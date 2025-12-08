@@ -53,7 +53,7 @@ const BurgerButton = ({ isOpen, toggle }: BurgerButtonProps) => {
             aria-label="Toggle menu"
             aria-expanded={isOpen}
             onClick={toggle}
-            className="md:hidden flex flex-col justify-center items-center gap-2.5 w-10 h-10 relative z-50"
+            className="md:hidden flex flex-col justify-center items-center gap-2.5 w-10 h-10 relative z-30"
             variants={burgerVariants}
             animate={isOpen ? "open" : "closed"}
         >

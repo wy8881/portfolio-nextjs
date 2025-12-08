@@ -1,12 +1,13 @@
     'use client'
 
     import Link from 'next/link'
-    import logo from '@/public/imges/icon_black.svg'
+    import logo from '@/public/images/icon_black.svg'
     import Image from 'next/image'
     import {usePathname} from 'next/navigation'
     import {motion, AnimatePresence} from 'framer-motion'
     import { useState } from 'react'
     import BurgerButton from '@/components/layout/navbar/BurgerButton'
+    import MobileMenu from '@/components/layout/navbar/MobileMenu'
 
 
     type NavLink = {
@@ -54,17 +55,10 @@
         const [isOpen, setIsOpen] = useState(false)
         
         return (
-            <AnimatePresence mode='wait'>
-                <motion.nav 
-                key={pathname}
-                className="fixed top-0 left-0 right-0 z-50 bg-nav-bg"
-                initial={{ y: '-100%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: '-100%', opacity: 0 }}
-                transition={{ duration: 0.5   , ease: 'easeInOut' }}
+            <header className="fixed top-0 left-0 right-0 z-50 bg-nav-bg"
             >
-                <div className="max-w-7xl mx-auto px-6 py-5 md:py-2 lg:py-4">
-                    <div className="flex items-center justify-between md:hidden">
+                <div className="max-w-7xl mx-auto px-6 py-4 md:py-5 lg:py-6 relative">
+                    <div className="flex items-center justify-between md:hidden relative z-30">
                         <Link href="/">
                             <Image 
                                 src={logo} 
@@ -76,93 +70,24 @@
                         </Link>
                         <BurgerButton isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
                     </div>
-                    <AnimatePresence>
-                        {isOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: "auto" }}
-                                exit={{ opacity: 0, height: 0 }}
-                                transition={{ 
-                                    duration: 0.3,
-                                    ease: [0.4, 0, 0.2, 1]
-                                }}
-                                className="md:hidden overflow-hidden"
-                            >
-                                <motion.div
-                                    initial={{ y: -20 }}
-                                    animate={{ y: 0 }}
-                                    exit={{ y: -20 }}
-                                    transition={{ 
-                                        duration: 0.3,
-                                        ease: [0.4, 0, 0.2, 1]
-                                    }}
-                                    className="py-6 space-y-4"
-                                >
-                                    {NAV_LINKS.map((link, index) => {
-                                        const isActive = pathname === link.href
-                                        return (
-                                            <motion.div
-                                                key={link.label}
-                                                initial={{ opacity: 0, x: -20 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ 
-                                                    duration: 0.3,
-                                                    delay: index * 0.05,
-                                                    ease: [0.4, 0, 0.2, 1]
-                                                }}
-                                            >
-                                                <Link
-                                                    href={link.href}
-                                                    onClick={() => setIsOpen(false)}
-                                                    className={`
-                                                        block text-base font-normal
-                                                        transition-all duration-200
-                                                        ${isActive
-                                                            ? 'text-nav-link-active'
-                                                            : 'text-nav-link-inactive hover:text-secondary'
-                                                        }`
-                                                    }
-                                                >
-                                                    {link.label}
-                                                </Link>
-                                            </motion.div>
-                                        )
-                                    })}
-                                    <div className="flex gap-6 pt-4">
-                                        {SOCIAL_LINKS.map((link, index) => (
-                                            <motion.div
-                                                key={link.label}
-                                                initial={{ opacity: 0, scale: 0.8 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ 
-                                                    duration: 0.3,
-                                                    delay: NAV_LINKS.length * 0.05 + index * 0.05,
-                                                    ease: [0.4, 0, 0.2, 1]
-                                                }}
-                                            >
-                                                <Link
-                                                    href={link.href}
-                                                    target='_blank'
-                                                    rel='noopener noreferrer'
-                                                    aria-label={link.ariaLabel}
-                                                    className='
-                                                        text-nav-link-inactive
-                                                        hover:text-secondary
-                                                        transition-all duration-200
-                                                        text-2xl
-                                                    '
-                                                >
-                                                    <i className={link.icon}></i>
-                                                </Link>
-                                            </motion.div>
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                    <div className="hidden md:flex items-center">
-                        <Link href="/" className='px-6 md:px-20 lg:px-22'>
+                    <MobileMenu 
+                        isOpen={isOpen}
+                        onClose={() => setIsOpen(false)}
+                        pathname={pathname}
+                        navLinks={NAV_LINKS}
+                        socialLinks={SOCIAL_LINKS}
+                    />
+                    
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={pathname}
+                            initial={{ y: '-50%', opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: '-50%', opacity: 0 }}
+                            transition={{ duration: 0.4, ease: 'easeInOut' }}
+                            className="hidden md:flex items-center"
+                        >
+                        <Link href="/" className='md:px-20 lg:px-24'>
                             <Image 
                                 src={logo} 
                                 alt='Logo' 
@@ -171,7 +96,7 @@
                                 className="rounded-full w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 object-cover aspect-square" 
                             />
                         </Link>
-                        <div className='ml-auto flex items-center gap-12 md:gap-16 lg:gap-20 px-18 md:px-20 lg:px-22'>
+                        <div className='ml-auto flex items-center gap-12 md:gap-16 lg:gap-20 px-16 md:px-20 lg:px-24'>
                             <div className="flex gap-4 md:gap-6 lg:gap-8">
                                 {NAV_LINKS.map((link) => {
                                     const isActive = pathname === link.href
@@ -185,7 +110,7 @@
                                                 transition-all duration-200
                                                 ${isActive
                                                     ? 'text-nav-link-active pb-1 border-b-2'
-                                                    : 'text-nav-link-inactive hover:text-secondary'
+                                                    : 'text-nav-link-inactive hover:text-text-secondary '
                                                 }`
                                             }
                                         >
@@ -204,7 +129,7 @@
                                         aria-label={link.ariaLabel}
                                         className='
                                             text-nav-link-inactive
-                                            hover:text-secondary
+                                            hover:text-text-secondary
                                             transition-all duration-200
                                             text-xl md:text-2xl lg:text-3xl
                                         '
@@ -216,13 +141,10 @@
 
                             </div>
                         </div>
-                    </div>
-
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
-            </motion.nav>
-
-        </AnimatePresence>
-            
+            </header>
         )
     }
 
