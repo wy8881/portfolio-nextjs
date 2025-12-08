@@ -1,31 +1,13 @@
 import type { Metadata } from "next";
-import { Staatliches, Caveat, Fredoka, Truculenta } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
-import Navbar from "@/components/layout/Navbar";
+import Navbar from "@/components/layout/navbar/Navbar";
 
-const graduate = Staatliches({
-  variable: "--font-graduate",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: "400",
-});
-
-const crafty = Caveat({
-  variable: "--font-crafty",
-  subsets: ["latin"],
-  weight: "400",
-});
-
-const bubblegum = Fredoka({
-  variable: "--font-bubblegum",
-  subsets: ["latin"],
-  weight: "400",
-});
-
-const truculenta = Truculenta({
-  variable: "--font-truculenta",
-  subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -42,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${graduate.variable} ${crafty.variable} ${bubblegum.variable} ${truculenta.variable} antialiased`}
+        className={`${inter.variable} antialiased`}
       >
         <ThemeProvider 
           attribute="class" 
