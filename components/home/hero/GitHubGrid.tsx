@@ -7,27 +7,27 @@ import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
 
 const getColorByLevel = (level: ContributionLevel): string => {
   const colorMap: Record<ContributionLevel, string> = {
-    0: '#eef1f4',    
-    1: '#c8d0d9',   
-    2: '#9eabb8',   
-    3: '#6c7a89',  
-    4: '#2b333a',   
+    0: '#eceff2',    
+    1: '#d6dce1',   
+    2: '#aeb7bf',   
+    3: '#7a8692',  
+    4: '#4f5963',   
   }
   return colorMap[level]
 }
 
 const GRID_STYLES = {
   cellSize: {
-    4: 'clamp(27px, 3vw, 40px)',
-    12: 'clamp(21px, 3vw, 32px)',
+    4: 'clamp(28px, 3vw, 40px)',
+    12: 'clamp(22px, 2.5vw, 32px)',
     52: 'clamp(16px, 2vw, 24px)',
-    100: 'clamp(10px, 1vw, 16px)',
+    100: 'clamp(12px, 1.2vw, 18px)',
   },
   gap: {
-    4: 'clamp(16px, 2vw, 24px)',
-    12: 'clamp(11px, 1vw, 16px)',
-    52: 'clamp(8px, 1vw, 12px)',
-    100: 'clamp(5px, 0.5vw, 8px)',
+    4: 'clamp(20px, 2.5vw, 30px)',
+    12: 'clamp(14px, 1.5vw, 20px)',
+    52: 'clamp(10px, 1.2vw, 15px)',
+    100: 'clamp(6px, 0.8vw, 10px)',
   },
   labelWidth: {
     4: 'clamp(53px, 7vw, 80px)',
@@ -113,7 +113,7 @@ function ContributionCell({ day, cellSize }: ContributionCellProps) {
           ease: ANIMATION_EASING.standard
         }
       }}
-      className="rounded-full will-change-transform"
+      className="rounded-md will-change-transform"
       style={{ 
         width: cellSize,
         height: cellSize,
@@ -128,80 +128,63 @@ function ContributionCell({ day, cellSize }: ContributionCellProps) {
 
 interface GitHubGridProps {
   weeks: ContributionDay[][]
+  total: number
+  period: number
 }
 
-export function GitHubGrid({ weeks }: GitHubGridProps) {
+export function GitHubGrid({ weeks, total, period }: GitHubGridProps) {
   const weekCount = weeks.length
   const config = getGridConfig(weekCount)
-  
-  const monthLabels: { weekIndex: number; month: string }[] = []
-  const seenMonths = new Set<string>()
-  
-  weeks.forEach((week, weekIndex) => {
-    if (week.length > 0) {
-      const firstDay = new Date(week[0].date) 
-      const monthKey = `${firstDay.getFullYear()}-${firstDay.getMonth()}`
-      
-      if (!seenMonths.has(monthKey)) {
-        seenMonths.add(monthKey)
-        const monthName = firstDay.toLocaleDateString('en-US', { month: 'short' })
-        monthLabels.push({ weekIndex, month: monthName })
-      }
-    }
-  })
-
-  const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-  const yAxisDays = [1, 3, 5]
 
   return (
-    <motion.div 
-      className="hidden md:grid w-full max-w-full overflow-x-auto"
-      style={{
-        gridTemplateColumns: `${config.labelWidth} repeat(${weeks.length}, ${config.cellSize})`,
-        gridTemplateRows: `auto repeat(7, ${config.cellSize})`,
-        gap: config.gap
-      }}
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
-    >
-      <div />
-      {weeks.map((week, weekIndex) => {
-        const label = monthLabels.find(l => l.weekIndex === weekIndex)
-        return (
+    <div className="hidden md:block w-full">
+      <div className="relative">
+        <div className="overflow-x-auto hide-scrollbar">
           <motion.div 
-            key={weekIndex} 
-            className="text-text-secondary text-center"
-            style={{ fontSize: config.labelFontSize }}
-            variants={labelVariants}
+            className="grid"
+            style={{
+              gridTemplateColumns: `repeat(${weeks.length}, ${config.cellSize})`,
+              gridTemplateRows: `repeat(7, ${config.cellSize})`,
+              gap: config.gap,
+              width: 'max-content',
+              minWidth: '100%',
+            }}
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
           >
-            {label && <span>{label.month}</span>}
+            {[0, 1, 2, 3, 4, 5, 6].map(dayIndex => (
+              <Fragment key={dayIndex}>
+                {weeks.map((week, weekIndex) => {
+                  const day = week[dayIndex]
+                  if (!day) return <div key={`empty-${weekIndex}`} />
+                  return (
+                    <ContributionCell 
+                      key={`${day.date}-${weekIndex}`}
+                      day={day} 
+                      cellSize={config.cellSize} />
+                  )
+                })}
+              </Fragment>
+            ))}
           </motion.div>
-        )
-      })}
-      
-      {[0, 1, 2, 3, 4, 5, 6].map(dayIndex => (
-        <Fragment key={dayIndex}>
-          <motion.div 
-            className="text-text-secondary flex items-center"
-            style={{ fontSize: config.labelFontSize }}
-            variants={labelVariants}
-          >
-            {yAxisDays.includes(dayIndex) && <span>{dayLabels[dayIndex]}</span>}
-          </motion.div>
-          
-          {weeks.map((week, weekIndex) => {
-            const day = week[dayIndex]
-            if (!day) return <div key={`empty-${weekIndex}`} />
-            return (
-              <ContributionCell 
-                key={`${day.date}-${weekIndex}`}
-                day={day} 
-                cellSize={config.cellSize} />
-            )
-          })}
-        </Fragment>
-      ))}
-    </motion.div>
+        </div>
+        <div 
+          className="absolute top-0 left-0 bottom-0 w-8 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to right, rgba(255, 255, 255, 0.7), transparent)',
+          }}
+        />
+        <div 
+          className="absolute top-0 right-0 bottom-0 w-8 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to left, rgba(255, 255, 255, 0.7), transparent)',
+          }}
+        />
+      </div>
+      <div className="mt-3 text-sm text-text-secondary text-left">
+        {total} contributions during the last {period} days
+      </div>
+    </div>
   )
 }

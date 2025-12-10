@@ -13,17 +13,17 @@ export function HeroSection() {
       className="
         grid 
         grid-cols-1
-        md:grid-cols-[15%_70%_15%]
-        lg:grid-cols-[1fr_3fr_1fr]
+        md:grid-cols-[18%_64%_18%]
+        lg:grid-cols-[1.2fr_3fr_1.2fr]
         gap-4 md:gap-6 lg:gap-8
-        px-4 md:px-6 lg:px-8
+        px-6 md:px-8 lg:px-12
         pt-4 md:pt-6 pb-12 lg:pb-16
         items-stretch
         "
     aria-label="Hero Section"
     role="region"
     >
-      <div className="hidden md:flex justify-center items-center">
+      <div className="hidden md:flex justify-end items-center pr-4 md:pr-6">
         {isLoading && (
           <div className="w-full h-full flex items-center justify-center min-h-[400px]">
             <div className="animate-pulse text-text-secondary">Loading...</div>
@@ -31,7 +31,9 @@ export function HeroSection() {
         )}
         {isError && null}
         {!isLoading && !isError && contributions && (
-          <GitHubGrid weeks={contributions.contributions} />
+          <div className="w-[90%] max-w-full">
+            <GitHubGrid weeks={contributions.contributions} total={contributions.total} period={30} />
+          </div>
         )}
       </div>
 

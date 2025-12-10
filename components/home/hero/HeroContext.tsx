@@ -16,7 +16,7 @@ const heroData = {
 
 export function Hero() {
   return (
-    <section className="flex flex-col items-center text-center px-6 py-12 md:py-16 lg:py-20">
+    <section className="flex flex-col items-center text-center px-6 pt-8 md:pt-12 lg:pt-16 pb-12 md:pb-16 lg:pb-20">
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -38,8 +38,8 @@ export function Hero() {
           delay: 0.2,
           ease: ANIMATION_EASING.standard
         }}
-        className="h-[3px] bg-gradient-to-r from-transparent via-text-primary to-transparent mb-6"
-        style={{ width: 'clamp(8rem, 20vw, 16rem)' }}
+        className="h-[2px] bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-6 blur-sm"
+        style={{ width: 'clamp(9.375rem, 22.5vw, 11.25rem)' }}
       />
 
       <motion.h2
@@ -78,16 +78,17 @@ export function Hero() {
           delay: 0.5,
           ease: ANIMATION_EASING.standard
         }}
-        className="flex flex-col sm:flex-row gap-4 items-center justify-center"
+        className="flex flex-col sm:flex-row gap-6 md:gap-8 items-center justify-center"
       >
         <Link
           href={heroData.cta.primary.href}
           className="
             bg-cta-bg text-cta-text
+            border-2 border-transparent
             px-8 py-3
             font-normal
             transition-all duration-200
-            hover:opacity-90
+            hover:bg-background hover:text-cta-bg hover:border-cta-bg
             rounded-sm
           "
           style={{ fontSize: 'clamp(0.875rem, 1.2vw, 1rem)' }}

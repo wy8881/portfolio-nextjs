@@ -24,3 +24,28 @@ p {
   line-height: 1.5;
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.tech-item {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+}
+
+@media (min-width: 1280px) {
+  .tech-item {
+    position: absolute !important;
+    left: var(--tech-left) !important;
+    top: var(--tech-top) !important;
+    transform: translateX(-50%) !important;
+  }
+}
+

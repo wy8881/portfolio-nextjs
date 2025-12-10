@@ -11,7 +11,7 @@ export const TECH_STACK: TechItem[] = [
   {
     name: 'React',
     fontSize: 'clamp(1rem, 1.2vw, 1.125rem)',
-    xPosition: '18%',
+    xPosition: '12%',
     yPosition: '12%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
@@ -19,7 +19,7 @@ export const TECH_STACK: TechItem[] = [
   {
     name: 'TypeScript',
     fontSize: 'clamp(0.875rem, 1vw, 1rem)',
-    xPosition: '72%',
+    xPosition: '66%',
     yPosition: '25%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
@@ -27,7 +27,7 @@ export const TECH_STACK: TechItem[] = [
   {
     name: 'Next.js',
     fontSize: 'clamp(1.25rem, 1.5vw, 1.5rem)',
-    xPosition: '43%',
+    xPosition: '37%',
     yPosition: '35%',
     color: 'text-gray-600',
     fontWeight: 'font-medium',
@@ -35,7 +35,7 @@ export const TECH_STACK: TechItem[] = [
   {
     name: 'Python',
     fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)',
-    xPosition: '22%',
+    xPosition: '16%',
     yPosition: '48%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
@@ -43,7 +43,7 @@ export const TECH_STACK: TechItem[] = [
   {
     name: 'Spring Boot',
     fontSize: 'clamp(1.125rem, 1.3vw, 1.25rem)',
-    xPosition: '68%',
+    xPosition: '62%',
     yPosition: '58%',
     color: 'text-gray-600',
     fontWeight: 'font-medium',
@@ -51,7 +51,7 @@ export const TECH_STACK: TechItem[] = [
   {
     name: 'MongoDB',
     fontSize: 'clamp(0.875rem, 1vw, 1rem)',
-    xPosition: '38%',
+    xPosition: '32%',
     yPosition: '68%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
@@ -59,7 +59,7 @@ export const TECH_STACK: TechItem[] = [
   {
     name: 'Tailwind CSS',
     fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)',
-    xPosition: '75%',
+    xPosition: '69%',
     yPosition: '82%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
@@ -67,7 +67,7 @@ export const TECH_STACK: TechItem[] = [
   {
     name: 'AWS',
     fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)',
-    xPosition: '28%',
+    xPosition: '22%',
     yPosition: '75%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
