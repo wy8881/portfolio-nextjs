@@ -2,37 +2,19 @@
 
 import { useGitHubContributions } from '@/hooks/useGitHubContributions'
 import { GitHubGrid } from '@/components/home/hero/GitHubGrid'
+import { Hero } from '@/components/home/hero/HeroContext'
 
 export default function TestPage() {
-  const { contributions, isLoading, isError, errorMessage } = useGitHubContributions({ period: 30 })
-  
-  if (isLoading) {
-    return <div className="p-8">加载中...</div>
-  }
-  
-  if (isError) {
-    return (
-      <div className="p-8 text-red-500">
-        <p>加载失败：{errorMessage}</p>
-      </div>
-    )
-  }
-  
-  if (!contributions) {
-    return <div className="p-8">没有数据</div>
-  }
+  const { contributions } = useGitHubContributions({ period: 30 })
   
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">GitHub 贡献图</h1>
-      
-      <div className="mb-4">
-        <p>总贡献：{contributions.total} 次</p>
-        <p>周数：{contributions.contributions.length}</p>
+    <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-8 md:gap-12 lg:gap-16 px-6 py-8 md:py-12 lg:py-16 min-h-screen">
+      <div className="flex-1 max-w-2xl">
+        <Hero />
       </div>
       
-      <div className="p-6 md:p-8 lg:p-10">
-        <GitHubGrid weeks={contributions.contributions} />
+      <div className="flex-1 flex justify-center md:justify-end">
+        {contributions && <GitHubGrid weeks={contributions.contributions} />}
       </div>
     </div>
   )
