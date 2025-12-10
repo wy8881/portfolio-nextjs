@@ -1,0 +1,85 @@
+export interface TechItem {
+  name: string
+  fontSize: string
+  xPosition: string
+  yPosition: string
+  color: string
+  fontWeight: string
+  delay: number
+}
+
+export const TECH_STACK: TechItem[] = [
+  {
+    name: 'React',
+    fontSize: 'clamp(1rem, 1.2vw, 1.125rem)',
+    xPosition: '18%',
+    yPosition: '12%',
+    color: 'text-gray-500',
+    fontWeight: 'font-light',
+    delay: 0.1,
+  },
+  {
+    name: 'TypeScript',
+    fontSize: 'clamp(0.875rem, 1vw, 1rem)',
+    xPosition: '72%',
+    yPosition: '25%',
+    color: 'text-gray-500',
+    fontWeight: 'font-light',
+    delay: 0.2,
+  },
+  {
+    name: 'Next.js',
+    fontSize: 'clamp(1.25rem, 1.5vw, 1.5rem)',
+    xPosition: '43%',
+    yPosition: '35%',
+    color: 'text-gray-600',
+    fontWeight: 'font-medium',
+    delay: 0.3,
+  },
+  {
+    name: 'Python',
+    fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)',
+    xPosition: '22%',
+    yPosition: '48%',
+    color: 'text-gray-500',
+    fontWeight: 'font-light',
+    delay: 0.4,
+  },
+  {
+    name: 'Spring Boot',
+    fontSize: 'clamp(1.125rem, 1.3vw, 1.25rem)',
+    xPosition: '68%',
+    yPosition: '58%',
+    color: 'text-gray-600',
+    fontWeight: 'font-medium',
+    delay: 0.5,
+  },
+  {
+    name: 'MongoDB',
+    fontSize: 'clamp(0.875rem, 1vw, 1rem)',
+    xPosition: '38%',
+    yPosition: '68%',
+    color: 'text-gray-500',
+    fontWeight: 'font-light',
+    delay: 0.6,
+  },
+  {
+    name: 'Tailwind CSS',
+    fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)',
+    xPosition: '75%',
+    yPosition: '82%',
+    color: 'text-gray-500',
+    fontWeight: 'font-light',
+    delay: 0.7,
+  },
+  {
+    name: 'AWS',
+    fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)',
+    xPosition: '28%',
+    yPosition: '75%',
+    color: 'text-gray-500',
+    fontWeight: 'font-light',
+    delay: 0.65,
+  },
+]
+

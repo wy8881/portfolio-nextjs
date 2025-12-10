@@ -3,6 +3,7 @@
 import { useGitHubContributions } from '@/hooks/useGitHubContributions'
 import { GitHubGrid } from '@/components/home/hero/GitHubGrid'
 import { Hero } from '@/components/home/hero/HeroContext'
+import { TechCloud } from '@/components/home/hero/TechCloud'
 
 export default function TestPage() {
   const { contributions } = useGitHubContributions({ period: 30 })
@@ -15,7 +16,9 @@ export default function TestPage() {
       <div className="flex-1 max-w-2xl">
         <Hero />
       </div>
-      
+      <div className="flex-1 max-w-2xl">
+        <TechCloud />
+      </div>
 
     </div>
   )
