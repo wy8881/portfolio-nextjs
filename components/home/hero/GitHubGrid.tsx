@@ -2,6 +2,7 @@
 
 import type { ContributionDay, ContributionLevel } from '@/lib/types'
 import { motion } from 'framer-motion'
+import { Fragment } from 'react'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
 
 const getColorByLevel = (level: ContributionLevel): string => {
@@ -16,48 +17,30 @@ const getColorByLevel = (level: ContributionLevel): string => {
 }
 
 const GRID_STYLES = {
-  cell: {
-    4: {
-      width: 'clamp(27px, 3vw, 40px)',
-      height: 'clamp(27px, 3vw, 40px)',
-    },
-    12: {
-      width: 'clamp(21px, 3vw, 32px)',
-      height: 'clamp(21px, 3vw, 32px)',
-    },
-    52: {
-      width: 'clamp(16px, 2vw, 24px)',
-      height: 'clamp(16px, 2vw, 24px)',
-    },
-    100: {
-      width: 'clamp(10px, 1vw, 16px)',
-      height: 'clamp(10px, 1vw, 16px)',
-    },
+  cellSize: {
+    4: 'clamp(27px, 3vw, 40px)',
+    12: 'clamp(21px, 3vw, 32px)',
+    52: 'clamp(16px, 2vw, 24px)',
+    100: 'clamp(10px, 1vw, 16px)',
   },
   gap: {
     4: 'clamp(16px, 2vw, 24px)',
     12: 'clamp(11px, 1vw, 16px)',
     52: 'clamp(8px, 1vw, 12px)',
-    100: 'clamp(5px,0.5vw, 8px)',
+    100: 'clamp(5px, 0.5vw, 8px)',
   },
-  text: {
-    4: 'clamp(8px, 1vw, 11px)',
-    12: 'clamp(7px, 0.8vw, 10px)',
-    52: 'clamp(6px, 0.75vw, 9px)',
-    100: 'clamp(5px, 0.7vw, 8px)',
+  labelWidth: {
+    4: 'clamp(106px, 14vw, 160px)',
+    12: 'clamp(86px, 10vw, 128px)',
+    52: 'clamp(64px, 8vw, 100px)',
+    100: 'clamp(42px, 6vw, 64px)',
   },
-  label: {
-    4: 'clamp(53x, 7vw, 80px)',
-    12: 'clamp(43px, 5vw, 64px)',
-    52: 'clamp(32px, 4vw, 50px)',
-    100: 'clamp(21px, 3vw, 32px)',
+  labelFontSize: {
+    4: 'clamp(16px, 2vw, 22px)',
+    12: 'clamp(14px, 1.6vw, 20px)',
+    52: 'clamp(12px, 1.5vw, 18px)',
+    100: 'clamp(10px, 1.4vw, 16px)',
   },
-  paddingLeft: {
-    4: 'clamp(53px, 7vw, 80px)',
-    12: 'clamp(43px, 5vw, 64px)',
-    52: 'clamp(32px, 4vw, 48px)',
-    100: 'clamp(21px, 3vw, 32px)',
-  }
 }
 
 function getGridConfig(weekCount: number) {
@@ -67,21 +50,20 @@ function getGridConfig(weekCount: number) {
     : 100
   
   return {
-    cell: GRID_STYLES.cell[key],
+    cellSize: GRID_STYLES.cellSize[key],
     gap: GRID_STYLES.gap[key],
-    text: GRID_STYLES.text[key],
-    label: GRID_STYLES.label[key],
-    paddingLeft: GRID_STYLES.paddingLeft[key],
+    labelWidth: GRID_STYLES.labelWidth[key],
+    labelFontSize: GRID_STYLES.labelFontSize[key],
   }
 }
 
 interface ContributionCellProps {
   day: ContributionDay
   delay: number
-  cellStyle: { width: string; height: string }
+  cellSize: string
 }
 
-function ContributionCell({ day, delay, cellStyle }: ContributionCellProps) {
+function ContributionCell({ day, delay, cellSize }: ContributionCellProps) {
   const color = getColorByLevel(day.level)
   return (
     <motion.div
@@ -101,8 +83,8 @@ function ContributionCell({ day, delay, cellStyle }: ContributionCellProps) {
       }}
       className="rounded-full"
       style={{ 
-        width: cellStyle.width,
-        height: cellStyle.height,
+        width: cellSize,
+        height: cellSize,
         backgroundColor: color,
         willChange: 'transform, opacity'
       }}
@@ -142,74 +124,63 @@ export function GitHubGrid({ weeks }: GitHubGridProps) {
 
   return (
     <div 
-      className="hidden md:flex flex-col w-full max-w-full overflow-x-auto"
-      style={{ gap: config.gap }}
+      className="hidden md:grid w-full max-w-full overflow-x-auto"
+      style={{
+        gridTemplateColumns: `${config.labelWidth} repeat(${weeks.length}, ${config.cellSize})`,
+        gridTemplateRows: `auto repeat(7, ${config.cellSize})`,
+        gap: config.gap
+      }}
     >
-      <div 
-        className="flex"
-        style={{ gap: config.gap, paddingLeft: config.paddingLeft }}
-      >
-        {weeks.map((week, weekIndex) => {
-          const label = monthLabels.find(l => l.weekIndex === weekIndex)
-          return (
-            <div 
-              key={weekIndex} 
-              className="flex items-start justify-center text-text-secondary"
-              style={{ width: config.label, fontSize: config.text }}
-            >
-              {label && <span>{label.month}</span>}
-            </div>
-          )
-        })}
-      </div>
+      <div />
+      {weeks.map((week, weekIndex) => {
+        const label = monthLabels.find(l => l.weekIndex === weekIndex)
+        return (
+          <motion.div 
+            key={weekIndex} 
+            className="text-text-secondary text-center"
+            style={{ fontSize: config.labelFontSize }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ 
+              duration: ANIMATION_DURATION.hero.cell,
+              delay: weekIndex * 0.05,
+              ease: ANIMATION_EASING.standard
+            }}
+          >
+            {label && <span>{label.month}</span>}
+          </motion.div>
+        )
+      })}
       
-      <div 
-        className="flex items-start"
-        style={{ gap: config.gap }}
-      >
-        <div 
-          className="flex flex-col pt-[2px]"
-          style={{ gap: config.gap }}
-        >
-          {dayLabels.map((dayLabel, dayIndex) => {
-            const shouldShow = yAxisDays.includes(dayIndex)
+      {[0, 1, 2, 3, 4, 5, 6].map(dayIndex => (
+        <Fragment key={dayIndex}>
+          <motion.div 
+            className="text-text-secondary flex items-center"
+            style={{ fontSize: config.labelFontSize }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ 
+              duration: ANIMATION_DURATION.hero.cell,
+              delay: dayIndex * 0.05,
+              ease: ANIMATION_EASING.standard
+            }}
+          >
+            {yAxisDays.includes(dayIndex) && <span>{dayLabels[dayIndex]}</span>}
+          </motion.div>
+          
+          {weeks.map((week, weekIndex) => {
+            const day = week[dayIndex]
+            if (!day) return <div key={`empty-${weekIndex}`} />
             return (
-              <div 
-                key={dayIndex} 
-                className="flex items-center text-text-secondary"
-                style={{ 
-                  height: config.cell.height,
-                  width: config.label,
-                  fontSize: config.text
-                }}
-              >
-                {shouldShow && <span>{dayLabel}</span>}
-              </div>
+              <ContributionCell 
+                key={`${day.date}-${weekIndex}`}
+                day={day} 
+                delay={(weekIndex * 7 + dayIndex) * 0.01}
+                cellSize={config.cellSize} />
             )
           })}
-        </div>
-        
-        <div 
-          className="flex"
-          style={{ gap: config.gap }}
-        >
-          {weeks.map((week, weekIndex) => (
-            <div 
-              key={weekIndex} 
-              className="flex flex-col"
-              style={{ gap: config.gap }}
-            >
-              {week.map((day, dayIndex) => (
-                <ContributionCell 
-                  key={day.date} 
-                  day={day} 
-                  delay={(weekIndex * 7 + dayIndex) * 0.01}
-                  cellStyle={config.cell} />
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+        </Fragment>
+      ))}
     </div>
   )
 }
