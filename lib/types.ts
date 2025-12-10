@@ -11,10 +11,8 @@ export interface ContributionWeek {
 }
 
 export interface ContributionData {
-    total: {
-        [year: string]: number
-    }
-     contributions: ContributionDay[][]
+    total: number
+    contributions: ContributionDay[][]
 }
 
 export interface GitHubApiResponse {

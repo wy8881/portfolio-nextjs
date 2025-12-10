@@ -45,33 +45,15 @@ function ContributionCell({ day, delay }: ContributionCellProps) {
 
 interface GitHubGridProps {
   weeks: ContributionDay[][]
-  month?: number 
 }
 
-export function GitHubGrid({ weeks, month = 1}: GitHubGridProps) {
-  const cutoffDate = new Date()
-  cutoffDate.setMonth(cutoffDate.getMonth() - month)
-  cutoffDate.setHours(0, 0, 0, 0)
-  
-  const today = new Date()
-  today.setHours(23, 59, 59, 999) // End of today
-  
-  const filteredWeeks = weeks
-    .map(week => 
-      week.filter(day => {
-        const dayDate = new Date(day.date)
-        dayDate.setHours(0, 0, 0, 0)
-        return dayDate >= cutoffDate && dayDate <= today
-      })
-    )
-    .filter(week => week.length > 0)
-  
+export function GitHubGrid({ weeks }: GitHubGridProps) {
   const monthLabels: { weekIndex: number; month: string }[] = []
   const seenMonths = new Set<string>()
   
-  filteredWeeks.forEach((week, weekIndex) => {
+  weeks.forEach((week, weekIndex) => {
     if (week.length > 0) {
-      const firstDay = new Date(week[0].date)
+      const firstDay = new Date(week[0].date) 
       const monthKey = `${firstDay.getFullYear()}-${firstDay.getMonth()}`
       
       if (!seenMonths.has(monthKey)) {
@@ -82,15 +64,18 @@ export function GitHubGrid({ weeks, month = 1}: GitHubGridProps) {
     }
   })
 
+  const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  const yAxisDays = [1, 3, 5]
+
   return (
-    <div className="flex items-start gap-2">
-      <div className="flex flex-col gap-1 pt-[2px]">
-        {filteredWeeks.map((week, weekIndex) => {
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-1 pl-8">
+        {weeks.map((week, weekIndex) => {
           const label = monthLabels.find(l => l.weekIndex === weekIndex)
           return (
             <div 
               key={weekIndex} 
-              className="h-3 md:h-3.5 lg:h-4 flex items-center text-xs text-text-secondary"
+              className="w-3 md:w-3.5 lg:w-4 flex items-start justify-center text-xs text-text-secondary"
             >
               {label && <span>{label.month}</span>}
             </div>
@@ -98,17 +83,33 @@ export function GitHubGrid({ weeks, month = 1}: GitHubGridProps) {
         })}
       </div>
       
-      <div className="flex gap-1">
-        {filteredWeeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="flex flex-col gap-1">
-            {week.map((day, dayIndex) => (
-              <ContributionCell 
-                key={day.date} 
-                day={day} 
-                delay={weekIndex * 0.1 + dayIndex * 0.05} />
-            ))}
-          </div>
-        ))}
+      <div className="flex items-start gap-2">
+        <div className="flex flex-col gap-1 pt-[2px]">
+          {dayLabels.map((dayLabel, dayIndex) => {
+            const shouldShow = yAxisDays.includes(dayIndex)
+            return (
+              <div 
+                key={dayIndex} 
+                className="h-3 md:h-3.5 lg:h-4 flex items-center text-xs text-text-secondary w-8"
+              >
+                {shouldShow && <span>{dayLabel}</span>}
+              </div>
+            )
+          })}
+        </div>
+        
+        <div className="flex gap-1">
+          {weeks.map((week, weekIndex) => (
+            <div key={weekIndex} className="flex flex-col gap-1">
+              {week.map((day, dayIndex) => (
+                <ContributionCell 
+                  key={day.date} 
+                  day={day} 
+                  delay={weekIndex * 0.1 + dayIndex * 0.05} />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

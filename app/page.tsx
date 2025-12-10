@@ -4,7 +4,7 @@ import { useGitHubContributions } from '@/hooks/useGitHubContributions'
 import { GitHubGrid } from '@/components/home/hero/GitHubGrid'
 
 export default function TestPage() {
-  const { contributions, isLoading, isError, errorMessage } = useGitHubContributions()
+  const { contributions, isLoading, isError, errorMessage } = useGitHubContributions({ period: 30 })
   
   if (isLoading) {
     return <div className="p-8">加载中...</div>
@@ -27,7 +27,7 @@ export default function TestPage() {
       <h1 className="text-2xl font-bold mb-4">GitHub 贡献图</h1>
       
       <div className="mb-4">
-        <p>总贡献：{contributions.total['2024']} 次</p>
+        <p>总贡献：{contributions.total} 次</p>
         <p>周数：{contributions.contributions.length}</p>
       </div>
       
