@@ -8,6 +8,7 @@
     import { useState } from 'react'
     import BurgerButton from '@/components/layout/navbar/BurgerButton'
     import MobileMenu from '@/components/layout/navbar/MobileMenu'
+    import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
 
 
     type NavLink = {
@@ -84,7 +85,7 @@
                             initial={{ y: '-50%', opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: '-50%', opacity: 0 }}
-                            transition={{ duration: 0.4, ease: 'easeInOut' }}
+                            transition={{ duration: ANIMATION_DURATION.navbar.routeTransition, ease: ANIMATION_EASING.easeInOut }}
                             className="hidden md:flex items-center"
                         >
                         <Link href="/" className='md:px-20 lg:px-24'>
@@ -107,7 +108,7 @@
                                             className={`
                                                 text-sm md:text-base lg:text-lg
                                                 font-normal
-                                                transition-all duration-200
+                                                transition-all
                                                 ${isActive
                                                     ? 'text-nav-link-active pb-1 border-b-2'
                                                     : 'text-nav-link-inactive hover:text-text-secondary '

@@ -31,7 +31,7 @@ export default function TestPage() {
         <p>周数：{contributions.contributions.length}</p>
       </div>
       
-      <div className="border p-4 inline-block">
+      <div className="p-6 md:p-8 lg:p-10">
         <GitHubGrid weeks={contributions.contributions} />
       </div>
     </div>
