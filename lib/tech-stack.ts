@@ -5,7 +5,6 @@ export interface TechItem {
   yPosition: string
   color: string
   fontWeight: string
-  delay: number
 }
 
 export const TECH_STACK: TechItem[] = [
@@ -16,7 +15,6 @@ export const TECH_STACK: TechItem[] = [
     yPosition: '12%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
-    delay: 0.1,
   },
   {
     name: 'TypeScript',
@@ -25,7 +23,6 @@ export const TECH_STACK: TechItem[] = [
     yPosition: '25%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
-    delay: 0.2,
   },
   {
     name: 'Next.js',
@@ -34,7 +31,6 @@ export const TECH_STACK: TechItem[] = [
     yPosition: '35%',
     color: 'text-gray-600',
     fontWeight: 'font-medium',
-    delay: 0.3,
   },
   {
     name: 'Python',
@@ -43,7 +39,6 @@ export const TECH_STACK: TechItem[] = [
     yPosition: '48%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
-    delay: 0.4,
   },
   {
     name: 'Spring Boot',
@@ -52,7 +47,6 @@ export const TECH_STACK: TechItem[] = [
     yPosition: '58%',
     color: 'text-gray-600',
     fontWeight: 'font-medium',
-    delay: 0.5,
   },
   {
     name: 'MongoDB',
@@ -61,7 +55,6 @@ export const TECH_STACK: TechItem[] = [
     yPosition: '68%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
-    delay: 0.6,
   },
   {
     name: 'Tailwind CSS',
@@ -70,7 +63,6 @@ export const TECH_STACK: TechItem[] = [
     yPosition: '82%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
-    delay: 0.7,
   },
   {
     name: 'AWS',
@@ -79,7 +71,6 @@ export const TECH_STACK: TechItem[] = [
     yPosition: '75%',
     color: 'text-gray-500',
     fontWeight: 'font-light',
-    delay: 0.65,
   },
 ]
 

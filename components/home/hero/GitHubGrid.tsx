@@ -57,23 +57,55 @@ function getGridConfig(weekCount: number) {
   }
 }
 
+const containerVariants = {
+  hidden: {
+    opacity: 0,
+  },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.02,
+      delayChildren: 0,
+    },
+  },
+}
+
+const cellVariants = {
+  hidden: {
+    opacity: 0,
+  },
+  show: {
+    opacity: 1,
+    transition: {
+      duration: ANIMATION_DURATION.hero.cell,
+      ease: ANIMATION_EASING.standard,
+    },
+  },
+}
+
+const labelVariants = {
+  hidden: {
+    opacity: 0,
+  },
+  show: {
+    opacity: 1,
+    transition: {
+      duration: ANIMATION_DURATION.hero.cell,
+      ease: ANIMATION_EASING.standard,
+    },
+  },
+}
+
 interface ContributionCellProps {
   day: ContributionDay
-  delay: number
   cellSize: string
 }
 
-function ContributionCell({ day, delay, cellSize }: ContributionCellProps) {
+function ContributionCell({ day, cellSize }: ContributionCellProps) {
   const color = getColorByLevel(day.level)
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ 
-        duration: ANIMATION_DURATION.hero.cell, 
-        delay: Math.min(delay, 0.6), 
-        ease: ANIMATION_EASING.standard
-      }}
+      variants={cellVariants}
       whileHover={{
         scale: 1.2,
         transition: {
@@ -81,12 +113,11 @@ function ContributionCell({ day, delay, cellSize }: ContributionCellProps) {
           ease: ANIMATION_EASING.standard
         }
       }}
-      className="rounded-full"
+      className="rounded-full will-change-transform"
       style={{ 
         width: cellSize,
         height: cellSize,
         backgroundColor: color,
-        willChange: 'transform, opacity'
       }}
       title={`${day.date}: ${day.count} contributions`}
       role="gridcell"
@@ -123,13 +154,16 @@ export function GitHubGrid({ weeks }: GitHubGridProps) {
   const yAxisDays = [1, 3, 5]
 
   return (
-    <div 
+    <motion.div 
       className="hidden md:grid w-full max-w-full overflow-x-auto"
       style={{
         gridTemplateColumns: `${config.labelWidth} repeat(${weeks.length}, ${config.cellSize})`,
         gridTemplateRows: `auto repeat(7, ${config.cellSize})`,
         gap: config.gap
       }}
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
     >
       <div />
       {weeks.map((week, weekIndex) => {
@@ -139,13 +173,7 @@ export function GitHubGrid({ weeks }: GitHubGridProps) {
             key={weekIndex} 
             className="text-text-secondary text-center"
             style={{ fontSize: config.labelFontSize }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ 
-              duration: ANIMATION_DURATION.hero.cell,
-              delay: weekIndex * 0.05,
-              ease: ANIMATION_EASING.standard
-            }}
+            variants={labelVariants}
           >
             {label && <span>{label.month}</span>}
           </motion.div>
@@ -157,13 +185,7 @@ export function GitHubGrid({ weeks }: GitHubGridProps) {
           <motion.div 
             className="text-text-secondary flex items-center"
             style={{ fontSize: config.labelFontSize }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ 
-              duration: ANIMATION_DURATION.hero.cell,
-              delay: dayIndex * 0.05,
-              ease: ANIMATION_EASING.standard
-            }}
+            variants={labelVariants}
           >
             {yAxisDays.includes(dayIndex) && <span>{dayLabels[dayIndex]}</span>}
           </motion.div>
@@ -175,12 +197,11 @@ export function GitHubGrid({ weeks }: GitHubGridProps) {
               <ContributionCell 
                 key={`${day.date}-${weekIndex}`}
                 day={day} 
-                delay={(weekIndex * 7 + dayIndex) * 0.01}
                 cellSize={config.cellSize} />
             )
           })}
         </Fragment>
       ))}
-    </div>
+    </motion.div>
   )
 }
