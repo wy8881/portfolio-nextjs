@@ -1,9 +1,39 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useGitHubContributions } from '@/hooks/useGitHubContributions'
+import { GitHubGrid } from '@/components/home/hero/GitHubGrid'
+
+export default function TestPage() {
+  const { contributions, isLoading, isError, errorMessage } = useGitHubContributions()
+  
+  if (isLoading) {
+    return <div className="p-8">加载中...</div>
+  }
+  
+  if (isError) {
+    return (
+      <div className="p-8 text-red-500">
+        <p>加载失败：{errorMessage}</p>
+      </div>
+    )
+  }
+  
+  if (!contributions) {
+    return <div className="p-8">没有数据</div>
+  }
+  
   return (
-   <main className="flex min-h-screen flex-col items-center justify-between p-24">
-    <h1 className="text-4xl font-bold">Hello World</h1>
-   </main>
-  );
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-4">GitHub 贡献图</h1>
+      
+      <div className="mb-4">
+        <p>总贡献：{contributions.total['2024']} 次</p>
+        <p>周数：{contributions.contributions.length}</p>
+      </div>
+      
+      <div className="border p-4 inline-block">
+        <GitHubGrid weeks={contributions.contributions} />
+      </div>
+    </div>
+  )
 }
