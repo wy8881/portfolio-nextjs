@@ -30,10 +30,10 @@ const GRID_STYLES = {
     100: 'clamp(5px, 0.5vw, 8px)',
   },
   labelWidth: {
-    4: 'clamp(106px, 14vw, 160px)',
-    12: 'clamp(86px, 10vw, 128px)',
-    52: 'clamp(64px, 8vw, 100px)',
-    100: 'clamp(42px, 6vw, 64px)',
+    4: 'clamp(53px, 7vw, 80px)',
+    12: 'clamp(43px, 5vw, 64px)',
+    52: 'clamp(32px, 4vw, 50px)',
+    100: 'clamp(21px, 3vw, 32px)',
   },
   labelFontSize: {
     4: 'clamp(16px, 2vw, 22px)',
