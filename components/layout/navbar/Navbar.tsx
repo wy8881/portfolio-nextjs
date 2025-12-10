@@ -66,7 +66,11 @@
                                 alt='Logo' 
                                 width={160} 
                                 height={160}
-                                className="rounded-full w-10 h-10 object-cover aspect-square" 
+                                className="rounded-full object-cover aspect-square" 
+                                style={{ 
+                                    width: 'clamp(40px, 4vw, 56px)',
+                                    height: 'clamp(40px, 4vw, 56px)'
+                                }}
                             />
                         </Link>
                         <BurgerButton isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
@@ -88,17 +92,31 @@
                             transition={{ duration: ANIMATION_DURATION.navbar.routeTransition, ease: ANIMATION_EASING.easeInOut }}
                             className="hidden md:flex items-center"
                         >
-                        <Link href="/" className='md:px-20 lg:px-24'>
+                        <Link href="/" style={{ paddingLeft: 'clamp(4rem, 6vw, 6rem)', paddingRight: 'clamp(4rem, 6vw, 6rem)' }}>
                             <Image 
                                 src={logo} 
                                 alt='Logo' 
                                 width={160} 
                                 height={160}
-                                className="rounded-full w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 object-cover aspect-square" 
+                                className="rounded-full object-cover aspect-square" 
+                                style={{ 
+                                    width: 'clamp(40px, 4vw, 56px)',
+                                    height: 'clamp(40px, 4vw, 56px)'
+                                }}
                             />
                         </Link>
-                        <div className='ml-auto flex items-center gap-12 md:gap-16 lg:gap-20 px-16 md:px-20 lg:px-24'>
-                            <div className="flex gap-4 md:gap-6 lg:gap-8">
+                        <div 
+                            className='ml-auto flex items-center'
+                            style={{ 
+                                gap: 'clamp(3rem, 5vw, 5rem)',
+                                paddingLeft: 'clamp(4rem, 5vw, 6rem)',
+                                paddingRight: 'clamp(4rem, 5vw, 6rem)'
+                            }}
+                        >
+                            <div 
+                                className="flex"
+                                style={{ gap: 'clamp(1rem, 1.5vw, 2rem)' }}
+                            >
                                 {NAV_LINKS.map((link) => {
                                     const isActive = pathname === link.href
                                     return (
@@ -106,7 +124,6 @@
                                             key={link.label}
                                             href={link.href}
                                             className={`
-                                                text-sm md:text-base lg:text-lg
                                                 font-normal
                                                 transition-all
                                                 ${isActive
@@ -114,13 +131,17 @@
                                                     : 'text-nav-link-inactive hover:text-text-secondary '
                                                 }`
                                             }
+                                            style={{ fontSize: 'clamp(14px, 1.2vw, 18px)' }}
                                         >
                                             {link.label}
                                         </Link>
                                     )
                                 })}
                             </div>
-                            <div className='flex items-center gap-4 md:gap-6 lg:gap-8'>
+                            <div 
+                                className='flex items-center'
+                                style={{ gap: 'clamp(1rem, 1.5vw, 2rem)' }}
+                            >
                                 {SOCIAL_LINKS.map((link) => (
                                     <Link
                                         key={link.label}
@@ -132,9 +153,8 @@
                                             text-nav-link-inactive
                                             hover:text-text-secondary
                                             transition-all duration-200
-                                            text-xl md:text-2xl lg:text-3xl
                                         '
-
+                                        style={{ fontSize: 'clamp(20px, 2vw, 30px)' }}
                                     >
                                         <i className={link.icon}></i>
                                     </Link>
