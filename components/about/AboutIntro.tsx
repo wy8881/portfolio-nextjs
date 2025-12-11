@@ -9,9 +9,6 @@ const AboutIntro = () => {
     >
       <div
         className="
-          mx-auto
-          max-w-[clamp(320px,90vw,1280px)]
-          px-[clamp(1rem,5vw+2.5rem,5rem)]
           pt-[clamp(4rem,10vh+2rem,9rem)]
           pb-[clamp(3rem,10vh,8rem)]
         "

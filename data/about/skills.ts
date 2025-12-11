@@ -5,10 +5,12 @@ export const skillsData: SkillCategory[] = [
     id: 1,
     title: "Full-stack Engineering",
     skills: [
+      "WordPress",
       "React / Next.js",
       "TypeScript / JavaScript",
       "Spring Boot (Java)",
       "MongoDB / REST APIs"
+
     ]
   },
   {

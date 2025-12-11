@@ -9,10 +9,6 @@ const SkillsSection = () => {
     >
       <div
         className="
-          w-full
-          max-w-[clamp(320px,90vw,1280px)]
-          mx-auto
-          px-[clamp(1rem,5vw,4rem)]
           py-[clamp(4rem,8vh,6rem)]
         "
       >
