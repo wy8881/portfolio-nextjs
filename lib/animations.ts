@@ -3,9 +3,12 @@
  * Used across navbar, hero, and other components for consistent timing
  */
 
+const PAGE_TRANSITION_DURATION = 0.3
+
 export const ANIMATION_DURATION = {
+  pageTransition: PAGE_TRANSITION_DURATION,
   navbar: {
-    routeTransition: 1,
+    routeTransition: PAGE_TRANSITION_DURATION,
     hover: 0.2,
   },
   hero: {

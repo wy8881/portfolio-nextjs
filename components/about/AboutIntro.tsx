@@ -1,5 +1,9 @@
+'use client'
+
 import ProfileImage from './ProfileImage'
 import { personalInfo } from '@/data/about/personal-info'
+import { motion } from 'framer-motion'
+import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
 
 const AboutIntro = () => {
   return (
@@ -25,7 +29,14 @@ const AboutIntro = () => {
             lg:gap-16
           "
         >
-          <div
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              delay: ANIMATION_DURATION.pageTransition + 0.2,
+              duration: ANIMATION_DURATION.pageTransition,
+              ease: ANIMATION_EASING.easeInOut
+            }}
             className="
               space-y-[clamp(1rem,3vw,2rem)]
               max-w-[580px]
@@ -81,11 +92,19 @@ const AboutIntro = () => {
             >
               {personalInfo.description}
             </p>
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              delay: ANIMATION_DURATION.pageTransition + 0.2,
+              duration: ANIMATION_DURATION.pageTransition,
+              ease: ANIMATION_EASING.easeInOut
+            }}
+          >
             <ProfileImage />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

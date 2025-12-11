@@ -89,7 +89,7 @@
                             initial={{ y: '-50%', opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                             exit={{ y: '-50%', opacity: 0 }}
-                            transition={{ duration: ANIMATION_DURATION.navbar.routeTransition, ease: ANIMATION_EASING.easeInOut }}
+                            transition={{ duration: ANIMATION_DURATION.pageTransition, ease: ANIMATION_EASING.easeInOut }}
                             className="hidden md:flex items-center"
                         >
                         <Link href="/" style={{ paddingLeft: 'clamp(4rem, 6vw, 6rem)', paddingRight: 'clamp(4rem, 6vw, 6rem)' }}>

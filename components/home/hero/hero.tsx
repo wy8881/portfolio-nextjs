@@ -4,12 +4,21 @@ import { useGitHubContributions } from '@/hooks/useGitHubContributions'
 import { GitHubGrid } from '@/components/home/hero/GitHubGrid'
 import { Hero } from '@/components/home/hero/HeroContext'
 import { TechCloud } from '@/components/home/hero/TechCloud'
+import { motion } from 'framer-motion'
+import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
 
 export function HeroSection() {
   const { contributions, isLoading, isError } = useGitHubContributions({ period: 30 })
-  
+
   return (
-    <section 
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{
+        delay: ANIMATION_DURATION.pageTransition,
+        duration: ANIMATION_DURATION.pageTransition,
+        ease: ANIMATION_EASING.easeInOut
+      }}
       className="
         grid 
         grid-cols-1
@@ -19,9 +28,9 @@ export function HeroSection() {
         px-6 md:px-8 lg:px-12
         pt-4 md:pt-6 pb-12 lg:pb-16
         items-stretch
-        "
-    aria-label="Hero Section"
-    role="region"
+      "
+      aria-label="Hero Section"
+      role="region"
     >
       <div className="hidden md:flex justify-end items-center pr-4 md:pr-6">
         {isLoading && (
@@ -44,7 +53,7 @@ export function HeroSection() {
       <div className="hidden md:flex justify-center items-stretch h-full">
         <TechCloud />
       </div>
-    </section>
+    </motion.section>
   )
 }
 

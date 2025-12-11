@@ -22,6 +22,7 @@ export function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{
           duration: ANIMATION_DURATION.hero.cell,
+          delay: 0.1,
           ease: ANIMATION_EASING.standard
         }}
         className="font-bold text-text-primary mb-2"

@@ -17,8 +17,8 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <main className="w-full"> 
+    <section className="w-full"> 
       <HeroSection />
-    </main>
+    </section>
   )
 }
