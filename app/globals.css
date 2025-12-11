@@ -14,6 +14,7 @@
   --color-cta-bg: #000000;
   --color-cta-text: #FFFFFF;
   --font-inter: var(--font-inter), sans-serif;
+  --font-family-inter: var(--font-inter), sans-serif;
 }
 
 body {
@@ -46,6 +47,6 @@ p {
     left: var(--tech-left) !important;
     top: var(--tech-top) !important;
     transform: translateX(-50%) !important;
-  }
+}
 }
 

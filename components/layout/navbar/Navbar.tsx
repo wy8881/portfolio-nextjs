@@ -9,7 +9,7 @@
     import BurgerButton from '@/components/layout/navbar/BurgerButton'
     import MobileMenu from '@/components/layout/navbar/MobileMenu'
     import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
-
+    
 
     type NavLink = {
         href: string
@@ -87,7 +87,7 @@
                         <motion.div
                             key={pathname}
                             initial={{ y: '-50%', opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
+                animate={{ y: 0, opacity: 1 }}
                             exit={{ y: '-50%', opacity: 0 }}
                             transition={{ duration: ANIMATION_DURATION.navbar.routeTransition, ease: ANIMATION_EASING.easeInOut }}
                             className="hidden md:flex items-center"

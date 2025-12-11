@@ -12,7 +12,7 @@ export interface ContributionWeek {
 
 export interface ContributionData {
     total: number
-    contributions: ContributionDay[][]
+     contributions: ContributionDay[][]
 }
 
 export interface GitHubApiResponse {

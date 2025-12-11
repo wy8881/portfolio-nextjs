@@ -166,7 +166,7 @@ export function GitHubGrid({ weeks, total, period }: GitHubGridProps) {
                   )
                 })}
               </Fragment>
-            ))}
+          ))}
           </motion.div>
         </div>
         <div 
