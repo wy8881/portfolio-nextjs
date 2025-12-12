@@ -7,16 +7,6 @@ import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
 
 const AboutIntro = () => {
   return (
-    <section
-      className="w-full"
-      aria-label="About introduction"
-    >
-      <div
-        className="
-          pt-[clamp(4rem,10vh+2rem,9rem)]
-          pb-[clamp(3rem,10vh,8rem)]
-        "
-      >
         <div
           className="
             grid
@@ -106,8 +96,6 @@ const AboutIntro = () => {
             <ProfileImage />
           </motion.div>
         </div>
-      </div>
-    </section>
   )
 }
 
