@@ -7,7 +7,7 @@ export const projects: Project[] = [
     description: "End-to-end voting app with role-based access control and real-time results",
     tags: ["Spring Boot", "MongoDB", "JWT"],
     category: "Full-Stack",
-    github: "https://github.com/wy8881/voting-system",
+    github: "https://github.com/wy8881/voting",
     liveDemo: "https://voting.wyprojects.com/",
     featured: true
   },
