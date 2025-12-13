@@ -32,7 +32,7 @@ export default function RootLayout({
           defaultTheme="light" 
           enableSystem={false}>
           <Navbar />
-          <main className="pt-20" min-h-screen="true">
+          <main className="my-22 md:my-28 lg:my-34 px-10 md:px-12 lg:px-28" min-h-screen="true">
             {children}
           </main>
           <Footer />

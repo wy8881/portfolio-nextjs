@@ -8,16 +8,8 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <section className="w-full flex items-center justify-center">
-      <div
-        className="
-          max-w-[clamp(320px,90vw,1280px)]
-          mx-auto
-          px-[clamp(1.5rem,5vw,4rem)]
-        "
-      >
+    <section aria-label="Contact section">
         <ContactIntro />
-      </div>
     </section>
   );
 }

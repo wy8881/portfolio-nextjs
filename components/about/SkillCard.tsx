@@ -1,5 +1,7 @@
 'use client'
 
+import { CardTitle, Body } from '@/components/ui/Typography'
+
 interface SkillCardProps {
   title: string;
   skills: string[];
@@ -21,34 +23,13 @@ const SkillCard = ({ title, skills }: SkillCardProps) => {
         hover:shadow-[8px_8px_0px_0px_#000000]
       "
     >
-      <h3
-        className="
-          font-sans
-          text-[clamp(1.125rem,2vw,1.375rem)]
-          font-semibold
-          mb-4
-          text-black
-          leading-[1.3]
-        "
-      >
-        {title}
-      </h3>
+      <CardTitle>{title}</CardTitle>
       
-      <ul
-        className="
-          list-none
-          p-0
-          space-y-2
-        "
-      >
+      <ul className="list-none p-0 space-y-2">
         {skills.map((skill, index) => (
           <li
             key={index}
             className="
-              font-sans
-              text-[clamp(0.875rem,1.5vw,1rem)]
-              text-[#333333]
-              leading-[1.6]
               pl-5
               relative
               before:content-['•']
@@ -58,7 +39,7 @@ const SkillCard = ({ title, skills }: SkillCardProps) => {
               before:font-semibold
             "
           >
-            {skill}
+            <Body as="span">{skill}</Body>
           </li>
         ))}
       </ul>

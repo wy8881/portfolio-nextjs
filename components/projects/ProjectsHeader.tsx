@@ -1,12 +1,10 @@
 'use client'
 
-import ProfileImage from './ProfileImage'
-import { personalInfo } from '@/data/about/personal-info'
 import { motion } from 'framer-motion'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
-import { SectionLabel, H1, H2, BodyLarge } from '@/components/ui/Typography'
+import { SectionLabel, H1, H2 } from '@/components/ui/Typography'
 
-const AboutIntro = () => {
+const ProjectsHeader = () => {
   return (
         <div
           className="
@@ -33,13 +31,11 @@ const AboutIntro = () => {
               max-w-[580px]
             "
           >
-            <SectionLabel>ABOUT</SectionLabel>
+            <SectionLabel>PROJECTS</SectionLabel>
             
-            <H1>I'm {personalInfo.name}</H1>
+            <H1>Projects & Experience</H1>
             
-            <H2>{personalInfo.title}</H2>
-            
-            <BodyLarge>{personalInfo.description}</BodyLarge>
+            <H2>Selected work & hands-on experience</H2>
           </motion.div>
 
           <motion.div
@@ -52,16 +48,42 @@ const AboutIntro = () => {
             }}
             className="
               hidden
-              flex
-              justify-center
-              md:flex justify-end
+              md:flex justify-center
             "
           >
-            <ProfileImage />
+            <div
+              className="
+                relative
+                w-[clamp(220px,85vw,380px)]
+                md:w-[clamp(320px,35vw,480px)]
+                aspect-square
+                flex
+                items-center
+                justify-center
+                rotate-[1deg]
+                md:rotate-[2deg]
+                hover:rotate-0
+                transition-transform
+                duration-[400ms]
+                ease-out
+              "
+            >
+              <code
+                className="
+                  font-mono
+                  text-[clamp(4rem,10vw,8rem)]
+                  font-light
+                  text-[#E5E5E5]
+                  select-none
+                "
+              >
+                &lt;code/&gt;
+              </code>
+            </div>
           </motion.div>
         </div>
   )
 }
 
-export default AboutIntro
+export default ProjectsHeader
 

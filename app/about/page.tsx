@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <section className="w-full">
+    <section>
       <div
         className="
           max-w-[clamp(320px,90vw,1280px)]
@@ -18,9 +18,15 @@ export default function AboutPage() {
           px-[clamp(1.5rem,5vw,4rem)]
         "
       >
-        <AboutIntro />
-        <SkillsSection />
-        <TimelineSection />
+        <div className="pb-[clamp(5rem,14vh,10rem)]">
+          <AboutIntro />
+        </div>
+        <div className="pb-[clamp(5rem,14vh,10rem)]">
+          <SkillsSection />
+        </div>
+        <div>
+          <TimelineSection />
+        </div>
       </div>
     </section>
   );

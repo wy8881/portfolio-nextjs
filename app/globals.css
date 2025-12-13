@@ -2,19 +2,33 @@
 @import "bootstrap-icons/font/bootstrap-icons.css";
 
 @theme inline {
-  --color-background: #FFFFFF;
-  --color-foreground: #333333;
-  --color-text-primary: #333333;
-  --color-text-secondary: #555555;
-  --color-secondary: #555555;
-  --color-border: #E5E5E5;
+  /* Navigation colors */
   --color-nav-bg: #000000;
   --color-nav-link-inactive: #FFFFFF;
   --color-nav-link-active: #555555;
+  
+  /* CTA colors */
   --color-cta-bg: #000000;
   --color-cta-text: #FFFFFF;
+  
+  /* Typography color system */
+  --color-text-primary: #000000;
+  --color-text-secondary: #555555;
+  --color-text-tertiary: #666666;
+  --color-text-label: #888888;
+  
+  /* Border color system */
+  --color-border-primary: #000000;
+  --color-border-secondary: #E5E5E5;
+  --color-border-tertiary: #CCCCCC;
+  
+  /* Background color system */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #FAFAFA;
+  --color-bg-tertiary: #F5F5F5;
+  
+  /* Font system */
   --font-inter: var(--font-inter), sans-serif;
-  --font-family-inter: var(--font-inter), sans-serif;
 }
 
 body {

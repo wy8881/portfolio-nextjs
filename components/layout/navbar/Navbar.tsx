@@ -55,10 +55,10 @@
         const [isOpen, setIsOpen] = useState(false)
         
         return (
-            <header className="fixed top-0 left-0 right-0 z-50 bg-nav-bg"
+            <header className="fixed top-0 left-0 right-0 z-50 bg-nav-bg h-16 md:h-20 lg:h-24"
             >
-                <div className="max-w-7xl mx-auto px-6 py-4 md:py-5 lg:py-6 relative">
-                    <div className="flex items-center justify-between md:hidden relative z-30">
+                <div className="max-w-7xl mx-auto px-6 h-full">
+                    <div className="flex items-center justify-between md:hidden z-30 h-full">
                         <Link href="/">
                             <Image 
                                 src={logo} 
@@ -74,24 +74,18 @@
                         </Link>
                         <BurgerButton isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
                     </div>
-                    <MobileMenu 
-                        isOpen={isOpen}
-                        onClose={() => setIsOpen(false)}
-                        pathname={pathname}
-                        navLinks={NAV_LINKS}
-                        socialLinks={SOCIAL_LINKS}
-                    />
+           
                     
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={pathname}
                             initial={{ y: '-50%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
+                            animate={{ y: 0, opacity: 1 }}
                             exit={{ y: '-50%', opacity: 0 }}
                             transition={{ duration: ANIMATION_DURATION.pageTransition, ease: ANIMATION_EASING.easeInOut }}
-                            className="hidden md:flex items-center"
+                            className="hidden md:flex items-center justify-between h-full"
                         >
-                        <Link href="/" style={{ paddingLeft: 'clamp(4rem, 6vw, 6rem)', paddingRight: 'clamp(4rem, 6vw, 6rem)' }}>
+                        <Link href="/">
                             <Image 
                                 src={logo} 
                                 alt='Logo' 
@@ -164,6 +158,13 @@
                         </motion.div>
                     </AnimatePresence>
                 </div>
+                <MobileMenu 
+                        isOpen={isOpen}
+                        onClose={() => setIsOpen(false)}
+                        pathname={pathname}
+                        navLinks={NAV_LINKS}
+                        socialLinks={SOCIAL_LINKS}
+                    />
             </header>
         )
     }

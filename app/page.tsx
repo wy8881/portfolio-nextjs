@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <section className="w-full"> 
+    <section aria-label="Hero section"> 
       <HeroSection />
     </section>
   )

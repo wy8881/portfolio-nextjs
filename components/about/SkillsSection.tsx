@@ -1,29 +1,11 @@
 import SkillCard from './SkillCard';
 import { skillsData } from '@/data/about/skills';
+import { H3 } from '@/components/ui/Typography';
 
 const SkillsSection = () => {
   return (
-    <section
-      className="w-full"
-      aria-label="Skills and expertise section"
-    >
-      <div
-        className="
-          py-[clamp(4rem,8vh,6rem)]
-        "
-      >
-        <h2
-          className="
-            font-sans
-            text-[clamp(2rem,4vw+0.5rem,3rem)]
-            font-bold
-            leading-[1.2]
-            text-black
-            mb-[clamp(2rem,4vw,3rem)]
-          "
-        >
-          Skills & Expertise
-        </h2>
+    <div>
+        <H3>Skills & Expertise</H3>
         
         <div
           className="
@@ -44,7 +26,6 @@ const SkillsSection = () => {
           ))}
         </div>
       </div>
-    </section>
   );
 };
 

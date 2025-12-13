@@ -1,4 +1,5 @@
 import { TimelineItem as TimelineItemType } from '@/types/about';
+import { CardTitle, Body } from '@/components/ui/Typography';
 
 interface TimelineItemProps {
   item: TimelineItemType;
@@ -30,36 +31,11 @@ const TimelineItem = ({ item, isLast }: TimelineItemProps) => {
         </div>
         
         <div className="space-y-3">
-          <h3
-            className="
-              text-[clamp(1.125rem,2vw,1.375rem)]
-              font-semibold
-              leading-[1.3]
-              text-black
-            "
-          >
-            {item.title}
-          </h3>
+          <CardTitle>{item.title}</CardTitle>
           
-          <p
-            className="
-              text-[clamp(1rem,1.5vw,1.125rem)]
-              text-[#666666]
-              mb-3
-            "
-          >
-            {item.organization}
-          </p>
+          <Body>{item.organization}</Body>
           
-          <ul
-            className="
-              space-y-2
-              text-[clamp(0.9375rem,1.5vw,1.0625rem)]
-              text-[#555555]
-              leading-[1.7]
-              ml-5
-            "
-          >
+          <ul className="space-y-2 ml-5">
             {item.highlights.map((highlight, idx) => (
               <li
                 key={idx}
@@ -73,7 +49,7 @@ const TimelineItem = ({ item, isLast }: TimelineItemProps) => {
                   before:font-semibold
                 "
               >
-                {highlight}
+                <Body>{highlight}</Body>
               </li>
             ))}
           </ul>
@@ -92,37 +68,11 @@ const TimelineItem = ({ item, isLast }: TimelineItemProps) => {
           {item.period}
         </div>
         
-        <h3
-          className="
-            text-[clamp(1.125rem,3.5vw,1.25rem)]
-            font-semibold
-            leading-[1.3]
-            text-black
-            mb-1
-          "
-        >
-          {item.title}
-        </h3>
+        <CardTitle>{item.title}</CardTitle>
         
-        <p
-          className="
-            text-[clamp(0.9375rem,2.5vw,1rem)]
-            text-[#666666]
-            mb-3
-          "
-        >
-          {item.organization}
-        </p>
+        <Body>{item.organization}</Body>
         
-        <ul
-          className="
-            space-y-2
-            text-[clamp(0.9375rem,2.5vw,1rem)]
-            text-[#555555]
-            leading-[1.7]
-            ml-5
-          "
-        >
+        <ul className="space-y-2 ml-5">
           {item.highlights.map((highlight, idx) => (
             <li
               key={idx}
@@ -136,7 +86,7 @@ const TimelineItem = ({ item, isLast }: TimelineItemProps) => {
                 before:font-semibold
               "
             >
-              {highlight}
+              <Body>{highlight}</Body>
             </li>
           ))}
         </ul>

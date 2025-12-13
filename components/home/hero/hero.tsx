@@ -29,13 +29,12 @@ export function HeroSection() {
         pt-4 md:pt-6 pb-12 lg:pb-16
         items-stretch
       "
-      aria-label="Hero Section"
       role="region"
     >
       <div className="hidden md:flex justify-end items-center pr-4 md:pr-6">
         {isLoading && (
           <div className="w-full h-full flex items-center justify-center min-h-[400px]">
-            <div className="animate-pulse text-text-secondary">Loading...</div>
+            <div className="animate-pulse text-text-secondary">Loading GitHub Contributions...</div>
           </div>
         )}
         {isError && null}
