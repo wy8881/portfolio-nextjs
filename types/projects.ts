@@ -8,6 +8,7 @@ export interface Project {
   category: ProjectCategory
   github?: string | null
   liveDemo?: string | null
+  publication?: string | null
   featured?: boolean
 }
 
@@ -16,5 +17,6 @@ export interface Certification {
   name: string
   details?: string
   year: number
+  badge?: string | null
 }
 

@@ -4,7 +4,7 @@ import { H3 } from '@/components/ui/Typography';
 
 const TimelineSection = () => {
   return (
-    <div>
+    <div className="flex flex-col gap-12">
         <H3>EXPERIENCE</H3>
         
         <div className="space-y-0">

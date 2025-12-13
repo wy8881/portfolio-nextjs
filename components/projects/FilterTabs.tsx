@@ -9,7 +9,7 @@ interface FilterTabsProps {
   onFilterChange: (filter: ProjectCategory | 'All') => void
 }
 
-const filters: (ProjectCategory | 'All')[] = ['All', 'Full-Stack', 'ML / Data', 'IT Support']
+const filters: (ProjectCategory | 'All')[] = ['All', 'Full-Stack', 'Frontend', 'ML / Data', 'IT Support']
 
 const FilterTabs = ({ onFilterChange }: FilterTabsProps) => {
   const [activeFilter, setActiveFilter] = useState<ProjectCategory | 'All'>('All')
@@ -33,10 +33,9 @@ const FilterTabs = ({ onFilterChange }: FilterTabsProps) => {
       {filters.map((filter, index) => (
         <motion.button
           key={filter}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{
-            delay: ANIMATION_DURATION.pageTransition + 0.2 + (index * 0.05),
             duration: 0.3,
             ease: ANIMATION_EASING.easeInOut
           }}

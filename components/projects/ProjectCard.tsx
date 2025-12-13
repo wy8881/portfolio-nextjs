@@ -12,6 +12,9 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <div
       className="
+        h-full
+        flex
+        flex-col
         bg-white
         border-2
         border-black
@@ -22,18 +25,16 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         ease-out
         hover:translate-y-[-4px]
         hover:shadow-[8px_8px_0px_0px_#000000]
+        gap-3
       "
     >
       <CardTitle>{project.title}</CardTitle>
-      
-      <CardDescription>{project.description}</CardDescription>
-      
+
       <div
         className="
           flex
           flex-wrap
           gap-2
-          mb-6
         "
       >
         {project.tags.map((tag, index) => (
@@ -55,11 +56,16 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         ))}
       </div>
       
+      <CardDescription className="flex-grow mb-6">{project.description}</CardDescription>
+      
+      
+      
       <div
         className="
           flex
           gap-6
           text-[0.9375rem]
+          mt-auto
         "
       >
         {project.github && (
@@ -91,6 +97,17 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             aria-label={`View live demo for ${project.title}`}
           >
             Live Demo →
+          </Link>
+        )}
+        {project.publication && (
+          <Link
+            href={project.publication}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-black hover:underline transition-all duration-200"
+            aria-label={`View publication for ${project.title}`}
+          >
+            View Publication →
           </Link>
         )}
       </div>

@@ -12,9 +12,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Yi Wang's Portfolio",
+  title: "Yi's Portfolio",
   description: "Full-stack developer specializing in React and Spring Boot",
   keywords: ["portfolio", "developer", "react", "nextjs", "spring boot"],
+  icons: {
+    icon: '/images/icon.svg',
+  },
 };
 
 export default function RootLayout({

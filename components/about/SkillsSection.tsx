@@ -4,7 +4,7 @@ import { H3 } from '@/components/ui/Typography';
 
 const SkillsSection = () => {
   return (
-    <div>
+    <div className="flex flex-col gap-12">
         <H3>Skills & Expertise</H3>
         
         <div

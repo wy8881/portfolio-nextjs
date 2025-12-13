@@ -38,7 +38,7 @@ const ProjectsGrid = ({ projects }: ProjectsGridProps) => {
             grid
             grid-cols-1
             md:grid-cols-2
-            lg:grid-cols-3
+            xl:grid-cols-3
             gap-6
             md:gap-6
             lg:gap-8
@@ -55,6 +55,7 @@ const ProjectsGrid = ({ projects }: ProjectsGridProps) => {
                 duration: 0.3,
                 ease: ANIMATION_EASING.easeInOut
               }}
+              className="h-full"
             >
               <ProjectCard project={project} />
             </motion.div>

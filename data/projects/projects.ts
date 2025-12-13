@@ -5,7 +5,7 @@ export const projects: Project[] = [
     id: 1,
     title: "Full-Stack Voting System",
     description: "End-to-end voting app with role-based access control and real-time results",
-    tags: ["React", "Spring Boot", "MongoDB", "JWT"],
+    tags: ["Spring Boot", "MongoDB", "JWT"],
     category: "Full-Stack",
     github: "https://github.com/wy8881/voting-system",
     liveDemo: "https://voting.wyprojects.com/",
@@ -13,14 +13,16 @@ export const projects: Project[] = [
   },
   {
     id: 2,
-    title: "XV Feature Engineering",
-    description: "ML pipeline for cystic fibrosis imaging analysis using deep learning",
-    tags: ["Python", "scikit-learn", "DenseNet", "TensorFlow"],
+    title: "Research Internship",
+    description: "Research internship focused on data analysis and machine learning methods applied to X-ray velocimetry (XV) imaging for cystic fibrosis research. Contributed to quantitative feature analysis across preclinical and clinical datasets, supporting a peer-reviewed publication.",
+    tags: ["Machine Learning", "Data Analysis", "Medical Imaging", "X-ray Velocimetry"],
     category: "ML / Data",
     github: null,
     liveDemo: null,
-    featured: true
+    publication:"https://www.researchgate.net/publication/396104789_124_Of_mice_and_men_Novel_methods_for_understanding_cystic_fibrosis_using_preclinical_and_clinical_X-ray_velocimetry_imaging",
+    featured: false
   },
+  
   {
     id: 3,
     title: "Personal Portfolio",
@@ -36,7 +38,7 @@ export const projects: Project[] = [
     id: 4,
     title: "Tic Tac Toe Game",
     description: "A simple Tic-Tac-Toe game built with React, allowing two players to take turns marking X and O on a 3x3 grid. The game automatically detects a winner or declares a draw when all cells are filled.",
-    tags: ["React", "JavaScript", "Game Logic"],
+    tags: ["React.js", "JavaScript", "Game Logic"],
     category: "Frontend",
     github: "https://github.com/wy8881/tic-tac-toe-game/",
     liveDemo: "https://wy8881.github.io/tic-tac-toe-game/",
@@ -48,10 +50,22 @@ export const projects: Project[] = [
     description: "A recipe management application built with Angular. Users can add, edit, and delete recipes and ingredients, with an integrated shopping list feature to manage required items.",
     tags: ["Angular", "TypeScript", "CRUD"],
     category: "Frontend",
-    github: "https://github.com/wy8881/RecipeBook/recipes",
+    github: "https://github.com/wy8881/RecipeBook",
     liveDemo: "https://wy8881.github.io/RecipeBook/recipes",
     featured: false
   },
+  {
+    id: 6,
+    title: "IT Support Experience",
+    description: "IT support experience gained during an internship in Australia, involving system upgrades and first-line user support. Responsibilities included handling phone-based support, troubleshooting issues, and escalating incidents to senior teams when required.",
+    tags: [ "System Upgrade", "Phone Support", "Incident Escalation", "Documentation"],
+    category: "IT Support",
+    github: null,
+    liveDemo: null,
+    featured: false
+  },
+
+  
   
   
 ]

@@ -8,10 +8,10 @@ import { H3 } from '@/components/ui/Typography'
 
 const CertificationsSection = () => {
   return (
-    <div>
+    <div className="flex flex-col gap-12">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
         viewport={{ once: true, margin: '-100px' }}
         transition={{
           duration: ANIMATION_DURATION.pageTransition,
@@ -46,6 +46,7 @@ const CertificationsSection = () => {
             <CertificationCard certification={certification} />
           </motion.div>
         ))}
+        
       </div>
     </div>
   )

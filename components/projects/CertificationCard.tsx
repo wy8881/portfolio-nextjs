@@ -2,7 +2,7 @@
 
 import { Certification } from '@/types/projects'
 import { CardTitle, Body } from '@/components/ui/Typography'
-
+import Link from 'next/link'
 interface CertificationCardProps {
   certification: Certification
 }
@@ -29,7 +29,12 @@ const CertificationCard = ({ certification }: CertificationCardProps) => {
         <Body>{certification.details}</Body>
       )}
       
-      <Body>Year: {certification.year}</Body>
+      <Body className="mb-4">Year: {certification.year}</Body>
+      {certification.badge && (
+        <Link href={certification.badge} target="_blank" rel="noopener noreferrer">
+          View Badge →
+        </Link>
+      )}
     </div>
   )
 }

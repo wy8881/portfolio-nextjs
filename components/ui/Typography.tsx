@@ -217,6 +217,7 @@ export function CardTitle({
         'font-semibold',
         'leading-[1.3]',
         'text-[#000000]',
+        'mb-5',
         className
       )}
     >
