@@ -37,7 +37,7 @@
             ariaLabel: 'Visit my GitHub Profile'
         },
         {
-            href: 'https://linkedin.com/in/yi-wang-meow99',
+            href: 'https://linkedin.com/in/yi-wang2808',
             icon: 'bi-linkedin',
             label: 'LinkedIn',
             ariaLabel: 'Visit my LinkedIn Profile'
@@ -59,7 +59,7 @@
             >
                 <div className="max-w-7xl mx-auto px-6 h-full">
                     <div className="flex items-center justify-between md:hidden z-30 h-full">
-                        <Link href="/">
+                        <Link href="/" className={`${isOpen ? 'invisible' : 'visible'}`}>
                             <Image 
                                 src={logo} 
                                 alt='Logo' 
