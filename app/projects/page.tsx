@@ -18,10 +18,10 @@ export default function ProjectsPage() {
           px-[clamp(1.5rem,5vw,4rem)]
         "
       >
-        <section className="pb-28 md:pb-40 lg:pb-52"  aria-label="Projects header">
+        <section className="pb-24 md:pb-32 lg:pb-40"  aria-label="Projects header">
           <ProjectsHeader />
         </section>
-        <section className="pb-20 md:pb-24 lg:pb-32" aria-label="Projects cards">
+        <section className="pb-16 md:pb-20 lg:pb-24" aria-label="Projects cards">
             <ProjectsGrid projects={projects} />
         </section>
         <section className="pb-20 md:pb-24 lg:pb-32" aria-label="Certifications section">

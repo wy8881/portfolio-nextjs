@@ -20,14 +20,14 @@ const GRID_STYLES = {
   cellSize: {
     4: 'clamp(28px, 3vw, 40px)',
     12: 'clamp(22px, 2.5vw, 32px)',
-    52: 'clamp(16px, 2vw, 24px)',
-    100: 'clamp(12px, 1.2vw, 18px)',
+    52: 'clamp(12px, 1.5vw, 18px)',
+    100: 'clamp(10px, 1vw, 14px)',
   },
   gap: {
     4: 'clamp(20px, 2.5vw, 30px)',
     12: 'clamp(14px, 1.5vw, 20px)',
-    52: 'clamp(10px, 1.2vw, 15px)',
-    100: 'clamp(6px, 0.8vw, 10px)',
+    52: 'clamp(6px, 0.8vw, 10px)',
+    100: 'clamp(4px, 0.6vw, 8px)',
   },
   labelWidth: {
     4: 'clamp(53px, 7vw, 80px)',
@@ -48,7 +48,7 @@ function getGridConfig(weekCount: number) {
     : weekCount <= 12 ? 12
     : weekCount <= 52 ? 52
     : 100
-  
+
   return {
     cellSize: GRID_STYLES.cellSize[key],
     gap: GRID_STYLES.gap[key],
@@ -114,7 +114,7 @@ function ContributionCell({ day, cellSize }: ContributionCellProps) {
         }
       }}
       className="rounded-md will-change-transform"
-      style={{ 
+      style={{
         width: cellSize,
         height: cellSize,
         backgroundColor: color,
@@ -122,7 +122,7 @@ function ContributionCell({ day, cellSize }: ContributionCellProps) {
       title={`${day.date}: ${day.count} contributions`}
       role="gridcell"
       aria-label={`${day.date}: ${day.count} contributions`}
-      />
+    />
   )
 }
 
@@ -140,7 +140,7 @@ export function GitHubGrid({ weeks, total, period }: GitHubGridProps) {
     <div className="hidden md:block w-full">
       <div className="relative">
         <div className="overflow-x-auto hide-scrollbar">
-          <motion.div 
+          <motion.div
             className="grid"
             style={{
               gridTemplateColumns: `repeat(${weeks.length}, ${config.cellSize})`,
@@ -159,23 +159,24 @@ export function GitHubGrid({ weeks, total, period }: GitHubGridProps) {
                   const day = week[dayIndex]
                   if (!day) return <div key={`empty-${weekIndex}`} />
                   return (
-                    <ContributionCell 
+                    <ContributionCell
                       key={`${day.date}-${weekIndex}`}
-                      day={day} 
-                      cellSize={config.cellSize} />
+                      day={day}
+                      cellSize={config.cellSize}
+                    />
                   )
                 })}
               </Fragment>
-          ))}
+            ))}
           </motion.div>
         </div>
-        <div 
+        <div
           className="absolute top-0 left-0 bottom-0 w-8 pointer-events-none"
           style={{
             background: 'linear-gradient(to right, rgba(255, 255, 255, 0.7), transparent)',
           }}
         />
-        <div 
+        <div
           className="absolute top-0 right-0 bottom-0 w-8 pointer-events-none"
           style={{
             background: 'linear-gradient(to left, rgba(255, 255, 255, 0.7), transparent)',

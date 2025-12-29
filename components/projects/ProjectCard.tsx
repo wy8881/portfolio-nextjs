@@ -57,9 +57,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
       </div>
       
       <CardDescription className="flex-grow mb-6">{project.description}</CardDescription>
-      
-      
-      
+
       <div
         className="
           flex

@@ -1,8 +1,3 @@
-/**
- * Global animation constants
- * Used across navbar, hero, and other components for consistent timing
- */
-
 const PAGE_TRANSITION_DURATION = 0.3
 
 export const ANIMATION_DURATION = {

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import AboutIntro from '@/components/about/AboutIntro';
 import SkillsSection from '@/components/about/SkillsSection';
 import TimelineSection from '@/components/about/TimelineSection';
+import { ScrollIndicator } from '@/components/ScrollIndicator';
 
 export const metadata: Metadata = {
   title: 'About - Yi Wang',
@@ -10,24 +11,19 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <section>
-      <div
-        className="
-          max-w-[clamp(320px,90vw,1280px)]
-          mx-auto
-          px-[clamp(1.5rem,5vw,4rem)]
-        "
+    <>
+      <section 
+        className="pb-12 md:pb-20 lg:pb-28"
+        aria-label="About intro section"
       >
-        <div className="pb-[clamp(5rem,14vh,10rem)]">
-          <AboutIntro />
-        </div>
-        <div className="pb-[clamp(5rem,14vh,10rem)]">
+        <AboutIntro />
+      </section>
+        <section className="pb-12 md:pb-20 lg:pb-28" aria-label="Skills section">
           <SkillsSection />
-        </div>
-        <div>
+        </section>
+        <section aria-label="Timeline section">
           <TimelineSection />
-        </div>
-      </div>
-    </section>
+        </section>
+    </>
   );
 }

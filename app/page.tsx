@@ -1,4 +1,5 @@
 import { HeroSection } from '@/components/home/hero/Hero'
+import FeaturedProjects from '@/components/home/featuredProjects/FeaturedProjects'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -20,8 +21,16 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <section aria-label="Hero section"> 
-      <HeroSection />
-    </section>
+    <>
+      <section 
+      aria-label="Hero section"
+      className=" px-6 md:px-8 lg:px-12 pt-4 md:pt-6 pb-12 lg:pb-16"
+      > 
+        <HeroSection />
+      </section>
+      <section aria-label="Featured projects section">
+        <FeaturedProjects />
+      </section>
+    </>
   )
 }

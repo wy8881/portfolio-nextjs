@@ -26,7 +26,7 @@ const ProjectsGrid = ({ projects }: ProjectsGridProps) => {
   return (
     <div>
       <FilterTabs onFilterChange={setActiveFilter} />
-      
+
       <AnimatePresence mode="wait">
         <motion.div
           key={activeFilter}
@@ -38,7 +38,7 @@ const ProjectsGrid = ({ projects }: ProjectsGridProps) => {
             grid
             grid-cols-1
             md:grid-cols-2
-            xl:grid-cols-3
+            xxl:grid-cols-3
             gap-6
             md:gap-6
             lg:gap-8
