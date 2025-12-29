@@ -9,7 +9,9 @@ export const projects: Project[] = [
     category: "Full-Stack",
     github: "https://github.com/wy8881/voting",
     liveDemo: "https://voting.wyprojects.com/",
-    featured: true
+    featured: true,
+    coverImage: "/images/projects/voting-system-cover.png",
+    shortTitle: "Voting System"
   },
   {
     id: 2,
@@ -31,7 +33,9 @@ export const projects: Project[] = [
     category: "Frontend",
     github: "https://github.com/wy8881/personal-portfolio/",
     liveDemo: "https://wy8881.github.io/personal-portfolio/",
-    featured: true
+    featured: true,
+    coverImage: "/images/projects/portfolio-cover.png",
+    shortTitle: "Personal Portfolio"
   },  
   
   {
@@ -42,7 +46,9 @@ export const projects: Project[] = [
     category: "Frontend",
     github: "https://github.com/wy8881/tic-tac-toe-game/",
     liveDemo: "https://tic-tac-toe.wyprojects.com",
-    featured: false
+    featured: true,
+    coverImage: "/images/projects/tic-tac-toe-cover.png",
+    shortTitle: "Tic Tac Toe"
   },
   {
     id: 5,
