@@ -37,11 +37,11 @@ export const projects: Project[] = [
   {
     id: 4,
     title: "Tic Tac Toe Game",
-    description: "A simple Tic-Tac-Toe game built with React, allowing two players to take turns marking X and O on a 3x3 grid. The game automatically detects a winner or declares a draw when all cells are filled.",
-    tags: ["React.js", "JavaScript", "Game Logic"],
+    description: "Online Tic-Tac-Toe game with Vite + Node.js + Socket.IO. Players can create or join rooms, match online, and play multiple rounds. After each game, they can choose to continue or leave.",
+    tags: ["Vite", "TypeScript", "Socket.IO", "Game Logic"],
     category: "Frontend",
     github: "https://github.com/wy8881/tic-tac-toe-game/",
-    liveDemo: "https://wy8881.github.io/tic-tac-toe-game/",
+    liveDemo: "https://tic-tac-toe.wyprojects.com",
     featured: false
   },
   {

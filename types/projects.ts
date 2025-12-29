@@ -10,6 +10,10 @@ export interface Project {
   liveDemo?: string | null
   publication?: string | null
   featured?: boolean
+
+  coverImage?: string | null
+  shortTitle?: string | null
+  tagline?: string | null
 }
 
 export interface Certification {

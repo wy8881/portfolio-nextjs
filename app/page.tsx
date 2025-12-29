@@ -1,4 +1,4 @@
-import { HeroSection } from '@/components/home/hero/hero'
+import { HeroSection } from '@/components/home/hero/Hero'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
