@@ -1,65 +1,50 @@
 import { motion } from "framer-motion";
-import {CardTitle, Body} from "@/components/ui/Typography";
-import { usePresenceData } from "framer-motion";
-import { forwardRef } from "react";
+import { usePresenceData, PanInfo } from "framer-motion";
+import SkillCard from "./SkillCard";
 
 interface AnimatedSkillCardProps {
     title: string;
     skills: string[];
+    onSwipe?: (direction: 1 | -1) => void;
 }
 
-const AnimatedSkillCard = ({title, skills}: AnimatedSkillCardProps) => {
+const swipeThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+    return Math.abs(offset) * velocity;
+}
+
+const AnimatedSkillCard = ({title, skills, onSwipe}: AnimatedSkillCardProps) => {
     const direction = usePresenceData();
+    const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, {offset, velocity}: PanInfo) => {
+      const swipe = swipePower(offset.x, velocity.x);
+      if (swipe > swipeThreshold) {
+        onSwipe?.(-1);
+      }else if (swipe < -swipeThreshold) {
+        onSwipe?.(1);
+      }
+    }
 
     return (
         <motion.div
-            initial={{opacity:0, x: direction * 50}}
-            animate={{
-                opacity: 1,
-                x: 0,
-                y: 0,
-                transition: {
-                    delay:0.2,
-                    duration: 0.2,
-                    ease: "easeOut",
-                }
-            }}
-            exit={{opacity:0, x: direction * 50}}
-            className="
-                w-full
-                h-full
-                bg-white
-                border-2
-                border-black
-                rounded-2xl
-                p-[clamp(1.5rem,3vw,2rem)]
-                transition-all
-                duration-300
-                ease-out
-                hover:translate-y-[-4px]
-                hover:shadow-[8px_8px_0px_0px_#000000]
-            "
+          drag="x"
+          dragConstraints={{left: 0, right: 0}}
+          onDragEnd={handleDragEnd}
+          dragElastic={0.5}
+          initial={{opacity:0, x: direction * 50}}
+          animate={{
+              opacity: 1,
+              x: 0,
+              y: 0,
+              transition: {
+                  delay:0.2,
+                  duration: 0.2,
+                  ease: "easeOut",
+              }
+          }}
+          exit={{opacity:0, x: direction * 50}}
+          className="w-full h-full select-none touch-action-pan-y"
         >
-                  <CardTitle>{title}</CardTitle>
-      
-      <ul className="list-none p-0 space-y-2">
-        {skills.map((skill, index) => (
-          <li
-            key={index}
-            className="
-              pl-5
-              relative
-              before:content-['•']
-              before:absolute
-              before:left-0
-              before:text-black
-              before:font-semibold
-            "
-          >
-            <Body as="span">{skill}</Body>
-          </li>
-        ))}
-      </ul>
+          <SkillCard title={title} skills={skills} />
         </motion.div>
     )
 };

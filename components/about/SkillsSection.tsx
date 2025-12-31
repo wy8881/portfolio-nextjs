@@ -7,13 +7,13 @@ import { useState } from 'react';
 import CarouselButton from '@/components/CarouselButton';
 import AnimatedSkillCard from './AnimatedSkillCard';
 const SkillsSection = () => {
-  const skillIndex = Array.from({length: skillsData.length}, (_, i) => i+1);
-  const [selectedSkill, setSelectedSkill] = useState(skillIndex[0]);
+  const [selectedSkillIndex, setSelectedSkillIndex] = useState(0);
   const [direction, setDirection] = useState <1 | -1> (1);
 
   function setSkill (newDirection: 1 | -1) {
-    const nextSkill = wrap(1, skillsData.length+1, selectedSkill + newDirection);
-    setSelectedSkill(nextSkill);
+    if (skillsData.length === 0) return
+    const nextIndex = wrap(0, skillsData.length, selectedSkillIndex + newDirection);
+    setSelectedSkillIndex(nextIndex);
     setDirection(newDirection);
   }
   return (
@@ -39,7 +39,7 @@ const SkillsSection = () => {
             />
           ))}
         </div>
-        <div className = "md:hidden flex items-center justify-center gap-10 ">
+        <div className = "hidden sm:flex md:hidden items-center justify-center gap-10 ">
           <CarouselButton direction="left" onClick={() => setSkill(-1)} />
           <div className = "w-[300px] h-[300px]">
             
@@ -48,14 +48,46 @@ const SkillsSection = () => {
               mode="wait"
               initial={false}
           >
-            <AnimatedSkillCard key={selectedSkill} title={skillsData[selectedSkill-1].title} skills={skillsData[selectedSkill-1].skills} /> 
+            {skillsData.length > 0 && (
+              <AnimatedSkillCard key={skillsData[selectedSkillIndex].id} title={skillsData[selectedSkillIndex].title} skills={skillsData[selectedSkillIndex].skills} /> 
+            )}
           </AnimatePresence>
           </div>
           <CarouselButton direction="right" onClick={() => setSkill(1)} />
-
+        </div>
+        <div className="sm:hidden flex flex-col items-center justify-center gap-4">
+          <div className="h-[300px] w-[300px] self-center">
+          <AnimatePresence 
+            custom={direction}
+            mode="wait" 
+            initial={false}>
+            {skillsData.length > 0 && (
+              <AnimatedSkillCard 
+                key={skillsData[selectedSkillIndex].id} 
+                title={skillsData[selectedSkillIndex].title} 
+                skills={skillsData[selectedSkillIndex].skills} 
+                onSwipe={setSkill}
+              />
+            )}
+          </AnimatePresence>
+          </div>
+          <div className="flex gap-4">
+          {skillsData.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setDirection(i > selectedSkillIndex ? 1 : -1)
+                setSelectedSkillIndex(i)
+              }}
+              className = {`h-2 rounded-full transition-all ${
+            i === selectedSkillIndex ? 'w-3 bg-black' : 'w-2 bg-gray-300'
+          }`}
+          />
+          ))}
         </div>
       </div>
 
+  </div>
   );
 };
 
