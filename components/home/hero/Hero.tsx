@@ -20,12 +20,13 @@ export function HeroSection() {
         ease: ANIMATION_EASING.easeInOut
       }}
       className="
-        grid 
+        grid
         grid-cols-1
         md:grid-cols-[18%_64%_18%]
         lg:grid-cols-[1.2fr_3fr_1.2fr]
-        gap-4 md:gap-6 lg:gap-8
-
+        gap-4
+        md:gap-6
+        lg:gap-8
       "
       role="region"
     >
