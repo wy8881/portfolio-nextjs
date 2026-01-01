@@ -52,9 +52,14 @@ const SOCIAL_LINKS: SocialLink[] = [
 const Navbar = () => {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-nav-bg h-16 md:h-20 lg:h-24">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-nav-bg h-16 md:h-20 lg:h-24"
+      style={{
+        transform:'tranlate3d(0,0,0)',
+        willChange:'transform',
+        backfaceVisibility:'hidden',
+      }}
+    >
       <div className="max-w-7xl mx-auto px-6 h-full">
         <div className="flex items-center justify-between md:hidden z-30 h-full">
           <Link href="/" className={`${isOpen ? 'invisible' : 'visible'}`}>
@@ -70,7 +75,7 @@ const Navbar = () => {
               }}
             />
           </Link>
-          <BurgerButton isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
+          <BurgerButton key="mobile-burger-button" isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
         </div>
 
         <AnimatePresence mode="wait">
