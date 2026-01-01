@@ -25,26 +25,20 @@ const CarouselButton = ({
             disabled:opacity-30
             disabled:cursor-not-allowed
             "
-            whileHover={!disabled ? {
-                scale: 1.1,
-                backgroundColor: "#000000",
-            }:{}}
-            whileTap={!disabled ? {
-                scale: 0.95,
-            }:{}}
+            whileHover={{scale: 1.1,backgroundColor: "#000000"}}
+            whileTap={{scale: 0.95}}
             transition={{
               duration: 0.3,
               ease: "easeOut",
             }}
             aria-label = {direction === "left" ? "Previous" : "Next"}
         >
-                  <motion.svg
+        <motion.svg
         viewBox="0 0 24 24"
         fill="none"
         className="w-5 h-5 stroke-black stroke-2"
-        variants={{
-          hover: { stroke: "#ffffff" }
-        }}
+        initial={{stroke: "#000000"}}
+        whileHover={{stroke: "#ffffff"}}
       >
         {direction === "left" ? (
           <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />

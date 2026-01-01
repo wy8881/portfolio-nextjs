@@ -11,6 +11,8 @@ const SkillCard = ({ title, skills }: SkillCardProps) => {
   return (
     <div
       className="
+        w-full
+        h-full
         bg-white
         border-2
         border-black

@@ -28,11 +28,11 @@ const AnimatedProjectCard = ({project, isSmallScreen=false, onSwipe}: AnimatedPr
 
     return (
         <motion.div
-        //   drag="x"
-        //   onDragEnd={handleDragEnd}
-        //   dragConstraints={{left: 0, right: 0}}
-        //   dragMomentum={false}
-        //   dragElastic={0.5}
+          drag="x"
+          onDragEnd={handleDragEnd}
+          dragConstraints={{left: 0, right: 0}}
+          dragMomentum={false}
+          dragElastic={0.5}
             initial={{opacity:0, x: direction * 50}}
             animate={{
                 opacity: 1,
@@ -46,8 +46,8 @@ const AnimatedProjectCard = ({project, isSmallScreen=false, onSwipe}: AnimatedPr
             }}
             exit={{opacity:0, x: direction * -50}}
             className="
-                w-full
                 h-full
+                w-full
                 select-none
                 touch-action-pan-y
                 "

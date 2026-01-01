@@ -41,8 +41,8 @@ const AnimatedSkillCard = ({title, skills, onSwipe}: AnimatedSkillCardProps) => 
                   ease: "easeOut",
               }
           }}
-          exit={{opacity:0, x: direction * 50}}
-          className="w-full h-full select-none touch-action-pan-y"
+          exit={{opacity:0, x: direction * -50}}
+          className="w-[300px] h-[300px] flex items-center justify-center select-none touch-action-pan-y"
         >
           <SkillCard title={title} skills={skills} />
         </motion.div>

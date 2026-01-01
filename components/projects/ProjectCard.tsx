@@ -6,13 +6,15 @@ import { CardTitle, CardDescription } from '@/components/ui/Typography'
 
 interface ProjectCardProps {
   project: Project
+  isSmallScreen?: boolean
 }
 
-const ProjectCard = ({ project }: ProjectCardProps) => {
+const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
   return (
     <div
       className="
         h-full
+        w-full
         flex
         flex-col
         bg-white
@@ -37,7 +39,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
           gap-2
         "
       >
-        {project.tags.map((tag, index) => (
+        {!isSmallScreen && project.tags.map((tag, index) => (
           <span
             key={index}
             className="
@@ -56,7 +58,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
         ))}
       </div>
       
-      <CardDescription className="flex-grow mb-6">{project.description}</CardDescription>
+      {!isSmallScreen && <CardDescription className="flex-grow mb-6">{project.description}</CardDescription>}
 
       <div
         className="

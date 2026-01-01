@@ -33,8 +33,70 @@ const panelVariants = {
     closed: { y: -20, opacity: 0 },
     open: { y: 0, opacity: 1 },
 }
-  
-  
+
+const backgroundVariants = {
+    open: () => ({
+      clipPath: `circle(150vh at calc(100% - 40px) 0)`,
+      transition: { type: 'spring' as const, stiffness: 20, restDelta: 2 },
+    }),
+    closed: {
+      clipPath: `circle(30px at calc(100% - 40px) 0)`,
+      transition: { type: 'spring' as const, stiffness: 400, damping: 40 },
+    },
+  }
+
+const containerVariants = {
+    open: {
+        transition: {
+            staggerChildren: 0.1,
+            delayChildren: 1,
+        }
+    },
+    closed: {
+        transition: {
+            staggerChildren: 0.05,
+            staggerDirection: -1,
+        }
+    },
+}
+
+const linkVariants = {
+    open: {
+        x: 0,
+        y: 0,
+        opacity: 1,
+        transition: {
+            x: { stiffness: 500, damping: 30, velocity: -100 },
+            y: { stiffness: 500, damping: 30, velocity: -100 },
+            opacity: { duration: 0.4 },
+        },
+    },
+    closed: {
+        x: 30,
+        y: -30,
+        opacity: 0,
+        transition: {
+            x: { stiffness: 500, damping: 30 },
+            y: { stiffness: 500, damping: 30 },
+            opacity: { duration: 0.3 },
+        },
+    },
+}
+
+const menuListVariants = {
+    open: {
+        transition: {
+            staggerChildren: 0.07,
+            delayChildren: 0.2,
+        }
+    },
+    closed: {
+        transition: {
+            staggerChildren: 0.05,
+            staggerDirection: -1,
+        }
+    },
+}
 
 const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: MobileMenuProps) => {
     useEffect(() => {
@@ -47,9 +109,24 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
         }
     }, [isOpen])
     return (
-        <AnimatePresence>
+        
+        <AnimatePresence mode="wait">
             {isOpen && (
-                <>
+                    <motion.div variants={containerVariants}
+                    initial="closed"
+                    animate="open"
+                    exit="closed"
+                    >
+                                        <motion.div
+                    key="mobile-menu-background"
+                    className="fixed inset-0 left-1/2 top-5 bg-nav-bg overflow-hidden z-20"
+                    variants={backgroundVariants}
+                    initial="closed"
+                    animate="open"
+                    exit="closed"
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                />
+
                 <motion.div
                     key="mobile-menu-overlay"
                     className="fixed inset-0 z-10 bg-black/40 backdrop-blur-sm md:hidden"
@@ -62,11 +139,13 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
                     aria-hidden="true"
                 />
 
+
                 <motion.div
                     key="mobile-menu-panel"
                     className="
-                    absolute top-full left-0 right-0 z-20 md:hidden
-                    bg-nav-bg shadow-lg
+                    fixed top-20 right-0 bottom-0 z-30
+                    w-1/2
+                    shadow-lg
                     -mt-[1.25rem]
                     px-6 pt-6 pb-6
                     "
@@ -80,51 +159,66 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
                     aria-label="Mobile navigation menu"
                     id="mobile-menu"
                 >
-                    <div className="flex flex-col gap-4">
+                    <motion.ul
+                        className="flex flex-col gap-4"
+                        variants={ menuListVariants}
+                        initial="closed"
+                        animate="open"
+                        exit="closed"
+                    >
                         {navLinks.map((link, index) => {
                             const isActive = pathname === link.href
                             return (
-                                <Link
+                                <motion.li
                                     key={link.label}
-                                    href={link.href}
-                                    aria-label={link.label}
-                                    className={`
-                                        text-base font-normal
-                                        transition-colors duration-200
-                                        ${isActive
-                                            ? 'text-nav-link-active inline-block pb-1 border-b-2 border-nav-link-active'
-                                            : 'text-nav-link-inactive hover:text-secondary block'
-                                        }`
-                                    }
+                                    variants={linkVariants}
                                 >
-                                    {link.label}
-                                </Link>
+                                    <Link
+                                        href={link.href}
+                                        aria-label={link.label}
+                                        onClick={onClose}
+                                        className={`
+                                            text-base font-normal
+                                            transition-colors duration-200
+                                            ${isActive
+                                                ? 'text-nav-link-active inline-block pb-1 border-b-2 border-nav-link-active'
+                                                : 'text-nav-link-inactive hover:text-secondary block'
+                                            }`
+                                        }
+                                    >
+                                        {link.label}
+                                    </Link>
+                                </motion.li>
                             )
                         })}
                         <div className="flex gap-6 pt-4">
                             {socialLinks.map((link, index) => (
-                                <Link
+                                <motion.li
                                     key={link.label}
-                                    aria-label={link.ariaLabel}
-                                    href={link.href}
-                                    rel='noopener noreferrer'
-                                    className="
-                                        flex items-center justify-center
-                                        text-2xl
-                                        text-nav-link-inactive
-                                        hover:text-secondary
-                                        transition-colors
-                                        duration-200
-                                    "
-                                    target='_blank'
+                                    variants={linkVariants}
                                 >
-                                    <i className={link.icon}></i>
-                                </Link>
+                                    <Link
+                                        aria-label={link.ariaLabel}
+                                        href={link.href}
+                                        rel='noopener noreferrer'
+                                        className="
+                                            flex items-center justify-center
+                                            text-2xl
+                                            text-nav-link-inactive
+                                            hover:text-secondary
+                                            transition-colors
+                                            duration-200
+                                        "
+                                        target='_blank'
+                                    >
+                                        <i className={link.icon}></i>
+                                    </Link>
+                                </motion.li>
                             ))}
                         </div>
-                    </div>
-                </motion.div>
-                </>
+                    </motion.ul>
+                    </motion.div>
+            </motion.div>
             )}
         </AnimatePresence>
     )
