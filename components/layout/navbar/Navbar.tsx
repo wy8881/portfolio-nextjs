@@ -5,7 +5,7 @@ import logo from '@/public/images/icon_black.svg'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import BurgerButton from '@/components/layout/navbar/BurgerButton'
 import MobileMenu from '@/components/layout/navbar/MobileMenu'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
@@ -51,7 +51,14 @@ const SOCIAL_LINKS: SocialLink[] = [
 
 const Navbar = () => {
   const pathname = usePathname()
+  const [isDesktop, setIsDesktop] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
+  useEffect(() => {
+    const check = () => {setIsDesktop(window.innerWidth >= 768)}
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-nav-bg h-16 md:h-20 lg:h-24"
       style={{
@@ -61,24 +68,9 @@ const Navbar = () => {
       }}
     >
       <div className="max-w-7xl mx-auto px-6 h-full">
-        <div className="flex items-center justify-between md:hidden z-30 h-full">
-          <Link href="/" className={`${isOpen ? 'invisible' : 'visible'}`}>
-            <Image
-              src={logo}
-              alt="Logo"
-              width={160}
-              height={160}
-              className="rounded-full object-cover aspect-square"
-              style={{
-                width: 'clamp(40px, 4vw, 56px)',
-                height: 'clamp(40px, 4vw, 56px)'
-              }}
-            />
-          </Link>
-          <BurgerButton key="mobile-burger-button" isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
-        </div>
 
-        <AnimatePresence mode="wait">
+        {isDesktop && (
+          <AnimatePresence mode="wait">
           <motion.div
             key={pathname}
             initial={{ y: '-50%', opacity: 0 }}
@@ -159,7 +151,25 @@ const Navbar = () => {
             </div>
           </motion.div>
         </AnimatePresence>
+        )}
+              <div className="flex items-center justify-between md:hidden z-30 h-full">
+          <Link href="/" className={`${isOpen ? 'invisible' : 'visible'}`}>
+            <Image
+              src={logo}
+              alt="Logo"
+              width={160}
+              height={160}
+              className="rounded-full object-cover aspect-square"
+              style={{
+                width: 'clamp(40px, 4vw, 56px)',
+                height: 'clamp(40px, 4vw, 56px)'
+              }}
+            />
+          </Link>
+          <BurgerButton key="mobile-burger-button" isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
+        </div>
       </div>
+
       <MobileMenu
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
