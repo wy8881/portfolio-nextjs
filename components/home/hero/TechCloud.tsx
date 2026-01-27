@@ -35,7 +35,7 @@ const itemVariants = {
 export function TechCloud() {
   return (
     <motion.div
-      className="hidden md:flex md:flex-col md:justify-center md:items-end md:gap-4 w-full h-auto xl:relative xl:block xl:h-full"
+      className="hidden md:flex md:flex-col md:justify-center md:items-end md:gap-4 w-full h-full xl:relative xl:block"
       variants={containerVariants}
       initial="hidden"
       animate="show"
@@ -44,10 +44,11 @@ export function TechCloud() {
       {TECH_STACK.map((tech) => (
         <div
           key={tech.name}
-          className="tech-item"
+          className="tech-item absolute"
           style={{
             '--tech-left': tech.xPosition,
             '--tech-top': tech.yPosition,
+            'position': 'absolute',
           } as React.CSSProperties & { '--tech-left': string; '--tech-top': string }}
         >
           <motion.div
@@ -69,6 +70,7 @@ export function TechCloud() {
           >
             {tech.name}
           </motion.div>
+          
         </div>
       ))}
     </motion.div>

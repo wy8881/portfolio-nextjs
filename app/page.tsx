@@ -1,6 +1,8 @@
 import { HeroSection } from '@/components/home/hero/Hero'
 import FeaturedProjects from '@/components/home/featuredProjects/FeaturedProjects'
 import type { Metadata } from 'next'
+import { getGithubData } from '@/lib/github'
+import { g, p } from 'framer-motion/client'
 
 export const metadata: Metadata = {
   title: "Yi's Portfolio",
@@ -19,14 +21,18 @@ export const metadata: Metadata = {
   },
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const PERIOD = 60
+  const contributionDataResponse = await getGithubData(PERIOD)
+
   return (
     <>
       <section 
       aria-label="Hero section"
       className=" px-6 md:px-8 lg:px-12 pt-4 md:pt-6 pb-12 lg:pb-16"
       > 
-        <HeroSection />
+        <HeroSection contributionData={contributionDataResponse ?? undefined} period={PERIOD} />
+        {/* <HeroSection/> */}
       </section>
       <section aria-label="Featured projects section">
         <FeaturedProjects />

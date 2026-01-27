@@ -78,7 +78,7 @@ const ProjectsGrid = ({ projects }: ProjectsGridProps) => {
 
       <div className="hidden sm:flex md:hidden items-center justify-center gap-10">
         <CarouselButton direction="left" onClick={() => setProject(-1)} />
-        <div className="w-full max-w-[400px]">
+        <div className="w-[400px] h-[400px]">
           <AnimatePresence
             custom={direction}
             mode="wait"
