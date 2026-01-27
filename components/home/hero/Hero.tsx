@@ -13,7 +13,6 @@ interface HeroSectionProps {
 
 export function HeroSection({contributionData, period = 60}: HeroSectionProps) {
   const hasContributions = !! contributionData
-  console.log('HeroSection contributionData:', contributionData)
   return (
     <motion.section
       initial={{ opacity: 0 }}

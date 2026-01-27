@@ -89,7 +89,9 @@ export function HeroContext() {
             px-8 py-3
             font-normal
             transition-all duration-200
-            hover:bg-background hover:text-cta-bg hover:border-cta-bg
+            hover:bg-cta-text
+            hover:text-cta-bg
+            hover:border-cta-bg
             rounded-sm
           "
           style={{ fontSize: 'clamp(0.875rem, 1.2vw, 1rem)' }}
@@ -100,12 +102,12 @@ export function HeroContext() {
         <Link
           href={heroData.cta.secondary.href}
           className="
-            bg-background text-text-primary
-            border-2 border-text-primary
+            bg-cta-text text-cta-bg
+            border-2 border-cta-bg
             px-8 py-3
             font-normal
             transition-all duration-200
-            hover:bg-text-primary hover:text-background
+            hover:bg-cta-bg hover:text-cta-text
             rounded-sm
           "
           style={{ fontSize: 'clamp(0.875rem, 1.2vw, 1rem)' }}

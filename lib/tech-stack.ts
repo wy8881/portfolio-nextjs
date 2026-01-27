@@ -43,7 +43,7 @@ export const TECH_STACK: TechItem[] = [
   {
     name: 'Spring Boot',
     fontSize: 'clamp(1.125rem, 1.3vw, 1.25rem)',
-    xPosition: '62%',
+    xPosition: '70%',
     yPosition: '58%',
     color: 'text-gray-600',
     fontWeight: 'font-medium',
