@@ -28,7 +28,7 @@ export function HeroSection({contributionData, period = 60}: HeroSectionProps) {
         md:h-[500px]
         grid
         grid-cols-1
-        ${hasContributions?"md:grid-cols-[18%_64%_18%] lg:grid-cols-[1.2fr_3fr_1.2fr]":"md:grid-cols-[70%_30%] lg:grid-cols-[2fr_2fr]"}
+        ${hasContributions?"md:grid-cols-[18%_64%_18%]":"md:grid-cols-2"}
         md:grid-rows-[450px]
         `
     }
@@ -42,11 +42,11 @@ export function HeroSection({contributionData, period = 60}: HeroSectionProps) {
         </div>
       }
 
-      <div className="flex justify-center items-center w-full">
+      <div className={`flex justify-center items-center w-full ${hasContributions ? '' : 'md:col-span-1'}`}>
         <HeroContext />
       </div>
 
-      <div className="hidden md:flex relative h-full w-full min-h-[300px] min-h-0">
+      <div className={`hidden md:flex relative h-full w-full min-h-[300px] min-h-0 ${hasContributions ? '' : 'md:col-span-1'}`}>
         <TechCloud />
       </div>
     </motion.section>

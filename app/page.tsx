@@ -32,7 +32,6 @@ export default async function HomePage() {
       className=" px-6 md:px-8 lg:px-12 pt-4 md:pt-6 pb-12 lg:pb-16"
       > 
         <HeroSection contributionData={contributionDataResponse ?? undefined} period={PERIOD} />
-        {/* <HeroSection/> */}
       </section>
       <section aria-label="Featured projects section">
         <FeaturedProjects />
