@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { personalInfo } from '@/data/about/personal-info'
+import catPic from '@/public/images/about/profile-cats.jpg'
 
 interface ProfileImageProps {
   className?: string
@@ -84,7 +85,7 @@ const ProfileImage = ({ className = '' }: ProfileImageProps) => {
           aria-hidden="true"
         />
         <Image
-          src={personalInfo.image.src}
+          src={catPic}
           alt={personalInfo.image.alt}
           width={480}
           height={480}
@@ -92,6 +93,7 @@ const ProfileImage = ({ className = '' }: ProfileImageProps) => {
           quality={90}
           className="w-full h-auto rounded-2xl block"
           sizes="(max-width: 768px) 85vw, (max-width: 1024px) 40vw, 35vw"
+          placeholder="blur"
         />
       </div>
     </div>
