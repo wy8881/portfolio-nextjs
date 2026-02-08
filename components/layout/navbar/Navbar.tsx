@@ -42,12 +42,12 @@ const SOCIAL_LINKS: SocialLink[] = [
     label: 'LinkedIn',
     ariaLabel: 'Visit my LinkedIn Profile'
   },
-  {
-    href: 'https://gravatar.com/wy7382',
-    icon: 'bi-wordpress',
-    label: 'WordPress',
-    ariaLabel: 'Visit my WordPress blog'
-  },
+  // {
+  //   href: 'https://gravatar.com/wy7382',
+  //   icon: 'bi-wordpress',
+  //   label: 'WordPress',
+  //   ariaLabel: 'Visit my WordPress blog'
+  // },
 ]
 
 const Navbar = () => {
@@ -112,7 +112,7 @@ const Navbar = () => {
                         font-normal
                         transition-all
                         ${isActive
-                          ? 'text-[#FAD11D] pb-1 border-b-2'
+                          ? 'text-nav-link-active pb-1 border-b-2'
                           : 'text-nav-link-inactive hover:text-text-secondary'
                         }`
                       }
@@ -150,8 +150,7 @@ const Navbar = () => {
           </motion.div>
         </AnimatePresence>
         )}
-        <div className="flex items-center justify-between md:hidden z-30 h-full"
-        >
+        <div className="flex items-center justify-between md:hidden z-30 h-full" >
           <Link href="/" className={`${isOpen ? 'invisible' : 'visible'}`}>
             <Image
               src={logo}

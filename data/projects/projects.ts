@@ -4,7 +4,7 @@ export const projects: Project[] = [
   {
     id: 1,
     title: "Full-Stack Voting System",
-    description: "End-to-end voting app with role-based access control and real-time results",
+    description: "A comprehensive full-stack voting platform engineered with Spring Boot and MongoDB. It features a robust security layer using JWT for role-based access control, ensuring secure user sessions and data integrity. The system leverages WebSocket or reactive updates to deliver real-time polling results through a dynamic, responsive interface.",
     tags: ["Spring Boot", "MongoDB", "JWT"],
     category: "Full-Stack",
     github: "https://github.com/wy8881/voting",
@@ -33,7 +33,7 @@ export const projects: Project[] = [
     category: "Frontend",
     github: "https://github.com/wy8881/personal-portfolio/",
     liveDemo: "https://wy8881.github.io/personal-portfolio/",
-    featured: true,
+    featured: false,
     coverImage: "/images/projects/portfolio-cover.png",
     shortTitle: "Personal Portfolio"
   },  
@@ -70,6 +70,18 @@ export const projects: Project[] = [
     liveDemo: null,
     featured: false
   },
+  {
+    id: 7,
+    title: "Aura Solutions Business Website",
+    description: "Professional corporate website featuring responsive design and optimized performance for business services",
+    tags: ["CMS Development", "WordPress", "Divi", "Amazon Lightsail"],
+    category: "Frontend",
+    github: "",
+    liveDemo: "https://aurasolutions.wyprojects.com/",
+    featured: true,
+    coverImage: "/images/projects/aurosolutions-cover.png",
+    shortTitle: "Aura Solutions"
+  }
 
   
   

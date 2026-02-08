@@ -109,35 +109,33 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
         }
     }, [isOpen])
     return (
-        
+        <div className="md:hidden">
         <AnimatePresence mode="wait">
             {isOpen && (
-                    <motion.div variants={containerVariants}
-                    initial="closed"
-                    animate="open"
-                    exit="closed"
-                    >
-                                        <motion.div
+                <motion.div variants={containerVariants}
+                initial="closed"
+                animate="open"
+                exit="closed">
+                    <motion.div
                     key="mobile-menu-background"
-                    className="fixed inset-0 left-1/2 top-5 bg-nav-bg overflow-hidden z-20"
+                    className="fixed inset-0 left-1/2 bg-[#363740] overflow-hidden z-20"
                     variants={backgroundVariants}
                     initial="closed"
                     animate="open"
                     exit="closed"
-                    transition={{ duration: 0.25, ease: "easeOut" }}
-                />
+                    transition={{ duration: 0.25, ease: "easeOut" }}/>
 
-                <motion.div
-                    key="mobile-menu-overlay"
-                    className="fixed inset-0 z-10 bg-black/40 backdrop-blur-sm md:hidden"
-                    variants={overlayVariants}
-                    initial="closed"
-                    animate="open"
-                    exit="closed"
-                    transition={{ duration: 0.2 }}
-                    onClick={onClose}
-                    aria-hidden="true"
-                />
+                    <motion.div
+                        key="mobile-menu-overlay"
+                        className="fixed inset-0 z-10 bg-black/40 backdrop-blur-sm md:hidden"
+                        variants={overlayVariants}
+                        initial="closed"
+                        animate="open"
+                        exit="closed"
+                        transition={{ duration: 0.2 }}
+                        onClick={onClose}
+                        aria-hidden="true"
+                    />
 
 
                 <motion.div
@@ -221,6 +219,7 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
             </motion.div>
             )}
         </AnimatePresence>
+        </div>
     )
 }
 

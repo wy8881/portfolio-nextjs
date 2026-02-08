@@ -1,8 +1,8 @@
 export function Footer() {
   return (
-    <footer className="w-full py-10 border-t border-border">
-      <p className="text-center text-sm text-text-secondary">
-        © 2025 Yi Wang · Built with Next.js · Hosted on Vercel
+    <footer className="w-full py-10 border-t border-border bg-black">
+      <p className="text-center text-sm text-[#FAD11D]">
+        © 2026 Yi Wang · Built with Next.js · Hosted on Vercel
       </p>
     </footer>
   )
