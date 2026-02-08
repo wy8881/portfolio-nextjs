@@ -23,6 +23,7 @@ type SocialLink = {
 }
 
 const NAV_LINKS: NavLink[] = [
+  { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
   { href: '/projects', label: 'Projects' },
   { href: '/contact', label: 'Contact' },
@@ -61,7 +62,7 @@ const Navbar = () => {
   }, [])
   return (
     <>
-    <header className="fixed z-50 top-0 left-0 right-0 bg-nav-bg h-16 md:h-20 lg:h-24"
+    <header className="fixed z-50 top-0 left-0 right-0 bg-[#363740] h-16 md:h-20 lg:h-24"
 
     >
       <div className="max-w-7xl mx-auto px-6 h-full">
@@ -111,7 +112,7 @@ const Navbar = () => {
                         font-normal
                         transition-all
                         ${isActive
-                          ? 'text-nav-link-active pb-1 border-b-2'
+                          ? 'text-[#FAD11D] pb-1 border-b-2'
                           : 'text-nav-link-inactive hover:text-text-secondary'
                         }`
                       }
