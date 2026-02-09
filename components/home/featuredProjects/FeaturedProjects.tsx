@@ -22,8 +22,6 @@ const FeaturedProjects = () => {
           xl:grid-cols-3
           gap-6
           md:gap-8
-          mb-8
-          md:mb-12
         "
       >
         {featuredProjects.map((project, index) => (
@@ -61,11 +59,11 @@ const FeaturedProjects = () => {
         <Link
           href="/projects"
           className="
-            text-black
-            text-[0.9375rem]
+            text-accent
+            text-sm
+            md:text-base
+            lg:text-lg
             hover:underline
-            transition-all
-            duration-200
           "
         >
           View All Projects →

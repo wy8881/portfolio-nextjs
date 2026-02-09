@@ -39,7 +39,7 @@ export function H1({
         'font-bold',
         'leading-[1.1]',
         'tracking-[-0.02em]',
-        'text-[#000000]',
+        'text-primary',
         variantStyles[variant],
         className
       )}
@@ -69,7 +69,7 @@ export function H2({
         'text-[clamp(1.125rem,2vw+0.5rem,1.5rem)]',
         'font-medium',
         'leading-[1.4]',
-        'text-[#555555]',
+        'text-primary',
         className
       )}
     >
@@ -98,7 +98,7 @@ export function H3({
         'text-[clamp(1.5rem,3vw,2rem)]',
         'font-semibold',
         'leading-[1.2]',
-        'text-[#000000]',
+        'text-primary',
         className
       )}
     >

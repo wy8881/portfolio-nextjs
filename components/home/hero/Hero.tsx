@@ -24,14 +24,12 @@ export function Hero({contributionData, period = 60}: HeroSectionProps) {
       }}
       className={`
         px-10 md:px-12 lg:px-28
-        items-stretch
         h-full
         w-full
         max-w-7xl
         grid
         grid-cols-1
         ${hasContributions?"md:grid-cols-[18%_64%_18%]":"md:grid-cols-2"}
-        md:grid-rows-[450px]
         `
     }
       role="region"

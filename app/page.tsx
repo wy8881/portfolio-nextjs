@@ -30,14 +30,15 @@ export default async function HomePage() {
     <>
       <section 
       aria-label="Hero section"
-      className="relative flex pt-20 md:pt-26 lg:pt-32 pb-10 md:pb-16 lg:pb-20 overflow-hidden min-h-screen w-full"
+      className="relative flex px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full"
       > 
         <Image src="/images/home/hero-cover.jpg" alt="Hero background image" fill className="absolute top-0 left-0 w-full h-full object-cover -z-10 flex flex-col" priority/>
         <div className="flex-1 flex justify-center items-center"> 
           <Hero contributionData={contributionDataResponse ?? undefined} period={PERIOD} />
         </div>
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-background to-transparent z-0" />
       </section>
-      <section aria-label="Featured projects section">
+      <section aria-label="Featured projects section" className = "px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 bg-background">
         <FeaturedProjects />
       </section>
     </>

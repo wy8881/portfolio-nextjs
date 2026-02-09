@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import logo from '@/public/images/icon_black.svg'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -9,6 +8,8 @@ import { use, useEffect, useState } from 'react'
 import BurgerButton from '@/components/layout/navbar/BurgerButton'
 import MobileMenu from '@/components/layout/navbar/MobileMenu'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
+
+const LOGO_SRC = '/images/icon_round.png'
 
 type NavLink = {
   href: string
@@ -62,10 +63,10 @@ const Navbar = () => {
   }, [])
   return (
     <>
-    <header className="fixed z-50 top-0 left-0 right-0 bg-nav-bg-100/80 backdrop-blur-md h-16 md:h-20 lg:h-24"
+    <header className="fixed z-50 top-0 left-0 right-0 bg-nav-bg/50 backdrop-blur-xl border-b border-stone-200/30 h-16 md:h-20 lg:h-24"
 
     >
-      <div className="max-w-7xl mx-auto px-6 h-full">
+      <div className="max-w-4xl mx-auto px-6 h-full">
 
         {isDesktop && (
           <AnimatePresence mode="wait">
@@ -79,11 +80,11 @@ const Navbar = () => {
           >
             <Link href="/">
               <Image
-                src={logo}
+                src={LOGO_SRC}
                 alt="Logo"
                 width={160}
                 height={160}
-                className="rounded-full object-cover aspect-square"
+                className="object-cover aspect-square"
                 style={{
                   width: 'clamp(40px, 4vw, 56px)',
                   height: 'clamp(40px, 4vw, 56px)'
@@ -112,8 +113,8 @@ const Navbar = () => {
                         font-normal
                         transition-all
                         ${isActive
-                          ? 'text-nav-link-active pb-1 border-b-2'
-                          : 'text-nav-link-inactive hover:text-text-secondary'
+                          ? 'text-accent pb-1 border-b-2'
+                          : 'text-text hover:text-secondary'
                         }`
                       }
                       style={{ fontSize: 'clamp(14px, 1.2vw, 18px)' }}
@@ -135,8 +136,8 @@ const Navbar = () => {
                     rel="noopener noreferrer"
                     aria-label={link.ariaLabel}
                     className="
-                      text-nav-link-inactive
-                      hover:text-text-secondary
+                      text-text
+                      hover:text-secondary
                       transition-all
                       duration-200
                     "
@@ -153,7 +154,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between md:hidden z-30 h-full" >
           <Link href="/" className={`${isOpen ? 'invisible' : 'visible'}`}>
             <Image
-              src={logo}
+              src={LOGO_SRC}
               alt="Logo"
               width={160}
               height={160}

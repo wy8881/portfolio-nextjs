@@ -25,23 +25,11 @@ export function HeroContext() {
           delay: 0.1,
           ease: ANIMATION_EASING.standard
         }}
-        className="font-bold text-text-primary mb-2"
+        className="font-bold text-primary mb-2"
         style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}
       >
         {heroData.name}
       </motion.h1>
-
-      <motion.div
-        initial={{ opacity: 0, scaleX: 0 }}
-        animate={{ opacity: 1, scaleX: 1 }}
-        transition={{
-          duration: ANIMATION_DURATION.hero.cell,
-          delay: 0.2,
-          ease: ANIMATION_EASING.standard
-        }}
-        className="h-[2px] bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-6 blur-sm"
-        style={{ width: 'clamp(9.375rem, 22.5vw, 11.25rem)' }}
-      />
 
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
@@ -65,7 +53,7 @@ export function HeroContext() {
           delay: 0.4,
           ease: ANIMATION_EASING.standard
         }}
-        className="text-text-secondary mb-8 max-w-2xl mx-auto"
+        className="text-secondary mb-8 max-w-2xl mx-auto"
         style={{ fontSize: 'clamp(1rem, 1.5vw, 1.125rem)' }}
       >
         {heroData.description}
@@ -84,14 +72,14 @@ export function HeroContext() {
         <Link
           href={heroData.cta.primary.href}
           className="
-            bg-cta-bg text-cta-text
+            bg-primary text-background
             border-2 border-transparent
             px-8 py-3
             font-normal
             transition-all duration-200
-            hover:bg-cta-text
-            hover:text-cta-bg
-            hover:border-cta-bg
+            hover:bg-background
+            hover:text-primary
+            hover:border-primary
             rounded-sm
           "
           style={{ fontSize: 'clamp(0.875rem, 1.2vw, 1rem)' }}
@@ -102,12 +90,12 @@ export function HeroContext() {
         <Link
           href={heroData.cta.secondary.href}
           className="
-            bg-cta-text text-cta-bg
-            border-2 border-cta-bg
+            bg-secondary text-background
+            border-2 border-secondary
             px-8 py-3
             font-normal
             transition-all duration-200
-            hover:bg-cta-bg hover:text-cta-text
+            hover:bg-background hover:text-secondary hover:border-secondary
             rounded-sm
           "
           style={{ fontSize: 'clamp(0.875rem, 1.2vw, 1rem)' }}
