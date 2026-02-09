@@ -62,7 +62,7 @@ const Navbar = () => {
   }, [])
   return (
     <>
-    <header className="fixed z-50 top-0 left-0 right-0 bg-[#363740] h-16 md:h-20 lg:h-24"
+    <header className="fixed z-50 top-0 left-0 right-0 bg-nav-bg-100/80 backdrop-blur-md h-16 md:h-20 lg:h-24"
 
     >
       <div className="max-w-7xl mx-auto px-6 h-full">

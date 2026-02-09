@@ -11,10 +11,10 @@ interface HeroSectionProps {
   period?: number
 }
 
-export function HeroSection({contributionData, period = 60}: HeroSectionProps) {
+export function Hero({contributionData, period = 60}: HeroSectionProps) {
   const hasContributions = !! contributionData
   return (
-    <motion.section
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{
@@ -23,8 +23,11 @@ export function HeroSection({contributionData, period = 60}: HeroSectionProps) {
         ease: ANIMATION_EASING.easeInOut
       }}
       className={`
+        px-10 md:px-12 lg:px-28
         items-stretch
-        md:h-[500px]
+        h-full
+        w-full
+        max-w-7xl
         grid
         grid-cols-1
         ${hasContributions?"md:grid-cols-[18%_64%_18%]":"md:grid-cols-2"}
@@ -48,7 +51,7 @@ export function HeroSection({contributionData, period = 60}: HeroSectionProps) {
       <div className={`hidden md:flex relative h-full w-full min-h-[300px] min-h-0 ${hasContributions ? '' : 'md:col-span-1'}`}>
         <TechCloud />
       </div>
-    </motion.section>
+    </motion.div>
   )
 }
 

@@ -170,18 +170,6 @@ export function GitHubGrid({ weeks, total, period }: GitHubGridProps) {
             ))}
           </motion.div>
         </div>
-        <div
-          className="absolute top-0 left-0 bottom-0 w-8 pointer-events-none"
-          style={{
-            background: 'linear-gradient(to right, rgba(255, 255, 255, 0.7), transparent)',
-          }}
-        />
-        <div
-          className="absolute top-0 right-0 bottom-0 w-8 pointer-events-none"
-          style={{
-            background: 'linear-gradient(to left, rgba(255, 255, 255, 0.7), transparent)',
-          }}
-        />
       </div>
       <div className="mt-3 text-sm text-text-secondary text-left">
         {total} contributions during the last {period} days
