@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
+import { ANIMATION_EASING } from '@/lib/animations'
 import { ProjectCategory } from '@/types/projects'
 
 interface FilterTabsProps {
@@ -30,7 +30,7 @@ const FilterTabs = ({ onFilterChange }: FilterTabsProps) => {
         mb-[clamp(3rem,5vw,4rem)]
       "
     >
-      {filters.map((filter, index) => (
+      {filters.map((filter) => (
         <motion.button
           key={filter}
           initial={{ opacity: 0 }}

@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { personalInfo } from '@/data/about/personal-info'
-import catPic from '@/public/images/about/profile-cats.jpg'
+import catPic from '@/public/images/about/profile-cats.webp'
 
 interface ProfileImageProps {
   className?: string
@@ -92,7 +92,6 @@ const ProfileImage = ({ className = '' }: ProfileImageProps) => {
           priority
           quality={90}
           className="w-full h-auto rounded-2xl block"
-          sizes="(max-width: 768px) 85vw, (max-width: 1024px) 40vw, 35vw"
           placeholder="blur"
         />
       </div>

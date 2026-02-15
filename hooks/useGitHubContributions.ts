@@ -1,7 +1,7 @@
 'use client'
 
 import useSWR from 'swr'
-import type { GitHubApiResponse, ContributionData } from '@/lib/types'
+import type { GitHubApiResponse } from '@/lib/types'
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 

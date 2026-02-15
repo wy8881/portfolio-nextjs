@@ -83,18 +83,6 @@ const cellVariants = {
   },
 }
 
-const labelVariants = {
-  hidden: {
-    opacity: 0,
-  },
-  show: {
-    opacity: 1,
-    transition: {
-      duration: ANIMATION_DURATION.hero.cell,
-      ease: ANIMATION_EASING.standard,
-    },
-  },
-}
 
 interface ContributionCellProps {
   day: ContributionDay

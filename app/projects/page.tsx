@@ -14,7 +14,7 @@ export default function ProjectsPage() {
   return (
     <>
       <section aria-label="Projects header" className="relative flex justify-center items-center px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full">
-        <Image src="/images/projects/project-cover.jpg" alt="Projects cover image" fill className="absolute top-0 left-0 w-full h-full object-cover -z-10 flex flex-col" priority/>
+        <Image src="/images/projects/project-cover.webp" alt="Projects cover image" fill className="absolute top-0 left-0 w-full h-full object-cover -z-10 flex flex-col" priority/>
         <ProjectsHeader />
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-background to-transparent z-0" />
       </section>

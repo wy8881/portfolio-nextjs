@@ -12,50 +12,6 @@ function getPreviousMonday(date: Date): Date {
   return monday
 }
 
-function reorganizeByMonday(contributions: ContributionDay[]): ContributionDay[][] {
-  if (contributions.length === 0) return []
-
-  
-  const contributionMap = new Map<string, ContributionDay>()
-  contributions.forEach(day => {
-    contributionMap.set(day.date, day)
-  })
-  const firstDate = new Date(contributions[0].date)
-  const lastDate = new Date(contributions[contributions.length - 1].date)
-  
-
-  const startMonday = getPreviousMonday(firstDate)
-  const endMonday = getPreviousMonday(lastDate)
-  const weeks: ContributionDay[][] = []
-  const currentMonday = new Date(startMonday)
-  
-  while (currentMonday <= endMonday) {
-    const week: ContributionDay[] = []
-    
-    for (let i = 0; i < 7; i++) {
-      const currentDate = new Date(currentMonday)
-      currentDate.setDate(currentMonday.getDate() + i)
-      const dateStr = currentDate.toISOString().split('T')[0]
-      
-      if (contributionMap.has(dateStr)) {
-        week.push(contributionMap.get(dateStr)!)
-      } else {
-        week.push({
-          date: dateStr,
-          count: 0,
-          level: 0
-        })
-      }
-    }
-    
-    weeks.push(week)
-    
-    currentMonday.setDate(currentMonday.getDate() + 7)
-  }
-  
-  return weeks
-}
-
 function convertToWeeks(contributions: ContributionDay[]): ContributionDay[][] {
   if (contributions.length === 0) return []
   
@@ -83,12 +39,11 @@ export async function getGithubData(period: number = 60) {
         const today = new Date()
         today.setHours(23, 59, 59, 999)
         
-        let startDate: Date
-        let endDate: Date = today
+        const endDate: Date = today
         if (!period || period <= 0) {
             period = 30
         }
-        startDate = new Date()
+        const startDate = new Date()
         startDate.setDate(startDate.getDate() - period)
         startDate.setHours(0, 0, 0, 0)
         const mondayStart = getPreviousMonday(startDate)

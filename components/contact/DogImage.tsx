@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { contactInfo } from '@/data/contact/contact-info'
-import dogPic from '@/public/images/contact/dog.jpg'
+import dogPic from '@/public/images/contact/dog.webp'
 
 interface DogImageProps {
   className?: string
@@ -90,7 +90,6 @@ const DogImage = ({ className = '' }: DogImageProps) => {
           height={480}
           quality={90}
           className="w-full h-auto rounded-2xl block"
-          sizes="(max-width: 768px) 85vw, (max-width: 1024px) 40vw, 35vw"
           placeholder="blur"
           />
       </div>
