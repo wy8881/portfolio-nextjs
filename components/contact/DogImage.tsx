@@ -91,6 +91,7 @@ const DogImage = ({ className = '' }: DogImageProps) => {
           quality={90}
           className="w-full h-auto rounded-2xl block"
           placeholder="blur"
+          priority
           />
       </div>
     </div>

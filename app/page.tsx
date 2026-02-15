@@ -31,7 +31,7 @@ export default async function HomePage() {
       aria-label="Hero section"
       className="relative flex px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full"
       > 
-        <Image src="/images/home/hero-cover.webp" alt="Hero background image" fill className="absolute top-0 left-0 w-full h-full object-cover -z-10 flex flex-col" priority/>
+        <Image src="/images/home/hero-cover.webp" alt="Hero background image" fill className="absolute top-0 left-0 w-full h-full object-cover -z-10 flex flex-col" sizes="100vw" quality={75} priority/>
         <div className="flex-1 flex justify-center items-center"> 
           <Hero contributionData={contributionDataResponse ?? undefined} period={PERIOD} />
         </div>

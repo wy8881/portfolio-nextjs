@@ -15,7 +15,7 @@ export default function AboutPage() {
         aria-label="About intro section"
         className="relative flex justify-center items-center px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full"
       >
-        <Image src="/images/about/about-cover.webp" alt="About intro background image" fill className="absolute top-0 left-0 w-full h-full object-cover -z-10 flex flex-col" priority/>
+        <Image src="/images/about/about-cover.webp" alt="About intro background image" fill className="absolute top-0 left-0 w-full h-full object-cover -z-10 flex flex-col" sizes="100vw" quality={75} priority/>
         <AboutIntro />
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-background to-transparent z-0" />
       </section>
