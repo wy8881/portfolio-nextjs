@@ -9,7 +9,7 @@ import BurgerButton from '@/components/layout/navbar/BurgerButton'
 import MobileMenu from '@/components/layout/navbar/MobileMenu'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
 
-const LOGO_SRC = '/images/icon_round.png'
+const LOGO_SRC = '/images/icon.webp'
 
 type NavLink = {
   href: string
