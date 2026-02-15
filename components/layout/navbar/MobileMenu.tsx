@@ -118,7 +118,7 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
                 exit="closed">
                     <motion.div
                     key="mobile-menu-background"
-                    className="fixed inset-0 left-1/2 bg-[#363740] overflow-hidden z-20"
+                    className="fixed inset-0 left-1/2 bg-background overflow-hidden z-20"
                     variants={backgroundVariants}
                     initial="closed"
                     animate="open"
@@ -127,7 +127,7 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
 
                     <motion.div
                         key="mobile-menu-overlay"
-                        className="fixed inset-0 z-10 bg-black/40 backdrop-blur-sm md:hidden"
+                        className="fixed inset-0 z-10 bg-black/40 backdrop-blur-sm md:hidden min-h-screen"
                         variants={overlayVariants}
                         initial="closed"
                         animate="open"
@@ -146,6 +146,8 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
                     shadow-lg
                     -mt-[1.25rem]
                     px-6 pt-6 pb-6
+                    bg-background
+                    min-h-screen
                     "
                     variants={panelVariants}
                     initial="closed"
@@ -179,8 +181,8 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
                                             text-base font-normal
                                             transition-colors duration-200
                                             ${isActive
-                                                ? 'text-nav-link-active inline-block pb-1 border-b-2 border-nav-link-active'
-                                                : 'text-nav-link-inactive hover:text-secondary block'
+                                                ? 'text-accent inline-block pb-1 border-b-2 border-nav-link-active'
+                                                : 'text-primary hover:text-secondary block'
                                             }`
                                         }
                                     >

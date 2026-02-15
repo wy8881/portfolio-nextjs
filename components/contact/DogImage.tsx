@@ -88,12 +88,11 @@ const DogImage = ({ className = '' }: DogImageProps) => {
           alt={contactInfo.image.alt}
           width={480}
           height={480}
-          priority
           quality={90}
           className="w-full h-auto rounded-2xl block"
           sizes="(max-width: 768px) 85vw, (max-width: 1024px) 40vw, 35vw"
           placeholder="blur"
-        />
+          />
       </div>
     </div>
   )

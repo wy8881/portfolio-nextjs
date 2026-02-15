@@ -58,7 +58,7 @@ const BurgerButton = ({ isOpen, toggle }: BurgerButtonProps) => {
             animate={isOpen ? "open" : "closed"}
         >
             <motion.span 
-                className="block h-[2px] w-6 bg-nav-link-inactive rounded-full origin-center"
+                className="block h-[2px] w-6 bg-accent rounded-full origin-center"
                 variants={topLine}
                 transition={{ 
                     duration: 0.4,
@@ -66,7 +66,7 @@ const BurgerButton = ({ isOpen, toggle }: BurgerButtonProps) => {
                 }}
             />
             <motion.span 
-                className="block h-[2px] w-6 bg-nav-link-inactive rounded-full origin-center"
+                className="block h-[2px] w-6 bg-accent rounded-full origin-center"
                 variants={middleLine}
                 transition={{ 
                     duration: 0.3,
@@ -74,7 +74,7 @@ const BurgerButton = ({ isOpen, toggle }: BurgerButtonProps) => {
                 }}
             />
             <motion.span 
-                className="block h-[2px] w-6 bg-nav-link-inactive rounded-full origin-center"
+                className="block h-[2px] w-6 bg-accent rounded-full origin-center"
                 variants={bottomLine}
                 transition={{ 
                     duration: 0.4,

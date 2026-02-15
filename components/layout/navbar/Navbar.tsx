@@ -89,7 +89,7 @@ const Navbar = () => {
                   width: 'clamp(40px, 4vw, 56px)',
                   height: 'clamp(40px, 4vw, 56px)'
                 }}
-              />
+                priority/>
             </Link>
             <div
               className="ml-auto flex items-center"
