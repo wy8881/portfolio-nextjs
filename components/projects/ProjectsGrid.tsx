@@ -49,6 +49,7 @@ const ProjectsGrid = ({ projects }: ProjectsGridProps) => {
             gap-6
             md:gap-6
             lg:gap-8
+            items-stretch
           "
         >
           {filteredProjects.map((project, index) => (
@@ -90,7 +91,7 @@ const ProjectsGrid = ({ projects }: ProjectsGridProps) => {
       </div>
 
       <div className="sm:hidden flex flex-col items-center justify-center gap-4">
-        <div className="w-full max-w-[400px] aspect-square">
+        <div className="h-auto flex justify-center items-center">
           <AnimatePresence
             custom={direction}
             mode="wait"

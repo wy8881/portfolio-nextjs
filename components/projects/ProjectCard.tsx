@@ -13,11 +13,11 @@ const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
   return (
     <div
       className="
-        h-full
-        w-full
+
         flex
         flex-col
-        bg-white
+        h-full
+        bg-white/80
         border-2
         border-black
         rounded-2xl

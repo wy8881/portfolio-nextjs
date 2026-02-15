@@ -76,7 +76,7 @@ const Navbar = () => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: '-50%', opacity: 0 }}
             transition={{ duration: ANIMATION_DURATION.pageTransition, ease: ANIMATION_EASING.easeInOut }}
-            className="hidden md:flex items-center justify-between h-full"
+            className="hidden md:flex items-center justify-between h-full mx-8"
           >
             <Link href="/">
               <Image
@@ -89,6 +89,7 @@ const Navbar = () => {
                   width: 'clamp(40px, 4vw, 56px)',
                   height: 'clamp(40px, 4vw, 56px)'
                 }}
+                loading='eager'
                 priority/>
             </Link>
             <div
@@ -163,6 +164,8 @@ const Navbar = () => {
                 width: 'clamp(40px, 4vw, 56px)',
                 height: 'clamp(40px, 4vw, 56px)'
               }}
+              loading='eager'
+              priority
             />
           </Link>
           <BurgerButton key="mobile-burger-button" isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />

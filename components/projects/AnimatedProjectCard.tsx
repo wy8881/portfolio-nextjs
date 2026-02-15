@@ -46,10 +46,14 @@ const AnimatedProjectCard = ({project, isSmallScreen=false, onSwipe}: AnimatedPr
             }}
             exit={{opacity:0, x: direction * -50}}
             className="
-                h-full
-                w-full
                 select-none
                 touch-action-pan-y
+                flex
+                flex-col
+                justify-center
+                items-center
+                mx-6
+                my-6
                 "
             >
             <ProjectCard project={project} isSmallScreen={isSmallScreen} />

@@ -27,7 +27,8 @@ const FilterTabs = ({ onFilterChange }: FilterTabsProps) => {
         items-center
         gap-3
         md:gap-4
-        mb-[clamp(3rem,5vw,4rem)]
+        md:mb-8
+        lg:mb-10
       "
     >
       {filters.map((filter) => (
