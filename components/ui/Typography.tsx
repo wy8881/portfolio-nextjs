@@ -69,7 +69,7 @@ export function H2({
         'text-[clamp(1.125rem,2vw+0.5rem,1.5rem)]',
         'font-medium',
         'leading-[1.4]',
-        'text-primary',
+        'text-secondary',
         className
       )}
     >
@@ -128,7 +128,7 @@ export function SectionLabel({
         'font-normal',
         'tracking-[0.15em]',
         'uppercase',
-        'text-[#888888]',
+        'text-primary',
         'mb-2',
         className
       )}
@@ -187,7 +187,7 @@ export function Body({
         'text-[clamp(0.9375rem,1.5vw,1.0625rem)]',
         'font-normal',
         'leading-[1.7]',
-        'text-[#666666]',
+        'text-text',
         className
       )}
     >
@@ -216,7 +216,7 @@ export function CardTitle({
         'text-[clamp(1.125rem,2vw,1.375rem)]',
         'font-semibold',
         'leading-[1.3]',
-        'text-[#000000]',
+        'text-primary',
         'mb-5',
         className
       )}

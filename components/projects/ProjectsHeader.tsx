@@ -74,7 +74,7 @@ const ProjectsHeader = () => {
               font-mono
               text-[clamp(4rem,10vw,8rem)]
               font-light
-              text-[#E5E5E5]
+              text-primary
               select-none
             "
           >

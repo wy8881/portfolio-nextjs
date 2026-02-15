@@ -23,7 +23,7 @@ const TimelineItem = ({ item, isLast }: TimelineItemProps) => {
             text-[clamp(1.125rem,1.5vw,1.25rem)]
             font-bold
             leading-[1.3]
-            text-black
+            text-accent
             text-left
           "
         >
@@ -45,8 +45,6 @@ const TimelineItem = ({ item, isLast }: TimelineItemProps) => {
                   before:content-['•']
                   before:absolute
                   before:left-0
-                  before:text-black
-                  before:font-semibold
                 "
               >
                 <Body>{highlight}</Body>
@@ -61,7 +59,7 @@ const TimelineItem = ({ item, isLast }: TimelineItemProps) => {
           className="
             text-[clamp(1rem,3vw,1.125rem)]
             font-bold
-            text-black
+            text-accent
             mb-2
           "
         >
@@ -82,8 +80,6 @@ const TimelineItem = ({ item, isLast }: TimelineItemProps) => {
                 before:content-['•']
                 before:absolute
                 before:left-0
-                before:text-black
-                before:font-semibold
               "
             >
               <Body>{highlight}</Body>

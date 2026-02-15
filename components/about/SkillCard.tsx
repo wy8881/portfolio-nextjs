@@ -13,7 +13,8 @@ const SkillCard = ({ title, skills }: SkillCardProps) => {
       className="
         w-full
         h-full
-        bg-white
+        bg-white/50
+        backdrop-blur-md
         border-2
         border-black
         rounded-2xl
