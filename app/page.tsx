@@ -3,7 +3,6 @@ import FeaturedProjects from '@/components/home/featuredProjects/FeaturedProject
 import type { Metadata } from 'next'
 import { getGithubData } from '@/lib/github'
 import Image from 'next/image'
-import { g, i, p } from 'framer-motion/client'
 
 export const metadata: Metadata = {
   title: "Yi's Portfolio",

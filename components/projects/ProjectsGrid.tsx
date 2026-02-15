@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { motion, AnimatePresence, wrap } from 'framer-motion'
 import { ANIMATION_EASING } from '@/lib/animations'
 import { Project, ProjectCategory } from '@/types/projects'
@@ -15,17 +15,15 @@ interface ProjectsGridProps {
 
 const ProjectsGrid = ({ projects }: ProjectsGridProps) => {
   const [activeFilter, setActiveFilter] = useState<ProjectCategory | 'All'>('All')
-  const [filteredProjects, setFilteredProjects] = useState<Project[]>(projects)
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0)
   const [direction, setDirection] = useState<1 | -1>(1)
-
-  useEffect(() => {
+  const filteredProjects = useMemo(() => {
     if (activeFilter === 'All') {
-      setFilteredProjects(projects)
-    } else {
-      setFilteredProjects(projects.filter(project => project.category === activeFilter))
+      return projects
     }
-    setSelectedProjectIndex(0)
+    else {
+      return projects.filter(project => project.category === activeFilter)
+    }
   }, [activeFilter, projects])
 
   function setProject(newDirection: 1 | -1) {

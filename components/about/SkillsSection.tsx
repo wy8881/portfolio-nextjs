@@ -2,7 +2,7 @@
 import SkillCard from './SkillCard';
 import { skillsData } from '@/data/about/skills';
 import { H3 } from '@/components/ui/Typography';
-import{motion, AnimatePresence, usePresenceData, wrap} from 'framer-motion';
+import{AnimatePresence, wrap} from 'framer-motion';
 import { useState } from 'react';
 import CarouselButton from '@/components/CarouselButton';
 import AnimatedSkillCard from './AnimatedSkillCard';

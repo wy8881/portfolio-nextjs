@@ -35,7 +35,7 @@ const AboutIntro = () => {
       >
         <SectionLabel>ABOUT</SectionLabel>
 
-        <H1>I'm {personalInfo.name}</H1>
+        <H1>I&apos;m {personalInfo.name}</H1>
 
         <H2>{personalInfo.title}</H2>
 

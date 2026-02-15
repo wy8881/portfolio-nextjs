@@ -4,7 +4,6 @@ import DogImage from './DogImage'
 import { contactInfo } from '@/data/contact/contact-info'
 import { motion } from 'framer-motion'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
-import Link from 'next/link'
 import { SectionLabel, H1, H2, BodyLarge, Body } from '@/components/ui/Typography'
 
 const ContactIntro = () => {

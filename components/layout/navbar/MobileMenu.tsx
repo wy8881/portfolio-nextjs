@@ -166,7 +166,7 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
                         animate="open"
                         exit="closed"
                     >
-                        {navLinks.map((link, index) => {
+                        {navLinks.map((link) => {
                             const isActive = pathname === link.href
                             return (
                                 <motion.li
@@ -192,7 +192,7 @@ const MobileMenu = ({ isOpen, onClose, pathname, navLinks, socialLinks }: Mobile
                             )
                         })}
                         <div className="flex gap-6 pt-4">
-                            {socialLinks.map((link, index) => (
+                            {socialLinks.map((link) => (
                                 <motion.li
                                     key={link.label}
                                     variants={linkVariants}

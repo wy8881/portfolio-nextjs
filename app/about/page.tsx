@@ -3,7 +3,6 @@ import AboutIntro from '@/components/about/AboutIntro';
 import SkillsSection from '@/components/about/SkillsSection';
 import TimelineSection from '@/components/about/TimelineSection';
 import Image from 'next/image';
-import { ScrollIndicator } from '@/components/ScrollIndicator';
 
 export const metadata: Metadata = {
   title: 'About - Yi Wang',
