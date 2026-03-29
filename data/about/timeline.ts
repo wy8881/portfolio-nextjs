@@ -40,15 +40,29 @@ export const timelineData: TimelineItem[] = [
     ],
     type: "project"
   },
+
   {
     id: 4,
-    period: "2025",
-    title: "IT Support Intern",
-    organization: "Bank of China",
-    location: "Sydney",
+    period:'2025',
+    title:'Bussiness Website',
+    organization:'Personal Project',
+    location:'',
+    highlights:[
+      'Built with Wordpress and Divibuilder',
+      'Deployed to AWS Lightsail',
+      'The website is for a fake bussiness, but it looks pretty real :)'
+    ],
+    type: "project"
+  },
+
+  {
+    id: 5,
+    period:'2025 - Present',
+    title: 'Junior Software Engineer',
+    organization: 'Tech Company',
+    location: 'City, State',
     highlights: [
-      "Troubleshooting, documentation, and user support",
-      "Improved escalation workflows and created guides for recurring issues"
+      'Wish I can thrive :)'
     ],
     type: "work"
   }
