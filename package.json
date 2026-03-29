@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@chenglou/pretext": "^0.0.4",
     "@react-three/fiber": "^9.5.0",
     "bootstrap-icons": "^1.13.1",
     "clsx": "^2.1.1",
@@ -26,7 +27,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "baseline-browser-mapping": "^2.9.19",
+    "baseline-browser-mapping": "^2.10.12",
     "eslint": "^9",
     "eslint-config-next": "16.0.6",
     "tailwindcss": "^4",
