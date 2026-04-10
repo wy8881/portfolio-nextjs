@@ -189,8 +189,8 @@ export default function PretextDemo({ bodyText }: { bodyText: string }) {
     }
 
     const dragon: Dragon = {
-      x: DRAGON_INIT.fx * stage.clientWidth,
-      y: DRAGON_INIT.fy * stage.clientHeight,
+      x: DRAGON_INIT.fx * container.clientWidth,
+      y: DRAGON_INIT.fy * container.clientHeight,
       r: DRAGON_INIT.r,
       vx: 0, vy: 0,
       paused: true,
@@ -201,8 +201,8 @@ export default function PretextDemo({ bodyText }: { bodyText: string }) {
     let rafId: number | null = null
 
     function render(now: number): boolean {
-      const pageWidth = stage.clientWidth
-      const pageHeight = stage.clientHeight
+      const pageWidth = container.clientWidth
+      const pageHeight = container.clientHeight
       const isNarrow = pageWidth < NARROW_BREAKPOINT
       const gutter = isNarrow ? NARROW_GUTTER : GUTTER
       const colGap = isNarrow ? NARROW_COL_GAP : COL_GAP
@@ -309,7 +309,7 @@ export default function PretextDemo({ bodyText }: { bodyText: string }) {
       dragonEl.style.transformOrigin = 'center center'
 
       const isHovered = hitTestDragon(dragon, pointer.x, pointer.y, dragonRadiusScale)
-      stage.style.cursor = drag !== null ? 'grabbing' : isHovered ? 'grab' : ''
+      container.style.cursor = drag !== null ? 'grabbing' : isHovered ? 'grab' : ''
       lastFrameTime = stillAnimating ? now : null
 
       return stillAnimating
