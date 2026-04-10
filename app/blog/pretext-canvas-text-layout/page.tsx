@@ -193,23 +193,37 @@ dragon.y += (dy / dist) * step`}</code>
                 narrowing still holds, since the function could be called at any time.
               </p>
               <p className="text-secondary leading-relaxed mb-4">
-                The fix is to capture the non-null value in a new typed variable immediately after the check:
+                A common but unsafe fix is the non-null assertion operator{' '}
+                <code className="bg-artifact px-1 rounded">!</code> — writing{' '}
+                <code className="bg-artifact px-1 rounded">stage!.appendChild(el)</code>. This simply
+                tells TypeScript to stop complaining without any actual check. If{' '}
+                <code className="bg-artifact px-1 rounded">stage</code> were ever null at runtime,
+                it would throw — silently bypassing the type system is never the right answer.
+              </p>
+              <p className="text-secondary leading-relaxed mb-4">
+                The safe fix is <strong className="text-primary">narrowing by assignment</strong>.
+                After the null check, assign <code className="bg-artifact px-1 rounded">stage</code> to
+                a new variable typed as <code className="bg-artifact px-1 rounded">HTMLDivElement</code> —
+                not nullable. TypeScript infers from the assignment that this variable can never be null,
+                and that narrowing carries into any closure that uses it:
               </p>
               <pre className="bg-artifact rounded-xl p-4 text-sm overflow-x-auto mb-4">
                 <code className="text-primary">{`const stage = stageRef.current
 if (!stage) return
-const container: HTMLDivElement = stage  // non-null, safe to use in closures
+const container: HTMLDivElement = stage  // narrowed — TypeScript knows this is non-null
 
 function syncPool(...) {
-  container.appendChild(el)  // ✓ TypeScript is happy
-}`}</code>
+  container.appendChild(el)   // ✓ safe in closures
+}
+
+const pageWidth = container.clientWidth  // ✓
+container.style.cursor = 'grabbing'      // ✓`}</code>
               </pre>
               <p className="text-secondary leading-relaxed">
-                <code className="bg-artifact px-1 rounded">container</code> is typed as{' '}
-                <code className="bg-artifact px-1 rounded">HTMLDivElement</code> — not nullable — so
-                TypeScript trusts it inside any nested function. The original{' '}
-                <code className="bg-artifact px-1 rounded">stage</code> variable is still used at the
-                top level of the effect where narrowing works fine.
+                Unlike <code className="bg-artifact px-1 rounded">!</code>, this approach doesn&apos;t
+                bypass the type system — it works with it. TypeScript understands that{' '}
+                <code className="bg-artifact px-1 rounded">container</code> was assigned from a
+                non-null value and will enforce that contract everywhere it&apos;s used.
               </p>
             </section>
 
