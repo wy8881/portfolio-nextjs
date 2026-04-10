@@ -44,6 +44,7 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
             src={project.coverImage}
             alt={displayTitle}
             fill
+            sizes="(max-width: 768px) 50vw, 33vw"
             className="
               object-cover
               rounded-t-2xl
