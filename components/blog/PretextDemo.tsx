@@ -125,6 +125,7 @@ export default function PretextDemo({ bodyText }: { bodyText: string }) {
   useEffect(() => {
     const stage = stageRef.current
     if (!stage) return
+    const container: HTMLDivElement = stage
 
     const preparedBody = prepareWithSegments(bodyText, BODY_FONT)
 
@@ -151,7 +152,7 @@ export default function PretextDemo({ bodyText }: { bodyText: string }) {
     const headlinePool: HTMLSpanElement[] = []
 
     function syncPool<T extends HTMLElement>(pool: T[], count: number, create: () => T): void {
-      while (pool.length < count) { const el = create(); stage.appendChild(el); pool.push(el) }
+      while (pool.length < count) { const el = create(); container.appendChild(el); pool.push(el) }
       for (let i = 0; i < pool.length; i++) pool[i]!.style.display = i < count ? '' : 'none'
     }
 

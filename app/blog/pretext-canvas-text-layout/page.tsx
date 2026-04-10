@@ -27,7 +27,7 @@ export default function PretextCanvasTextLayoutPage() {
         description="How a layout engine inverts CSS — measuring, carving, and reflowing text around moving objects in real time."
         tags={['canvas', 'text-layout', 'typescript', 'animation']}
       >
-          <div className="prose prose-stone max-w-none space-y-10">
+          <article className="prose prose-stone max-w-none space-y-10">
 
             <section>
               <h2 className="text-2xl font-semibold text-primary mb-4">The core idea</h2>
@@ -175,7 +175,45 @@ dragon.y += (dy / dist) * step`}</code>
               </p>
             </section>
 
-          </div>
+            <section>
+              <h2 className="text-2xl font-semibold text-primary mb-4">Pitfall: stage is possibly null</h2>
+              <p className="text-secondary leading-relaxed mb-4">
+                When using <code className="bg-artifact px-1 rounded">useRef</code> in React, the ref
+                is typed as <code className="bg-artifact px-1 rounded">HTMLDivElement | null</code> because
+                the element doesn&apos;t exist yet at the time the component function runs — it only gets
+                attached after the first render. TypeScript sees the ref as potentially null everywhere,
+                including inside nested functions like <code className="bg-artifact px-1 rounded">syncPool</code>,
+                even if you&apos;ve already checked it at the top of the effect.
+              </p>
+              <p className="text-secondary leading-relaxed mb-4">
+                The cause is that TypeScript&apos;s null narrowing doesn&apos;t carry into closures. When you
+                write <code className="bg-artifact px-1 rounded">if (!stage) return</code>, TypeScript
+                narrows <code className="bg-artifact px-1 rounded">stage</code> to non-null for the rest
+                of that block — but inside a nested function defined later, it can&apos;t guarantee the
+                narrowing still holds, since the function could be called at any time.
+              </p>
+              <p className="text-secondary leading-relaxed mb-4">
+                The fix is to capture the non-null value in a new typed variable immediately after the check:
+              </p>
+              <pre className="bg-artifact rounded-xl p-4 text-sm overflow-x-auto mb-4">
+                <code className="text-primary">{`const stage = stageRef.current
+if (!stage) return
+const container: HTMLDivElement = stage  // non-null, safe to use in closures
+
+function syncPool(...) {
+  container.appendChild(el)  // ✓ TypeScript is happy
+}`}</code>
+              </pre>
+              <p className="text-secondary leading-relaxed">
+                <code className="bg-artifact px-1 rounded">container</code> is typed as{' '}
+                <code className="bg-artifact px-1 rounded">HTMLDivElement</code> — not nullable — so
+                TypeScript trusts it inside any nested function. The original{' '}
+                <code className="bg-artifact px-1 rounded">stage</code> variable is still used at the
+                top level of the effect where narrowing works fine.
+              </p>
+            </section>
+
+          </article>
       </BlogPostLayout>
     </div>
   )
