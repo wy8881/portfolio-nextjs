@@ -1,10 +1,11 @@
 'use client'
 
 import DogImage from './DogImage'
+import ContactInfoRow from './ContactInfoRow'
 import { contactInfo } from '@/data/contact/contact-info'
 import { motion } from 'framer-motion'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
-import { SectionLabel, H1, H2, BodyLarge, Body } from '@/components/ui/Typography'
+import { SectionLabel, H1, H2, BodyLarge } from '@/components/ui/Typography'
 
 const ContactIntro = () => {
   return (
@@ -41,16 +42,27 @@ const ContactIntro = () => {
             
             <BodyLarge>{contactInfo.description}</BodyLarge>
             
-            <div className="space-y-2 px-10 py-4 bg-artifact ring-1 ring-accent/40 shadow-[0_20px_50px_color-mix(in_srgb,var(--color-accent)_30%,transparent)] flex flex-col justify-start items-start rounded-lg w-fit">
-              <div className="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-text before:font-semibold">
-                <Body as="div">{contactInfo.email}</Body>
+            <div className="bg-[var(--color-contact-card)] border-l-4 border-accent rounded-r-lg px-6 py-4 shadow-sm flex flex-col gap-2.5 w-fit">
+              <div className="text-[10px] tracking-[2px] uppercase font-bold text-accent mb-1">
+                Contact
               </div>
-              <div className="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-text before:font-semibold">
-                <Body as="div">{contactInfo.phone}</Body>
-              </div>
-              <div className="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-text before:font-semibold">
-                <Body as="div">{contactInfo.location}</Body>
-              </div>
+              <ContactInfoRow
+                icon="bi-envelope"
+                label="Email"
+                text={contactInfo.email}
+                href={`mailto:${contactInfo.email}`}
+              />
+              <ContactInfoRow
+                icon="bi-telephone"
+                label="Phone"
+                text={contactInfo.phone}
+                href={`tel:${contactInfo.phone.replace(/\s/g, '')}`}
+              />
+              <ContactInfoRow
+                icon="bi-geo-alt"
+                label="Location"
+                text={contactInfo.location}
+              />
             </div>
             
             {/* <div
