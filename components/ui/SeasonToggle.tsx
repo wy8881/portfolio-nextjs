@@ -4,6 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 
 type Season = 'spring' | 'summer' | 'autumn' | 'winter'
 
+function getInitialSeason(): Season {
+  if (typeof window === 'undefined') return 'summer'
+  return (localStorage.getItem('season') as Season) || 'summer'
+}
+
 const SEASONS: { id: Season; emoji: string; label: string }[] = [
   { id: 'spring', emoji: '🌸', label: 'Spring' },
   { id: 'summer', emoji: '☀️', label: 'Summer' },
@@ -19,15 +24,9 @@ const ACCENT_COLORS: Record<Season, string> = {
 }
 
 export default function SeasonToggle() {
-  const [season, setSeason] = useState<Season>('summer')
+  const [season, setSeason] = useState<Season>(getInitialSeason)
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-
-  // Read from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem('season') as Season | null
-    if (stored) setSeason(stored)
-  }, [])
 
   // Close on outside click
   useEffect(() => {
