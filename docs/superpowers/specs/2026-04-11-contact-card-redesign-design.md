@@ -14,7 +14,11 @@ The current contact info card uses `bg-artifact` (`#C3C3B9` in summer), which is
 - Card background uses a new `--color-contact-card` CSS custom property, set per theme
 - Left border uses the existing `--color-accent` token (already theme-aware)
 - Each contact row is rendered by a new `ContactInfoRow` component
-- Each row receives an `icon` (Bootstrap Icon class), `text` (the value), and `label` (e.g. "Email" — used as `aria-label` on the icon for accessibility)
+- Each row receives `icon`, `text`, `label`, and optional `href`
+- The icon is `aria-hidden="true"` (decorative — text conveys the meaning)
+- `label` renders as a `sr-only` prefix so screen readers announce e.g. "Email: wy7382@gmail.com"
+- Email and phone rows pass an `href` (`mailto:` and `tel:` respectively) to render as links — enables tap-to-email/call on mobile and announces as interactive to screen readers
+- Location renders as plain text (no href)
 - A small uppercase "CONTACT" label sits above the rows in `text-accent`
 - Bullet pseudo-elements (`before:content-['•']`) are removed
 - Social links remain commented out
@@ -51,13 +55,14 @@ Add `--color-contact-card` to `globals.css`:
 
 ```tsx
 interface ContactInfoRowProps {
-  icon: string   // Bootstrap Icon class e.g. "bi-envelope"
-  text: string   // The contact value e.g. "wy7382@gmail.com"
-  label: string  // Human-readable label e.g. "Email" — used as aria-label on the icon
+  icon: string    // Bootstrap Icon class e.g. "bi-envelope" — rendered aria-hidden="true"
+  text: string    // Display value e.g. "wy7382@gmail.com"
+  label: string   // sr-only prefix e.g. "Email" — screen readers announce "Email: wy7382@gmail.com"
+  href?: string   // Optional link — mailto: for email, tel: for phone, omit for location
 }
 ```
 
-Renders a single row: icon (`text-accent`, `aria-label={label}`) + text (`Body` component).
+Renders a single row: `aria-hidden` icon (`text-accent`) + optional link wrapper + `sr-only` label + text (`Body` component).
 
 ### `components/contact/ContactIntro.tsx`
 
@@ -68,8 +73,8 @@ Replace the current card `<div>` (line 44) with:
   <div className="text-[10px] tracking-[2px] uppercase font-bold text-accent mb-1">
     Contact
   </div>
-  <ContactInfoRow icon="bi-envelope"  label="Email"    text={contactInfo.email} />
-  <ContactInfoRow icon="bi-telephone" label="Phone"    text={contactInfo.phone} />
+  <ContactInfoRow icon="bi-envelope"  label="Email"    text={contactInfo.email}    href={`mailto:${contactInfo.email}`} />
+  <ContactInfoRow icon="bi-telephone" label="Phone"    text={contactInfo.phone}    href={`tel:${contactInfo.phone.replace(/\s/g, '')}`} />
   <ContactInfoRow icon="bi-geo-alt"   label="Location" text={contactInfo.location} />
 </div>
 ```
