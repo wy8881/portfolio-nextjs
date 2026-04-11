@@ -56,7 +56,7 @@ const ContactIntro = () => {
                 icon="bi-telephone"
                 label="Phone"
                 text={contactInfo.phone}
-                href={`tel:${contactInfo.phone.replace(/\s/g, '')}`}
+                href={`tel:${contactInfo.phone.replace(/[^\d+]/g, '')}`}
               />
               <ContactInfoRow
                 icon="bi-geo-alt"
