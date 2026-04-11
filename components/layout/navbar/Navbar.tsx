@@ -1,15 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {useEffect, useState } from 'react'
 import BurgerButton from '@/components/layout/navbar/BurgerButton'
 import MobileMenu from '@/components/layout/navbar/MobileMenu'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
-
-const LOGO_SRC = '/images/icon.webp'
+import LogoIcon from '@/components/ui/LogoIcon'
 
 type NavLink = {
   href: string
@@ -77,18 +75,13 @@ const Navbar = () => {
             className="hidden md:flex items-center justify-between h-full mx-8"
           >
             <Link href="/">
-              <Image
-                src={LOGO_SRC}
-                alt="Logo"
-                width={160}
-                height={160}
-                className="object-cover aspect-square"
+              <LogoIcon
                 style={{
+                  color: 'var(--color-nav-text)',
                   width: 'clamp(40px, 4vw, 56px)',
-                  height: 'clamp(40px, 4vw, 56px)'
+                  height: 'clamp(40px, 4vw, 56px)',
                 }}
-                loading='eager'
-                priority/>
+              />
             </Link>
             <div
               className="ml-auto flex items-center"
@@ -149,18 +142,12 @@ const Navbar = () => {
         )}
         <div className="flex items-center justify-between md:hidden z-30 h-full" >
           <Link href="/" className={`${isOpen ? 'invisible' : 'visible'}`}>
-            <Image
-              src={LOGO_SRC}
-              alt="Logo"
-              width={160}
-              height={160}
-              className="rounded-full object-cover aspect-square"
+            <LogoIcon
               style={{
+                color: 'var(--color-nav-text)',
                 width: 'clamp(40px, 4vw, 56px)',
-                height: 'clamp(40px, 4vw, 56px)'
+                height: 'clamp(40px, 4vw, 56px)',
               }}
-              loading='eager'
-              priority
             />
           </Link>
           <BurgerButton key="mobile-burger-button" isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
