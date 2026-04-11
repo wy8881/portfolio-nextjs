@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "next-themes";
 import Navbar from "@/components/layout/navbar/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import SeasonToggle from "@/components/ui/SeasonToggle";
@@ -40,20 +39,17 @@ export default function RootLayout({
           }}
         />
       </head>
+    <header className="fixed z-50 top-0 left-0 right-0 bg-nav-bg/50 backdrop-blur-xl border-b border-stone-200/30 h-16 md:h-20 lg:h-24">
+      <Navbar />
+    </header>
       <body
         className={`${inter.variable} antialiased`}
       >
-        <ThemeProvider 
-          attribute="class" 
-          defaultTheme="light" 
-          enableSystem={false}>
-          <Navbar />
           <main>
             {children}
           </main>
           <Footer />
           <SeasonToggle />
-        </ThemeProvider>
       </body>
     </html>
   );

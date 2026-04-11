@@ -1,0 +1,106 @@
+<h2>Which direction feels right?</h2>
+<p class="subtitle">Your current palette is warm sage green. Which vibe do you want to move toward?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="dark" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f0f0f;padding:20px;display:flex;flex-direction:column;gap:8px;">
+      <div style="height:10px;width:60%;background:#f0f0f0;border-radius:4px"></div>
+      <div style="height:8px;width:40%;background:#888;border-radius:4px"></div>
+      <div style="height:8px;width:80%;background:#555;border-radius:4px;margin-top:4px"></div>
+      <div style="height:8px;width:65%;background:#555;border-radius:4px"></div>
+      <div style="height:28px;width:90px;background:#6366f1;border-radius:6px;margin-top:8px"></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <div style="width:10px;height:10px;border-radius:50%;background:#0f0f0f;border:2px solid #6366f1"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#6366f1"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#0f0f0f;border:2px solid #6366f1"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Dark mode</h3>
+      <p>Near-black background, light text, vivid accent. Modern developer aesthetic — feels technical and sharp.</p>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <div style="width:24px;height:24px;border-radius:4px;background:#0f0f0f;border:1px solid #333"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#1a1a1a;border:1px solid #333"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#6366f1"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#f0f0f0"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="minimal" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#ffffff;padding:20px;display:flex;flex-direction:column;gap:8px;">
+      <div style="height:10px;width:60%;background:#111;border-radius:4px"></div>
+      <div style="height:8px;width:40%;background:#bbb;border-radius:4px"></div>
+      <div style="height:8px;width:80%;background:#ddd;border-radius:4px;margin-top:4px"></div>
+      <div style="height:8px;width:65%;background:#ddd;border-radius:4px"></div>
+      <div style="height:28px;width:90px;background:#111;border-radius:2px;margin-top:8px"></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <div style="width:10px;height:10px;border-radius:50%;background:#fff;border:1.5px solid #111"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#111"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#fff;border:1.5px solid #111"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Clean minimal</h3>
+      <p>Pure white background, stark black type, no color except for selective highlights. Editorial and timeless.</p>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <div style="width:24px;height:24px;border-radius:4px;background:#ffffff;border:1px solid #ddd"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#f5f5f5;border:1px solid #ddd"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#111111"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#888888"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="warm-refresh" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#faf7f2;padding:20px;display:flex;flex-direction:column;gap:8px;">
+      <div style="height:10px;width:60%;background:#1a1108;border-radius:4px"></div>
+      <div style="height:8px;width:40%;background:#a89880;border-radius:4px"></div>
+      <div style="height:8px;width:80%;background:#d5c9b8;border-radius:4px;margin-top:4px"></div>
+      <div style="height:8px;width:65%;background:#d5c9b8;border-radius:4px"></div>
+      <div style="height:28px;width:90px;background:#c2410c;border-radius:4px;margin-top:8px"></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <div style="width:10px;height:10px;border-radius:50%;background:#faf7f2;border:1.5px solid #c2410c"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#c2410c"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#faf7f2;border:1.5px solid #c2410c"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Warm refresh</h3>
+      <p>Keep the warmth but brighter — cream background, rich brown text, burnt orange or terracotta accent. Feels personal and crafted.</p>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <div style="width:24px;height:24px;border-radius:4px;background:#faf7f2;border:1px solid #ddd"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#f0ebe3;border:1px solid #ddd"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#c2410c"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#1a1108"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-choice="bold" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8f4ff;padding:20px;display:flex;flex-direction:column;gap:8px;">
+      <div style="height:10px;width:60%;background:#1e0a3c;border-radius:4px"></div>
+      <div style="height:8px;width:40%;background:#9d7ec9;border-radius:4px"></div>
+      <div style="height:8px;width:80%;background:#d4c5e8;border-radius:4px;margin-top:4px"></div>
+      <div style="height:8px;width:65%;background:#d4c5e8;border-radius:4px"></div>
+      <div style="height:28px;width:90px;background:#7c3aed;border-radius:6px;margin-top:8px"></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <div style="width:10px;height:10px;border-radius:50%;background:#f8f4ff;border:1.5px solid #7c3aed"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#7c3aed"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:#f8f4ff;border:1.5px solid #7c3aed"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Bold & expressive</h3>
+      <p>Light lavender background, deep purple text, strong violet accent. More personality and energy — stands out from typical dev portfolios.</p>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <div style="width:24px;height:24px;border-radius:4px;background:#f8f4ff;border:1px solid #ddd"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#ede9ff;border:1px solid #ddd"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#7c3aed"></div>
+        <div style="width:24px;height:24px;border-radius:4px;background:#1e0a3c"></div>
+      </div>
+    </div>
+  </div>
+
+</div>

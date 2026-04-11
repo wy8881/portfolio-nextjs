@@ -64,9 +64,6 @@ const Navbar = () => {
   }, [])
   return (
     <>
-    <header className="fixed z-50 top-0 left-0 right-0 bg-nav-bg/50 backdrop-blur-xl border-b border-stone-200/30 h-16 md:h-20 lg:h-24"
-
-    >
       <div className="max-w-4xl mx-auto px-6 h-full">
 
         {isDesktop && (
@@ -176,9 +173,7 @@ const Navbar = () => {
           navLinks={NAV_LINKS}
           socialLinks={SOCIAL_LINKS}
         />  
-    </header>
-
-        </>
+    </>
   )
 }
 

@@ -42,13 +42,13 @@ const ContactIntro = () => {
             <BodyLarge>{contactInfo.description}</BodyLarge>
             
             <div className="space-y-2 px-10 py-4 bg-background/70 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.4)] flex flex-col justify-start items-start rounded-lg w-fit">
-              <div className="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-black before:font-semibold">
+              <div className="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-text before:font-semibold">
                 <Body as="div">{contactInfo.email}</Body>
               </div>
-              <div className="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-black before:font-semibold">
+              <div className="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-text before:font-semibold">
                 <Body as="div">{contactInfo.phone}</Body>
               </div>
-              <div className="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-black before:font-semibold">
+              <div className="relative pl-5 before:content-['•'] before:absolute before:left-0 before:text-text before:font-semibold">
                 <Body as="div">{contactInfo.location}</Body>
               </div>
             </div>

@@ -1,0 +1,43 @@
+<h2>Season toggle — collapsed & expanded</h2>
+<p class="subtitle">Circle shows current season. Click → all four appear. Click one to switch.</p>
+
+<div class="split">
+
+  <div class="mockup">
+    <div class="mockup-header">Default (collapsed)</div>
+    <div class="mockup-body" style="position:relative;min-height:180px;background:#E4E5D9">
+      <div style="position:absolute;top:12px;left:12px;font-size:12px;color:#78716c">☀️ Summer theme active</div>
+
+      <!-- collapsed button -->
+      <div style="position:absolute;bottom:20px;right:20px;background:#fff;border:2px solid #166534;border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 20px rgba(0,0,0,0.15);cursor:pointer">
+        ☀️
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">After click (expanded)</div>
+    <div class="mockup-body" style="position:relative;min-height:180px;background:#E4E5D9">
+      <div style="position:absolute;top:12px;left:12px;font-size:12px;color:#78716c">Click a season to switch</div>
+
+      <!-- expanded panel -->
+      <div style="position:absolute;bottom:20px;right:20px;background:#fff;border-radius:20px;padding:12px;box-shadow:0 8px 32px rgba(0,0,0,0.18);display:flex;flex-direction:column;gap:8px;min-width:150px">
+        <div style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:10px;cursor:pointer">
+          <span style="font-size:20px">🌸</span><span style="font-size:13px;color:#5c1a3a">Spring</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:10px;background:#E4E5D9;cursor:pointer">
+          <span style="font-size:20px">☀️</span><span style="font-size:13px;font-weight:700;color:#1C1917">Summer ✓</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:10px;cursor:pointer">
+          <span style="font-size:20px">🍂</span><span style="font-size:13px;color:#78716c">Autumn</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:10px;cursor:pointer">
+          <span style="font-size:20px">❄️</span><span style="font-size:13px;color:#78716c">Winter</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p style="margin-top:16px;font-size:13px;color:#888">Clicking outside the panel closes it. The border color on the collapsed button matches the active season's accent. Does this interaction feel right?</p>
