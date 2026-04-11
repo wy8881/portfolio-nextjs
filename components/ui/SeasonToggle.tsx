@@ -28,7 +28,6 @@ export default function SeasonToggle() {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -52,78 +51,40 @@ export default function SeasonToggle() {
   return (
     <div
       ref={ref}
-      style={{
-        position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        zIndex: 100,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-      }}
+      className="fixed bottom-6 right-6 z-[100] flex items-center justify-end"
     >
-      {/* Expanded pill */}
+      {/* Grid wrapper — animates width to fit-content */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          background: '#fff',
-          borderRadius: '40px',
-          padding: open ? '8px 8px' : '0',
-          boxShadow: open ? '0 4px 24px rgba(0,0,0,0.18)' : 'none',
-          overflow: 'hidden',
-          maxWidth: open ? '360px' : '0px',
-          opacity: open ? 1 : 0,
-          transition: 'max-width 0.3s ease, opacity 0.2s ease, padding 0.3s ease',
-          marginRight: open ? '8px' : '0',
-          gap: '4px',
-          whiteSpace: 'nowrap',
-        }}
+        className={`grid transition-[grid-template-columns,opacity,margin] duration-300 ease-in-out ${
+          open ? 'grid-cols-[1fr] opacity-100 mr-2' : 'grid-cols-[0fr] opacity-0 mr-0'
+        }`}
       >
-        {SEASONS.map(s => (
-          <button
-            key={s.id}
-            onClick={() => selectSeason(s.id)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 12px',
-              borderRadius: '30px',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: s.id === season ? 700 : 400,
-              background: s.id === season ? `${ACCENT_COLORS[s.id]}20` : 'transparent',
-              color: s.id === season ? ACCENT_COLORS[s.id] : '#666',
-              transition: 'background 0.2s',
-            }}
-          >
-            <span style={{ fontSize: '18px' }}>{s.emoji}</span>
-            {s.label}
-          </button>
-        ))}
+        {/* Inner pill */}
+        <div className="overflow-hidden flex items-center bg-white rounded-[40px] p-2 gap-1 whitespace-nowrap shadow-[0_4px_24px_rgba(0,0,0,0.18)]">
+          {SEASONS.map(s => (
+            <button
+              key={s.id}
+              onClick={() => selectSeason(s.id)}
+              className="flex items-center gap-1.5 py-1.5 px-3 rounded-full border-0 cursor-pointer text-[13px] transition-colors"
+              style={{
+                fontWeight: s.id === season ? 700 : 400,
+                background: s.id === season ? `${ACCENT_COLORS[s.id]}20` : 'transparent',
+                color: s.id === season ? ACCENT_COLORS[s.id] : '#666',
+              }}
+            >
+              <span className="text-lg">{s.emoji}</span>
+              {s.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Collapsed circle button */}
+      {/* Circle button */}
       <button
         onClick={() => setOpen(o => !o)}
         aria-label="Switch season theme"
-        style={{
-          width: '56px',
-          height: '56px',
-          borderRadius: '50%',
-          border: `2px solid ${accentColor}`,
-          background: '#fff',
-          cursor: 'pointer',
-          fontSize: '24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-          flexShrink: 0,
-          transition: 'border-color 0.3s',
-        }}
+        className="w-14 h-14 rounded-full bg-white cursor-pointer text-2xl flex items-center justify-center shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.15)] transition-colors"
+        style={{ border: `2px solid ${accentColor}` }}
       >
         {current.emoji}
       </button>
