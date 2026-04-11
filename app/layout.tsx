@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import Navbar from "@/components/layout/navbar/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import SeasonToggle from "@/components/ui/SeasonToggle";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,6 +28,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var season = localStorage.getItem('season') || 'summer';
+                document.documentElement.setAttribute('data-season', season);
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${inter.variable} antialiased`}
       >
@@ -39,6 +52,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <SeasonToggle />
         </ThemeProvider>
       </body>
     </html>
