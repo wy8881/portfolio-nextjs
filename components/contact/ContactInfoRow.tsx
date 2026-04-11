@@ -19,11 +19,11 @@ const ContactInfoRow = ({ icon, text, label, href }: ContactInfoRowProps) => {
     <div className="flex items-center gap-2.5">
       <i className={`bi ${icon} text-accent text-sm`} aria-hidden="true" />
       {href ? (
-        <a href={href} className="hover:underline underline-offset-2">
+        <a href={href} className="hover:underline underline-offset-2 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 rounded-sm">
           {content}
         </a>
       ) : (
-        <span>{content}</span>
+        <>{content}</>
       )}
     </div>
   )
