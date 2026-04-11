@@ -234,10 +234,10 @@ export function CardTitle({
  * <CardDescription>A brief description of the project</CardDescription>
  * <CardDescription as="div" className="text-sm">Smaller description</CardDescription>
  */
-export function CardDescription({ 
-  children, 
-  className, 
-  as: Component = 'p' 
+export function CardDescription({
+  children,
+  className,
+  as: Component = 'p'
 }: TypographyProps) {
   return (
     <Component
@@ -246,7 +246,7 @@ export function CardDescription({
         'text-[clamp(0.9375rem,1.5vw,1.0625rem)]',
         'font-normal',
         'leading-[1.6]',
-        'text-[#555555]',
+        'text-text',
         className
       )}
     >
