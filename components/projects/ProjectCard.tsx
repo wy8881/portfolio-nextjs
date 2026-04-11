@@ -17,16 +17,16 @@ const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
         flex
         flex-col
         h-full
-        bg-white/80
+        bg-artifact
         border-2
-        border-black
+        border-primary
         rounded-2xl
         p-[clamp(1.5rem,3vw,2rem)]
         transition-all
         duration-300
         ease-out
         hover:translate-y-[-4px]
-        hover:shadow-[8px_8px_0px_0px_#000000]
+        hover:shadow-[8px_8px_0px_0px_var(--color-accent)]
         gap-3
       "
     >
@@ -42,16 +42,12 @@ const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
         {!isSmallScreen && project.tags.map((tag, index) => (
           <span
             key={index}
-            className="
-              px-3
-              py-1
-              border
-              border-[#CCCCCC]
-              rounded
-              text-xs
-              text-[#666666]
-              bg-[#F5F5F5]
-            "
+            className="px-3 py-1 rounded text-xs"
+            style={{
+              background: 'color-mix(in srgb, var(--color-accent) 12%, transparent)',
+              border: '1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)',
+              color: 'var(--color-accent)',
+            }}
           >
             {tag}
           </span>
@@ -74,7 +70,7 @@ const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
             target="_blank"
             rel="noopener noreferrer"
             className="
-              text-black
+              text-accent
               hover:underline
               transition-all
               duration-200
@@ -87,7 +83,7 @@ const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
           <Link
             href={project.liveDemo}
             className="
-              text-black
+              text-accent
               hover:underline
               transition-all
               duration-200
@@ -104,7 +100,7 @@ const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
             href={project.publication}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-black hover:underline transition-all duration-200"
+            className="text-accent hover:underline transition-all duration-200"
             aria-label={`View publication for ${project.title}`}
           >
             View Publication →
