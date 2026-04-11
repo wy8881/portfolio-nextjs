@@ -1,0 +1,123 @@
+---
+title: "Next.js Font Variables and Tailwind @theme"
+date: "2026-04-11"
+description: "What inter.variable and antialiased actually do, and why @theme and @theme inline behave differently in Tailwind v4."
+tags: ["nextjs", "tailwind", "css", "fonts"]
+---
+
+## The className that confused me
+
+In every Next.js project, `layout.tsx` has a body tag that looks like this:
+
+```tsx
+<body className={`${inter.variable} antialiased`}>
+```
+
+Two things are happening here that are easy to gloss over. They are doing very different jobs.
+
+## inter.variable
+
+When you load a font in Next.js, you give it a variable name:
+
+```ts
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+})
+```
+
+`inter.variable` is not the font itself. It is a generated CSS class name — something like `__variable_a1b2c3`. When that class is applied to an element, it injects a CSS custom property into scope:
+
+```css
+.__variable_a1b2c3 {
+  --font-inter: 'Inter', sans-serif;
+}
+```
+
+Putting this class on `<body>` makes `--font-inter` available to every element on the page. Tailwind picks it up through the `@theme` block in `globals.css`:
+
+```css
+@theme {
+  --font-inter: var(--font-inter), sans-serif;
+}
+```
+
+This registers `--font-inter` as a Tailwind design token, which generates the `font-inter` utility class. When you apply `font-inter` to an element, it sets `font-family: var(--font-inter)` — which resolves to the Inter font loaded by Next.js with full subsetting, optimisation, and self-hosting.
+
+## antialiased
+
+This is a Tailwind utility that applies two CSS properties:
+
+```css
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+```
+
+Without it, browsers on macOS render fonts with subpixel antialiasing — a technique that uses the RGB channels of adjacent pixels to sharpen text. The result looks bolder and heavier. With `antialiased`, the browser switches to grayscale antialiasing, which renders text thinner, lighter, and crisper.
+
+Applying it to `<body>` makes it the default for the entire page. It is purely visual — it does not affect layout or accessibility.
+
+## @theme vs @theme inline in Tailwind v4
+
+This distinction came up while building a four-seasons theme switcher for this portfolio. The goal was to define colour tokens that could be swapped at runtime by setting a `data-season` attribute on the `<html>` element:
+
+```css
+[data-season="winter"] {
+  --color-background: #0a0f1e;
+  --color-text: #e8eef8;
+}
+```
+
+The plan was that Tailwind utilities like `bg-background` and `text-text` would automatically pick up the new values. They did not — and the reason is the difference between `@theme` and `@theme inline`.
+
+### @theme inline — values baked at build time
+
+The `inline` modifier tells Tailwind to resolve token values at build time and write them directly into utility classes:
+
+```css
+/* globals.css */
+@theme inline {
+  --color-background: #E4E5D9;
+}
+
+/* generated output */
+.bg-background {
+  background-color: #E4E5D9;  /* static hex, locked at build time */
+}
+```
+
+The hex value is frozen. Updating `--color-background` at runtime via a CSS attribute selector has no effect on `bg-background` — the utility already has its answer baked in.
+
+### @theme — values stay as CSS variables
+
+Without `inline`, Tailwind writes the CSS variable into `:root` and makes utilities reference it:
+
+```css
+/* globals.css */
+@theme {
+  --color-background: #E4E5D9;
+}
+
+/* generated output */
+:root {
+  --color-background: #E4E5D9;
+}
+
+.bg-background {
+  background-color: var(--color-background);  /* dynamic reference */
+}
+```
+
+Now `bg-background` resolves at runtime. When `[data-season="winter"]` overrides `--color-background`, every element using the utility immediately gets the new value — no JavaScript required, no class toggling, just CSS cascade.
+
+### When to use which
+
+Use `@theme inline` for values that never change at runtime — spacing scale, border radius, font sizes. These benefit from being inlined because the browser doesn't need to resolve a variable reference on every paint.
+
+Use `@theme` for values you intend to override at runtime — colours, any token driven by a theme, user preference, or dynamic state. The `var()` reference is the mechanism that makes runtime theming possible.
+
+## Putting it together
+
+The season switcher on this site works entirely through CSS variables. Selecting a season sets `data-season="winter"` on the `<html>` element. The cascade does the rest — every Tailwind utility that references a colour variable updates instantly, sitewide, with no JavaScript touching individual elements.
+
+None of this works unless the theme tokens are defined with `@theme`, not `@theme inline`. That single word determines whether your design tokens are frozen at build time or alive at runtime.
