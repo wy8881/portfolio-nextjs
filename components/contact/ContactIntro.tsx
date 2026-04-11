@@ -90,6 +90,7 @@ const ContactIntro = () => {
               duration: ANIMATION_DURATION.pageTransition,
               ease: ANIMATION_EASING.easeInOut
             }}
+            className="hidden md:flex justify-center items-center "
           >
             <DogImage />
           </motion.div>

@@ -10,6 +10,7 @@
   --color-artifact: #C3C3B9;
   --color-nav-bg: #166534;
   --color-nav-text: #f0fdf4;
+  --color-contact-card: #fafaf8;
 
   --font-inter: var(--font-inter), sans-serif;
 }
@@ -24,6 +25,7 @@
   --color-artifact: #C3C3B9;
   --color-nav-bg: #166534;
   --color-nav-text: #f0fdf4;
+  --color-contact-card: #fafaf8;
 }
 
 /* ── Spring ── */
@@ -36,6 +38,7 @@
   --color-artifact: #fce4ec;
   --color-nav-bg: #fff0f580;
   --color-nav-text: #5c1a3a;
+  --color-contact-card: #ffffff;
 }
 
 /* ── Autumn ── */
@@ -48,6 +51,7 @@
   --color-artifact: #fef3c7;
   --color-nav-bg: #f5e8c8;
   --color-nav-text: #1e3a5f;
+  --color-contact-card: #ffffff;
 }
 
 /* ── Winter ── */
@@ -60,6 +64,7 @@
   --color-artifact: #1a2540;
   --color-nav-bg: #0a0f1e80;
   --color-nav-text: #e8eef8;
+  --color-contact-card: #1e3a5f;
 }
 
 body {
