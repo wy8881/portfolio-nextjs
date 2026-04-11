@@ -2,46 +2,64 @@
 @import "bootstrap-icons/font/bootstrap-icons.css";
 
 @theme inline {
-
   --color-text: #292524;
   --color-background: #E4E5D9;
   --color-primary: #1C1917;
   --color-secondary: #78716C;
   --color-accent: #166534;
   --color-artifact: #C3C3B9;
+  --color-nav-bg: #166534;
+  --color-nav-text: #f0fdf4;
 
-
-  /* Navigation colors */
-  --color-nav-bg: #f5f5f4;
-  /* --color-nav-link-inactive: #FFFFFF;
-  --color-nav-link-active: #FAD11D;
-  
-
-  --color-cta-bg: #292524;
-  --color-cta-text: #FFFFFF;
-
-  --color-primary: #44403C;
-  --color-secondary: #78716C;
-  --color-accent: #292524;
-  
-
-  --color-text-primary: #2D2D2A;
-  --color-text-secondary: #555555;
-  --color-text-tertiary: #666666;
-  --color-text-label: #888888;
-  
-
-  --color-border-primary: #000000;
-  --color-border-secondary: #E5E5E5;
-  --color-border-tertiary: #CCCCCC;
-  
-
-  --color-bg-primary: #E4E5D9;
-  --color-bg-secondary: #FAFAFA;
-  --color-bg-tertiary: #F5F5F5; */
-  
-  /* Font system */
   --font-inter: var(--font-inter), sans-serif;
+}
+
+/* ── Summer (default) ── */
+[data-season="summer"] {
+  --color-background: #E4E5D9;
+  --color-text: #292524;
+  --color-primary: #1C1917;
+  --color-secondary: #78716C;
+  --color-accent: #166534;
+  --color-artifact: #C3C3B9;
+  --color-nav-bg: #166534;
+  --color-nav-text: #f0fdf4;
+}
+
+/* ── Spring ── */
+[data-season="spring"] {
+  --color-background: #fff0f5;
+  --color-text: #5c1a3a;
+  --color-primary: #5c1a3a;
+  --color-secondary: #b07090;
+  --color-accent: #e05c8a;
+  --color-artifact: #fce4ec;
+  --color-nav-bg: #fff0f580;
+  --color-nav-text: #5c1a3a;
+}
+
+/* ── Autumn ── */
+[data-season="autumn"] {
+  --color-background: #fffbeb;
+  --color-text: #1e3a5f;
+  --color-primary: #1e3a5f;
+  --color-secondary: #d4a017;
+  --color-accent: #f97316;
+  --color-artifact: #fef3c7;
+  --color-nav-bg: #f5e8c8;
+  --color-nav-text: #1e3a5f;
+}
+
+/* ── Winter ── */
+[data-season="winter"] {
+  --color-background: #0a0f1e;
+  --color-text: #e8eef8;
+  --color-primary: #e8eef8;
+  --color-secondary: #4a6fa5;
+  --color-accent: #7eb8f7;
+  --color-artifact: #1a2540;
+  --color-nav-bg: #0a0f1e80;
+  --color-nav-text: #e8eef8;
 }
 
 body {
@@ -74,6 +92,5 @@ p {
     left: var(--tech-left) !important;
     top: var(--tech-top) !important;
     transform: translateX(-50%) !important;
+  }
 }
-}
-
