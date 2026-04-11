@@ -1,7 +1,7 @@
 # Contact Info Card Redesign
 
 **Date:** 2026-04-11
-**Scope:** `ContactIntro.tsx` card div + `globals.css` theme token addition
+**Scope:** `ContactIntro.tsx` card div + `globals.css` theme token + new `ContactInfoRow` component
 
 ## Problem
 
@@ -13,7 +13,8 @@ The current contact info card uses `bg-artifact` (`#C3C3B9` in summer), which is
 
 - Card background uses a new `--color-contact-card` CSS custom property, set per theme
 - Left border uses the existing `--color-accent` token (already theme-aware)
-- Each contact row uses a Bootstrap Icon (`bi-envelope`, `bi-telephone`, `bi-geo-alt`) in `text-accent`
+- Each contact row is rendered by a new `ContactInfoRow` component
+- Each row receives an `icon` (Bootstrap Icon class), `text` (the value), and `label` (e.g. "Email" — used as `aria-label` on the icon for accessibility)
 - A small uppercase "CONTACT" label sits above the rows in `text-accent`
 - Bullet pseudo-elements (`before:content-['•']`) are removed
 - Social links remain commented out
@@ -46,36 +47,37 @@ Add `--color-contact-card` to `globals.css`:
    [data-season="winter"]  { --color-contact-card: #1e3a5f; }
    ```
 
+### `components/contact/ContactInfoRow.tsx` (new file)
+
+```tsx
+interface ContactInfoRowProps {
+  icon: string   // Bootstrap Icon class e.g. "bi-envelope"
+  text: string   // The contact value e.g. "wy7382@gmail.com"
+  label: string  // Human-readable label e.g. "Email" — used as aria-label on the icon
+}
+```
+
+Renders a single row: icon (`text-accent`, `aria-label={label}`) + text (`Body` component).
+
 ### `components/contact/ContactIntro.tsx`
 
 Replace the current card `<div>` (line 44) with:
 
 ```tsx
-<div className="border-l-4 border-accent rounded-r-lg px-6 py-4 shadow-sm flex flex-col gap-2.5 w-fit"
-     style={{ background: 'var(--color-contact-card)' }}>
+<div className="bg-[var(--color-contact-card)] border-l-4 border-accent rounded-r-lg px-6 py-4 shadow-sm flex flex-col gap-2.5 w-fit">
   <div className="text-[10px] tracking-[2px] uppercase font-bold text-accent mb-1">
     Contact
   </div>
-  <div className="flex items-center gap-2.5">
-    <i className="bi bi-envelope text-accent text-sm" />
-    <Body as="div">{contactInfo.email}</Body>
-  </div>
-  <div className="flex items-center gap-2.5">
-    <i className="bi bi-telephone text-accent text-sm" />
-    <Body as="div">{contactInfo.phone}</Body>
-  </div>
-  <div className="flex items-center gap-2.5">
-    <i className="bi bi-geo-alt text-accent text-sm" />
-    <Body as="div">{contactInfo.location}</Body>
-  </div>
+  <ContactInfoRow icon="bi-envelope"  label="Email"    text={contactInfo.email} />
+  <ContactInfoRow icon="bi-telephone" label="Phone"    text={contactInfo.phone} />
+  <ContactInfoRow icon="bi-geo-alt"   label="Location" text={contactInfo.location} />
 </div>
 ```
-
-**Note:** Use `bg-[var(--color-contact-card)]` as a Tailwind arbitrary value class, consistent with how other theme colors are used in the codebase. The inline style shown above is equivalent but less idiomatic here.
 
 ## What Is Not Changing
 
 - `data/contact/contact-info.ts` — data source untouched
+- `types/contact.ts` — untouched
 - `motion` animation wrapper — untouched
 - Grid layout and responsive breakpoints — untouched
 - Social links — remain commented out
