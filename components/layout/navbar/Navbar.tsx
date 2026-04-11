@@ -111,15 +111,13 @@ const Navbar = () => {
                     <Link
                       key={link.label}
                       href={link.href}
-                      className={`
-                        font-normal
-                        transition-all
-                        ${isActive
-                          ? 'text-accent pb-1 border-b-2'
-                          : 'text-text hover:text-secondary'
-                        }`
-                      }
-                      style={{ fontSize: 'clamp(14px, 1.2vw, 18px)' }}
+                      className={`font-normal transition-all ${isActive ? 'pb-1 border-b-2' : ''}`}
+                      style={{
+                        fontSize: 'clamp(14px, 1.2vw, 18px)',
+                        color: 'var(--color-nav-text)',
+                        opacity: isActive ? 1 : 0.75,
+                        borderColor: isActive ? 'var(--color-nav-text)' : 'transparent',
+                      }}
                     >
                       {link.label}
                     </Link>
@@ -137,13 +135,12 @@ const Navbar = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={link.ariaLabel}
-                    className="
-                      text-text
-                      hover:text-secondary
-                      transition-all
-                      duration-200
-                    "
-                    style={{ fontSize: 'clamp(20px, 2vw, 30px)' }}
+                    style={{
+                      fontSize: 'clamp(20px, 2vw, 30px)',
+                      color: 'var(--color-nav-text)',
+                      opacity: 0.75,
+                      transition: 'opacity 0.2s',
+                    }}
                   >
                     <i className={link.icon}></i>
                   </Link>
