@@ -17,17 +17,17 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
       className="
         flex
         flex-col
-        bg-white
+        bg-artifact
         border-2
-        border-black
+        border-primary
         rounded-2xl
         overflow-hidden
         transition-all
         duration-300
         ease-out
         hover:translate-y-[-4px]
-        hover:shadow-[8px_8px_0px_0px_#000000]
-        aspect-[4/3] 
+        hover:shadow-[8px_8px_0px_0px_var(--color-accent)]
+        aspect-[4/3]
       "
     >
       {project.coverImage && (
@@ -74,7 +74,7 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
               target="_blank"
               rel="noopener noreferrer"
               className="
-                text-black
+                text-accent
                 hover:underline
                 transition-all
                 duration-200
@@ -87,7 +87,7 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
             <Link
               href={project.liveDemo}
               className="
-                text-black
+                text-accent
                 hover:underline
                 transition-all
                 duration-200
@@ -105,7 +105,7 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
               target="_blank"
               rel="noopener noreferrer"
               className="
-                text-black
+                text-accent
                 hover:underline
                 transition-all
                 duration-200
