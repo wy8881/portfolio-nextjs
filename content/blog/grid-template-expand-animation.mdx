@@ -1,0 +1,167 @@
+---
+title: "The grid-template expand animation"
+date: "2026-04-12"
+description: "How animating grid-template-rows and grid-template-columns lets you expand an element from zero to auto without JavaScript, and why max-height is the wrong tool for the job."
+tags: ["css", "animation", "tailwind", "layout"]
+---
+
+## The problem with max-height
+
+The classic way to animate an element open is `max-height: 0` → `max-height: 500px`. It works, but it has a problem: the browser has no idea how tall the content actually is. It animates from 0 to 500px regardless of whether the real height is 40px or 490px. The result is a noticeably uneven easing — the element snaps open fast at first, then slows to nothing as it approaches a ceiling that was never real.
+
+You cannot animate to `max-height: auto`. CSS transitions only work between two concrete values.
+
+The grid trick solves this.
+
+## What grid-template-columns and grid-template-rows are
+
+`grid-template-columns` and `grid-template-rows` define the track sizes of a grid container — how wide each column is, how tall each row is.
+
+```css
+grid-template-columns: 200px 1fr 100px;
+/* three columns: fixed, flexible, fixed */
+
+grid-template-rows: auto 1fr;
+/* two rows: shrink-wrap content, then fill remaining space */
+```
+
+The `fr` unit means "fraction of available space." The total is the sum of all fr values across every track in that dimension — not declared anywhere, just derived.
+
+```css
+grid-template-columns: 1fr;         /* 1/1 = 100% */
+grid-template-columns: 1fr 1fr;     /* 1/2 | 1/2  */
+grid-template-columns: 2fr 1fr;     /* 2/3 | 1/3  */
+grid-template-columns: 1fr 2fr 1fr; /* 1/4 | 2/4 | 1/4 */
+```
+
+`1fr` does not inherently mean "all space." It means one unit out of however many fr units exist across the whole grid. When there is only one track, the sum is `1`, so that track takes everything. Any non-zero fr value would behave identically in a single-track grid — the ratio is what matters, not the number.
+
+### When to use auto instead of fr
+
+`fr` units only divide **remaining** space — after `auto`, fixed-size, and min-content tracks have already claimed their share. So `auto` sizes to content first, then `fr` splits whatever is left.
+
+```css
+grid-template-columns: auto 1fr;
+/* col 1: exactly as wide as its content
+   col 2: everything else */
+
+grid-template-columns: 1fr 1fr;
+/* col 1: half the total space
+   col 2: half the total space — content size is irrelevant */
+```
+
+The season toggle buttons make the difference obvious. Each button has an emoji and a label:
+
+```
+auto 1fr          1fr 1fr
+
+🌸 Spring         🌸      Spring
+☀️ Summer         ☀️      Summer
+🍂 Autumn         🍂      Autumn
+❄️ Winter         ❄️      Winter
+```
+
+With `auto 1fr`, the emoji column shrinks to the glyph width and the label takes the rest — the buttons stay compact. With `1fr 1fr`, both columns split space equally and the emoji sits in a column far wider than a single character. Use `auto` when a track should hug its content; use `fr` when it should fill proportional space.
+
+The interesting unit here is `0fr` — a track that takes zero space.
+
+A child element inside a `0fr` track is not hidden. It still exists in the DOM, it still has its natural dimensions, it is just constrained to a box of zero size. Pair it with `overflow: hidden` and it disappears completely.
+
+## The trick
+
+Animating from `grid-template-columns: 0fr` to `grid-template-columns: 1fr` causes the track to smoothly expand from zero to its natural content width — whatever that width happens to be. No hardcoded ceiling. The browser measures the content and that is the target.
+
+```css
+.wrapper {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns 300ms ease-in-out;
+}
+
+.wrapper.open {
+  grid-template-columns: 1fr;
+}
+
+.inner {
+  overflow: hidden; /* clips the child while the track is smaller than its content */
+}
+```
+
+In Tailwind, this pattern looks like:
+
+```tsx
+<div
+  className={`grid transition-[grid-template-columns] duration-300 ease-in-out ${
+    open ? 'grid-cols-[1fr]' : 'grid-cols-[0fr]'
+  }`}
+>
+  <div className="overflow-hidden">
+    {/* content */}
+  </div>
+</div>
+```
+
+The same trick works on rows — swap `grid-template-columns` for `grid-template-rows` and `grid-cols-[0fr]` for `grid-rows-[0fr]`.
+
+## What flex-col does
+
+`flex-col` sets `flex-direction: column` on a flex container. Without it, flex items lay out in a row — side by side horizontally. With it, they stack vertically.
+
+```
+flex-row (default)    flex-col
+┌──┬──┬──┐            ┌──────┐
+│A │B │C │            │  A   │
+└──┴──┴──┘            ├──────┤
+                      │  B   │
+                      ├──────┤
+                      │  C   │
+                      └──────┘
+```
+
+In the season toggle, the outer container uses `flex-col` on mobile so the pill stacks above the circle button. On desktop it switches to `flex-row` so the pill sits to the left of the button.
+
+```tsx
+<div className="flex flex-col items-end sm:flex-row sm:items-center">
+  {/* pill */}
+  {/* circle button */}
+</div>
+```
+
+`items-end` on the column aligns the pill to the right edge — without it, a short pill would stretch to fill the full width. `items-center` on the row vertically centres the pill and button relative to each other.
+
+## Why mb-2 pushes the pill upward, not downward
+
+On mobile, the container is `flex-col`. The DOM order is pill first, button second — so the pill renders above the button. Adding `mb-2` to the pill adds 8px of space between the bottom of the pill and the top of the button.
+
+```
+┌────────────────┐   ← pill
+│  🌸  ☀️  🍂  ❄️  │
+└────────────────┘
+        ↕ 8px (mb-2)
+      ┌──────┐
+      │  ☀️  │       ← button
+      └──────┘
+```
+
+The pill appears to expand upward because the button is anchored to the bottom of the screen via `fixed bottom-6`. Increasing content above it can only go one direction.
+
+## Why mr-2 pushes the pill leftward, not rightward
+
+On desktop, the container is `flex-row` and the DOM order is the same — pill first, button second. But now they sit side by side. Adding `mr-2` to the pill adds 8px of space between the right edge of the pill and the left edge of the button.
+
+```
+                ← 8px (mr-2) →
+┌────────────────────┐   ┌──────┐
+│ 🌸 ☀️ 🍂 ❄️         │   │  ☀️  │
+└────────────────────┘   └──────┘
+```
+
+Because the whole widget is `fixed right-6`, the button is the anchor. The pill can only expand to the left.
+
+## Why 2 and not 4
+
+`mb-2` and `mr-2` are 8px. `mb-4` and `mr-4` would be 16px.
+
+The circle button is `w-14 h-14` — 56px. A 16px gap would be more than a quarter of the button's diameter. At that distance, the pill and button start to feel like two separate things. At 8px they read as a unit — one combined widget with internal breathing room.
+
+The gap is intentionally tight. It says: this pill belongs to that button.

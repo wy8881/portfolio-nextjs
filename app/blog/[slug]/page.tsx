@@ -30,7 +30,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <BlogPostLayout title={post.title} date={post.date} description={post.description} tags={post.tags}>
-      <article className="prose max-w-none">
+      <article className="prose max-w-none relative z-[2]">
         <MDXRemote source={post.content} />
       </article>
     </BlogPostLayout>
