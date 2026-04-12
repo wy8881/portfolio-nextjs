@@ -1,7 +1,7 @@
 // components/ui/SeasonalCanvas.tsx
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTheme } from 'next-themes'
 import { createParticles, updateParticle, drawParticle, type Particle } from './particles'
 import type { Season } from '@/lib/types'
@@ -9,12 +9,6 @@ import type { Season } from '@/lib/types'
 const FADE_SECS = 0.6
 
 export default function SeasonalCanvas() {
-  if (
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ) {
-    return null
-  }
   return <Canvas />
 }
 
@@ -22,6 +16,7 @@ function Canvas() {
   const { theme } = useTheme()
   const season = (theme as Season) ?? 'summer'
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [reducedMotion, setReducedMotion] = useState(false)
 
   const stateRef = useRef<{
     season: Season
@@ -29,14 +24,19 @@ function Canvas() {
     rafId: number
     lastTime: number
   }>({
-    season: 'summer',
+    season: season,
     particles: [],
     rafId: 0,
     lastTime: 0,
   })
 
-  // Mount: canvas setup, RAF loop, ResizeObserver, visibility listener
+  // Mount: check reduced motion, set up canvas, RAF loop, ResizeObserver, visibility
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setReducedMotion(true)
+      return
+    }
+
     const canvas = canvasRef.current!
     const ctx = canvas.getContext('2d')!
     const state = stateRef.current
@@ -47,6 +47,12 @@ function Canvas() {
       canvas.height = window.innerHeight * dpr
       canvas.style.width = `${window.innerWidth}px`
       canvas.style.height = `${window.innerHeight}px`
+
+      // Respawn particles at new dimensions with fade-in
+      state.particles.forEach(p => { p.alphaDir = -1 })
+      const fresh = createParticles(state.season, canvas.width, canvas.height, dpr)
+      fresh.forEach(p => { p.alpha = 0 })
+      state.particles.push(...fresh)
     }
 
     function tick(timestamp: number) {
@@ -80,15 +86,20 @@ function Canvas() {
       }
     }
 
-    resize()
-    state.particles = createParticles(state.season, canvas.width, canvas.height, devicePixelRatio)
+    const dpr = devicePixelRatio
+    canvas.width = window.innerWidth * dpr
+    canvas.height = window.innerHeight * dpr
+    canvas.style.width = `${window.innerWidth}px`
+    canvas.style.height = `${window.innerHeight}px`
+
+    state.particles = createParticles(state.season, canvas.width, canvas.height, dpr)
     state.particles.forEach(p => { p.alpha = 1 })
 
     state.lastTime = performance.now()
     state.rafId = requestAnimationFrame(tick)
 
     const ro = new ResizeObserver(resize)
-    ro.observe(document.body)
+    ro.observe(document.documentElement)
     document.addEventListener('visibilitychange', handleVisibility)
 
     return () => {
@@ -98,23 +109,29 @@ function Canvas() {
     }
   }, [])
 
-  // Season change: fade out old particles, spawn new ones
+  // Season change: drop already-fading cohort, fade out active, spawn new
   useEffect(() => {
     const state = stateRef.current
     if (state.season === season) return
     state.season = season
 
-    const canvas = canvasRef.current!
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    state.particles = state.particles.filter(p => p.alphaDir !== -1)
     state.particles.forEach(p => { p.alphaDir = -1 })
 
     const incoming = createParticles(season, canvas.width, canvas.height, devicePixelRatio)
-    incoming.forEach(p => { p.alpha = 0 })  // ensure fade-in regardless of createParticles default
+    incoming.forEach(p => { p.alpha = 0 })
     state.particles.push(...incoming)
   }, [season])
+
+  if (reducedMotion) return null
 
   return (
     <canvas
       ref={canvasRef}
+      aria-hidden="true"
       style={{
         position: 'fixed',
         inset: 0,
