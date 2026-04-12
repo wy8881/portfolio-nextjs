@@ -84,7 +84,9 @@ function makeParticle(season: Season, W: number, H: number, dpr: number): Partic
 }
 
 export function createParticles(season: Season, W: number, H: number, dpr: number): Particle[] {
-  return Array.from({ length: COUNTS[season] }, () => makeParticle(season, W, H, dpr))
+  const mobile = W / dpr < 768
+  const count = mobile ? Math.floor(COUNTS[season] / 2) : COUNTS[season]
+  return Array.from({ length: count }, () => makeParticle(season, W, H, dpr))
 }
 
 /**
