@@ -16,16 +16,16 @@ export type Particle = {
   alphaDir: 1 | -1   // +1 fading in, -1 fading out
   color: string
   season: Season
-  // firefly-specific
+  // Firefly-specific fields (ignored by spring/autumn/winter)
   phase: number
   blinkSpeed: number
   hue: number
   glowR: number
 }
 
-const SPRING_COLORS = ['#fda4af', '#f9a8d4', '#fbcfe8', '#fce7f3', '#f472b6']
-const AUTUMN_COLORS = ['#f97316', '#fb923c', '#dc2626', '#b45309', '#d97706', '#ea580c']
-const WINTER_COLORS = ['#bfdbfe', '#93c5fd', '#dbeafe']
+const SPRING_COLORS = ['#fda4af', '#f9a8d4', '#fbcfe8', '#fce7f3', '#f472b6'] as const
+const AUTUMN_COLORS = ['#f97316', '#fb923c', '#dc2626', '#b45309', '#d97706', '#ea580c'] as const
+const WINTER_COLORS = ['#bfdbfe', '#93c5fd', '#dbeafe'] as const
 
 const COUNTS: Record<Season, number> = {
   spring: 36,
@@ -34,23 +34,23 @@ const COUNTS: Record<Season, number> = {
   winter: 42,
 }
 
+const SIZES: Record<Season, [number, number]> = {
+  spring: [4, 8],
+  summer: [2, 4],
+  autumn: [5, 11],
+  winter: [4, 11],
+}
+
 function rand(min: number, max: number) {
   return min + Math.random() * (max - min)
 }
 
-function randItem<T>(arr: T[]): T {
+function randItem<T>(arr: readonly [T, ...T[]]): T {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
-function makeParticle(season: Season, W: number, H: number): Particle {
-  const dpr = devicePixelRatio
-  const sizes: Record<Season, [number, number]> = {
-    spring: [4, 8],
-    summer: [2, 4],
-    autumn: [5, 11],
-    winter: [4, 11],
-  }
-  const [sMin, sMax] = sizes[season]
+function makeParticle(season: Season, W: number, H: number, dpr: number): Particle {
+  const [sMin, sMax] = SIZES[season]
   const hue = rand(135, 155)
 
   return {
@@ -83,12 +83,15 @@ function makeParticle(season: Season, W: number, H: number): Particle {
   }
 }
 
-export function createParticles(season: Season, W: number, H: number): Particle[] {
-  return Array.from({ length: COUNTS[season] }, () => makeParticle(season, W, H))
+export function createParticles(season: Season, W: number, H: number, dpr: number): Particle[] {
+  return Array.from({ length: COUNTS[season] }, () => makeParticle(season, W, H, dpr))
 }
 
-export function updateParticle(p: Particle, W: number, H: number): void {
-  const dpr = devicePixelRatio
+/**
+ * Advances physics for one frame. Does NOT mutate `alpha` or `alphaDir` —
+ * those are driven by the caller (SeasonalCanvas) to control cross-fade timing.
+ */
+export function updateParticle(p: Particle, W: number, H: number, dpr: number): void {
   p.wobble += p.wobbleSpeed
 
   if (p.season === 'summer') {
@@ -108,13 +111,13 @@ export function updateParticle(p: Particle, W: number, H: number): void {
   if (p.x < -p.size * 2) p.x = W + p.size * 2
 }
 
-export function drawParticle(ctx: CanvasRenderingContext2D, p: Particle): void {
+export function drawParticle(ctx: CanvasRenderingContext2D, p: Particle, dpr: number): void {
   ctx.save()
   switch (p.season) {
     case 'spring': drawSakura(ctx, p); break
     case 'summer': drawFirefly(ctx, p); break
-    case 'autumn': drawLeaf(ctx, p); break
-    case 'winter': drawSnowflake(ctx, p); break
+    case 'autumn': drawLeaf(ctx, p, dpr); break
+    case 'winter': drawSnowflake(ctx, p, dpr); break
   }
   ctx.restore()
 }
@@ -142,6 +145,8 @@ function drawSakura(ctx: CanvasRenderingContext2D, p: Particle): void {
 }
 
 function drawFirefly(ctx: CanvasRenderingContext2D, p: Particle): void {
+  // Fireflies use absolute canvas coords (p.x, p.y) rather than translate/rotate
+  // because the radial gradient origin must be in canvas space, not local space.
   const blink = Math.max(0, Math.sin(p.phase))
   const a = p.alpha * (0.08 + 0.92 * blink)
 
@@ -155,13 +160,13 @@ function drawFirefly(ctx: CanvasRenderingContext2D, p: Particle): void {
   ctx.fill()
 
   ctx.globalAlpha = p.alpha * (0.25 + 0.75 * blink)
-  ctx.fillStyle = `hsl(${p.hue},90%,22%)`
+  ctx.fillStyle = p.color
   ctx.beginPath()
   ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
   ctx.fill()
 }
 
-function drawLeaf(ctx: CanvasRenderingContext2D, p: Particle): void {
+function drawLeaf(ctx: CanvasRenderingContext2D, p: Particle, dpr: number): void {
   ctx.translate(p.x, p.y)
   ctx.rotate(p.rot)
   ctx.globalAlpha = p.opacity * p.alpha
@@ -173,29 +178,34 @@ function drawLeaf(ctx: CanvasRenderingContext2D, p: Particle): void {
   ctx.fill()
   ctx.globalAlpha = p.opacity * p.alpha * 0.25
   ctx.strokeStyle = '#fff'
-  ctx.lineWidth = devicePixelRatio
+  ctx.lineWidth = dpr
   ctx.beginPath()
   ctx.moveTo(0,  p.size * 0.8)
   ctx.lineTo(0, -p.size * 0.8)
   ctx.stroke()
 }
 
-function drawSnowflake(ctx: CanvasRenderingContext2D, p: Particle): void {
+function drawSnowflake(ctx: CanvasRenderingContext2D, p: Particle, dpr: number): void {
   ctx.translate(p.x, p.y)
   ctx.rotate(p.rot)
   ctx.globalAlpha = p.opacity * p.alpha
   ctx.strokeStyle = p.color
-  ctx.lineWidth = devicePixelRatio
+  ctx.lineWidth = dpr
   ctx.lineCap = 'round'
   for (let i = 0; i < 6; i++) {
     ctx.save()
     ctx.rotate((i * Math.PI) / 3)
     ctx.beginPath()
-    ctx.moveTo(0, 0);              ctx.lineTo(0, -p.size)
-    ctx.moveTo(0, -p.size * 0.35); ctx.lineTo( p.size * 0.2,  -p.size * 0.55)
-    ctx.moveTo(0, -p.size * 0.35); ctx.lineTo(-p.size * 0.2,  -p.size * 0.55)
-    ctx.moveTo(0, -p.size * 0.6);  ctx.lineTo( p.size * 0.15, -p.size * 0.75)
-    ctx.moveTo(0, -p.size * 0.6);  ctx.lineTo(-p.size * 0.15, -p.size * 0.75)
+    ctx.moveTo(0, 0)
+    ctx.lineTo(0, -p.size)
+    ctx.moveTo(0, -p.size * 0.35)
+    ctx.lineTo( p.size * 0.2,  -p.size * 0.55)
+    ctx.moveTo(0, -p.size * 0.35)
+    ctx.lineTo(-p.size * 0.2,  -p.size * 0.55)
+    ctx.moveTo(0, -p.size * 0.6)
+    ctx.lineTo( p.size * 0.15, -p.size * 0.75)
+    ctx.moveTo(0, -p.size * 0.6)
+    ctx.lineTo(-p.size * 0.15, -p.size * 0.75)
     ctx.stroke()
     ctx.restore()
   }
