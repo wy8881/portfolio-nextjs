@@ -12,14 +12,14 @@ export default function AboutPage() {
     <>
       <section
         aria-label="About intro section"
-        className="relative flex justify-center items-center px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full bg-background"
+        className="relative flex justify-center items-center py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full"
       >
         <AboutIntro />
       </section>
-      <section aria-label="Skills section" className="bg-background px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32">
+      <section aria-label="Skills section" className="py-16 md:py-24 lg:py-32">
         <SkillsSection />
       </section>
-      <section aria-label="Timeline section" className='bg-background px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 '>
+      <section aria-label="Timeline section" className="py-16 md:py-24 lg:py-32">
         <TimelineSection />
       </section>
     </>

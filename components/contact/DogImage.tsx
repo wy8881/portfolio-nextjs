@@ -1,14 +1,10 @@
-'use client'
+"use client";
 
-import Image from 'next/image'
-import { contactInfo } from '@/data/contact/contact-info'
-import dogPic from '@/public/images/contact/dog.webp'
+import Image from "next/image";
+import { contactInfo } from "@/data/contact/contact-info";
+import dogPic from "@/public/images/contact/dog.webp";
 
-interface DogImageProps {
-  className?: string
-}
-
-const DogImage = ({ className = '' }: DogImageProps) => {
+const DogImage = () => {
   return (
     <div
       className={`
@@ -19,12 +15,12 @@ const DogImage = ({ className = '' }: DogImageProps) => {
         items-center
         p-8
         md:p-12
-        ${className}
       `}
     >
       <div
         className="
           relative
+          z-[2]
           inline-block
           max-w-[clamp(220px,85vw,380px)]
           md:max-w-[clamp(320px,35vw,480px)]
@@ -92,11 +88,10 @@ const DogImage = ({ className = '' }: DogImageProps) => {
           className="w-full h-auto rounded-2xl block"
           placeholder="blur"
           priority
-          />
+        />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DogImage
-
+export default DogImage;

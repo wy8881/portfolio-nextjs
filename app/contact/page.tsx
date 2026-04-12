@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <section aria-label="Contact section" className='relative flex justify-center items-center px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 overflow-hidden min-h-screen w-full bg-background'>
+    <section aria-label="Contact section" className='relative flex justify-center items-center py-16 md:py-24 lg:py-32 overflow-hidden min-h-screen w-full'>
       <ContactIntro />
     </section>
   );

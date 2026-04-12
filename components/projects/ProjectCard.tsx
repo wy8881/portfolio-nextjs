@@ -1,15 +1,15 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { Project } from '@/types/projects'
-import { CardTitle, CardDescription } from '@/components/ui/Typography'
+import Link from "next/link";
+import { Project } from "@/types/projects";
+import { CardTitle, CardDescription } from "@/components/ui/Typography";
 
 interface ProjectCardProps {
-  project: Project
-  isSmallScreen?: boolean
+  project: Project;
+  isSmallScreen?: boolean;
 }
 
-const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
+const ProjectCard = ({ project, isSmallScreen = false }: ProjectCardProps) => {
   return (
     <div
       className="
@@ -40,22 +40,29 @@ const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
           gap-2
         "
       >
-        {!isSmallScreen && project.tags.map((tag, index) => (
-          <span
-            key={index}
-            className="px-3 py-1 rounded text-xs"
-            style={{
-              background: 'color-mix(in srgb, var(--color-accent) 12%, transparent)',
-              border: '1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)',
-              color: 'var(--color-accent)',
-            }}
-          >
-            {tag}
-          </span>
-        ))}
+        {!isSmallScreen &&
+          project.tags.map((tag, index) => (
+            <span
+              key={index}
+              className="px-3 py-1 rounded text-xs"
+              style={{
+                background:
+                  "color-mix(in srgb, var(--color-accent) 12%, transparent)",
+                border:
+                  "1px solid color-mix(in srgb, var(--color-accent) 40%, transparent)",
+                color: "var(--color-accent)",
+              }}
+            >
+              {tag}
+            </span>
+          ))}
       </div>
-      
-      {!isSmallScreen && <CardDescription className="flex-grow mb-6">{project.description}</CardDescription>}
+
+      {!isSmallScreen && (
+        <CardDescription className="flex-grow mb-6">
+          {project.description}
+        </CardDescription>
+      )}
 
       <div
         className="
@@ -109,8 +116,7 @@ const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProjectCard
-
+export default ProjectCard;

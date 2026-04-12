@@ -24,13 +24,13 @@ export default function HomePage() {
     <>
       <section
       aria-label="Hero section"
-      className="relative flex px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full bg-background"
+      className="relative flex py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full"
       >
         <div className="flex-1 flex justify-center items-center">
           <Hero />
         </div>
       </section>
-      <section aria-label="Featured projects section" className = "px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 bg-background">
+      <section aria-label="Featured projects section" className="py-16 md:py-24 lg:py-32">
         <FeaturedProjects />
       </section>
     </>

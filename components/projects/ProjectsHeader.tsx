@@ -1,21 +1,19 @@
-'use client'
+"use client";
 
-import { motion } from 'framer-motion'
-import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
-import { SectionLabel, H1, H2 } from '@/components/ui/Typography'
+import { motion } from "framer-motion";
+import { ANIMATION_DURATION, ANIMATION_EASING } from "@/lib/animations";
+import { SectionLabel, H1, H2 } from "@/components/ui/Typography";
 
 const ProjectsHeader = () => {
   return (
     <div
       className="
         grid
+        w-full
         grid-cols-1
         md:grid-cols-[55%_45%]
         lg:grid-cols-[60%_40%]
         items-center
-        gap-8
-        md:gap-12
-        lg:gap-16
       "
     >
       <motion.div
@@ -24,7 +22,7 @@ const ProjectsHeader = () => {
         transition={{
           delay: ANIMATION_DURATION.pageTransition + 0.2,
           duration: ANIMATION_DURATION.pageTransition,
-          ease: ANIMATION_EASING.easeInOut
+          ease: ANIMATION_EASING.easeInOut,
         }}
         className="
           space-y-[clamp(1rem,3vw,2rem)]
@@ -44,7 +42,7 @@ const ProjectsHeader = () => {
         transition={{
           delay: ANIMATION_DURATION.pageTransition + 0.2,
           duration: ANIMATION_DURATION.pageTransition,
-          ease: ANIMATION_EASING.easeInOut
+          ease: ANIMATION_EASING.easeInOut,
         }}
         className="
           hidden
@@ -55,9 +53,6 @@ const ProjectsHeader = () => {
         <div
           className="
             relative
-            w-[clamp(220px,85vw,380px)]
-            md:w-[clamp(320px,35vw,480px)]
-            aspect-square
             flex
             items-center
             justify-center
@@ -72,7 +67,7 @@ const ProjectsHeader = () => {
           <code
             className="
               font-mono
-              text-[clamp(4rem,10vw,8rem)]
+              text-[clamp(4rem,8vw,8rem)]
               font-light
               text-primary
               select-none
@@ -83,8 +78,7 @@ const ProjectsHeader = () => {
         </div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default ProjectsHeader
-
+export default ProjectsHeader;
