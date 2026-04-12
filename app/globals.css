@@ -30,12 +30,12 @@
 
 /* ── Spring ── */
 [data-season="spring"] {
-  --color-background: #fff0f5;
+  --color-background: #FEDFE1;
   --color-text: #5c1a3a;
   --color-primary: #5c1a3a;
   --color-secondary: #b07090;
   --color-accent: #e05c8a;
-  --color-artifact: #fce4ec;
+  --color-artifact: #F596AA;
   --color-nav-bg: #fff0f580;
   --color-nav-text: #5c1a3a;
   --color-contact-card: #ffffff;
