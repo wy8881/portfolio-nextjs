@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import Navbar from "@/components/layout/navbar/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import SeasonToggle from "@/components/ui/SeasonToggle";
+import SeasonalCanvas from "@/components/ui/SeasonalCanvas";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   description: "Full-stack developer specializing in React and Spring Boot",
   keywords: ["portfolio", "developer", "react", "nextjs", "spring boot"],
   icons: {
-    icon: '/images/icon.svg',
+    icon: '/images/icon.webp',
   },
 };
 
@@ -42,6 +43,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <SeasonalCanvas />
           <SeasonToggle />
         </ThemeProvider>
       </body>
