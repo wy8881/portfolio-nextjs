@@ -11,6 +11,7 @@
   --color-nav-bg: #166534;
   --color-nav-text: #f0fdf4;
   --color-contact-card: #fafaf8;
+  --color-code-bg: #1c1917;
 
   --font-inter: var(--font-inter), sans-serif;
 }
@@ -26,6 +27,7 @@
   --color-nav-bg: #166534;
   --color-nav-text: #f0fdf4;
   --color-contact-card: #fafaf8;
+  --color-code-bg: #1c1917;
 }
 
 /* ── Spring ── */
@@ -35,10 +37,11 @@
   --color-primary: #5c1a3a;
   --color-secondary: #b07090;
   --color-accent: #e05c8a;
-  --color-artifact: #F596AA;
+  --color-artifact:#F8C3CD;
   --color-nav-bg: #fff0f580;
   --color-nav-text: #5c1a3a;
   --color-contact-card: #ffffff;
+  --color-code-bg: #2d1a2e;
 }
 
 /* ── Autumn ── */
@@ -52,6 +55,7 @@
   --color-nav-bg: #f5e8c8;
   --color-nav-text: #1e3a5f;
   --color-contact-card: #ffffff;
+  --color-code-bg: #1a1209;
 }
 
 /* ── Winter ── */
@@ -65,6 +69,7 @@
   --color-nav-bg: #0a0f1e80;
   --color-nav-text: #e8eef8;
   --color-contact-card: #1e3a5f;
+  --color-code-bg: #050810;
 }
 
 body {
