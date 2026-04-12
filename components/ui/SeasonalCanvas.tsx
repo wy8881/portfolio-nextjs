@@ -108,7 +108,7 @@ function Canvas() {
     state.particles.forEach(p => { p.alphaDir = -1 })
 
     const incoming = createParticles(season, canvas.width, canvas.height, devicePixelRatio)
-    // alpha starts at 0, fades in via RAF loop
+    incoming.forEach(p => { p.alpha = 0 })  // ensure fade-in regardless of createParticles default
     state.particles.push(...incoming)
   }, [season])
 
