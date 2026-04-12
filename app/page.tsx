@@ -1,7 +1,6 @@
 import { Hero } from '@/components/home/hero/Hero'
 import FeaturedProjects from '@/components/home/featuredProjects/FeaturedProjects'
 import type { Metadata } from 'next'
-import { getGithubData } from '@/lib/github'
 
 export const metadata: Metadata = {
   title: "Yi's Portfolio",
@@ -20,10 +19,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function HomePage() {
-  const PERIOD = 60
-  const contributionDataResponse = await getGithubData(PERIOD)
-
+export default function HomePage() {
   return (
     <>
       <section
@@ -31,7 +27,7 @@ export default async function HomePage() {
       className="relative flex px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full bg-background"
       >
         <div className="flex-1 flex justify-center items-center">
-          <Hero contributionData={contributionDataResponse ?? undefined} period={PERIOD} />
+          <Hero />
         </div>
       </section>
       <section aria-label="Featured projects section" className = "px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 bg-background">
