@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { CardTitle, Body } from '@/components/ui/Typography'
+import { CardTitle, Body } from "@/components/ui/Typography";
 
 interface SkillCardProps {
   title: string;
@@ -24,10 +24,12 @@ const SkillCard = ({ title, skills }: SkillCardProps) => {
         ease-out
         hover:translate-y-[-4px]
         hover:shadow-[8px_8px_0px_0px_#000000]
+        relative
+        z-[2]
       "
     >
       <CardTitle>{title}</CardTitle>
-      
+
       <ul className="list-none p-0 space-y-2">
         {skills.map((skill, index) => (
           <li
@@ -51,4 +53,3 @@ const SkillCard = ({ title, skills }: SkillCardProps) => {
 };
 
 export default SkillCard;
-

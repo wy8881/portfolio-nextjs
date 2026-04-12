@@ -25,7 +25,7 @@ export default function BlogPostLayout({
   children,
 }: BlogPostLayoutProps) {
   return (
-    <div className="min-h-dvh bg-background pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-24 lg:pb-32 px-6 md:px-12 lg:px-24">
+    <div className="min-h-dvh pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-24 lg:pb-32">
       <div className="max-w-2xl mx-auto">
         <time className="text-sm text-secondary block mb-2">
           {formatDate(date)}

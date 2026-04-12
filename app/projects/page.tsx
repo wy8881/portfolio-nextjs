@@ -12,13 +12,13 @@ export const metadata: Metadata = {
 export default function ProjectsPage() {
   return (
     <>
-      <section aria-label="Projects header" className="relative flex justify-center items-center px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full bg-background">
+      <section aria-label="Projects header" className="relative flex justify-center items-center py-16 md:py-24 lg:py-32 overflow-hidden min-h-dvh w-full">
         <ProjectsHeader />
       </section>
-      <section aria-label="Projects cards section" className='bg-background px-6 md:px-12 lg:px-24 py-16 md:py-24 lg:py-32'>
+      <section aria-label="Projects cards section" className="py-16 md:py-24 lg:py-32">
           <ProjectsGrid projects={projects} />
       </section>
-      <section className="bg-background px-6 md:px-12 lg:px-24 pb-16 md:pb-24 lg:pb-32" aria-label="Certifications section">
+      <section className="pb-16 md:pb-24 lg:pb-32" aria-label="Certifications section">
         <CertificationsSection />
       </section>
     </>

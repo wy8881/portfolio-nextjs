@@ -11,6 +11,7 @@ const AboutIntro = () => {
     <div
       className="
         grid
+        w-full
         grid-cols-1
         md:grid-cols-[55%_45%]
         lg:grid-cols-[60%_40%]

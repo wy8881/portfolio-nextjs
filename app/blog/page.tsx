@@ -24,7 +24,7 @@ export default function BlogPage() {
   const allPosts = [...CUSTOM_POSTS, ...mdxPosts].sort((a, b) => (a.date < b.date ? 1 : -1))
 
   return (
-    <div className="min-h-dvh bg-background pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-24 lg:pb-32 px-6 md:px-12 lg:px-24">
+    <div className="min-h-dvh pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-24 lg:pb-32">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold text-primary mb-4">Blog</h1>
         <p className="text-secondary mb-16">Thoughts on things I&apos;m building and learning.</p>

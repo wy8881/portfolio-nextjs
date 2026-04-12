@@ -39,7 +39,7 @@ export default function RootLayout({
           <header className="fixed z-50 top-0 left-0 right-0 bg-nav-bg/50 backdrop-blur-xl border-b border-stone-200/30 h-16 md:h-20 lg:h-24">
             <Navbar />
           </header>
-          <main>
+          <main className="px-6 md:px-12 lg:px-24 bg-background">
             {children}
           </main>
           <Footer />
