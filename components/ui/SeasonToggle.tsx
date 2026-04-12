@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-
-type Season = 'spring' | 'summer' | 'autumn' | 'winter'
+import type { Season } from '@/lib/types'
 
 function getInitialSeason(): Season {
   if (typeof window === 'undefined') return 'summer'

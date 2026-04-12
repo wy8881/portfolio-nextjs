@@ -10,10 +10,6 @@ export const ANIMATION_DURATION = {
     cell: 1,
     hover: 0.5,
   },
-  techCloud: {
-    item: 0.6,
-    stagger: 0.1,
-  },
 } as const
 
 export const ANIMATION_EASING = {

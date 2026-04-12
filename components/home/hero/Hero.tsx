@@ -1,18 +1,12 @@
+// components/home/hero/Hero.tsx
 'use client'
-import { GitHubGrid } from '@/components/home/hero/GitHubGrid'
+
 import { HeroContext } from '@/components/home/hero/HeroContext'
-import { TechCloud } from '@/components/home/hero/TechCloud'
+import { SeasonCard } from '@/components/home/hero/SeasonCard'
 import { motion } from 'framer-motion'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
-import { ContributionData } from '@/lib/types'
 
-interface HeroSectionProps {
-  contributionData?: ContributionData
-  period?: number
-}
-
-export function Hero({contributionData, period = 60}: HeroSectionProps) {
-  const hasContributions = !! contributionData
+export function Hero() {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -20,36 +14,19 @@ export function Hero({contributionData, period = 60}: HeroSectionProps) {
       transition={{
         delay: ANIMATION_DURATION.pageTransition,
         duration: ANIMATION_DURATION.pageTransition,
-        ease: ANIMATION_EASING.easeInOut
+        ease: ANIMATION_EASING.easeInOut,
       }}
-      className={`
-        px-10 md:px-12 lg:px-28
-        h-full
-        w-full
-        max-w-7xl
+      className="
+        h-full w-full max-w-5xl
         grid
         grid-cols-1
-        ${hasContributions?"md:grid-cols-[18%_64%_18%]":"md:grid-cols-2"}
-        `
-    }
-      role="region"
+        md:grid-cols-[3fr_2fr]
+        gap-10 md:gap-16
+        items-center
+      "
     >
-      {hasContributions &&
-        <div className="hidden md:flex justify-end items-center">
-          <div className="w-full max-w-[200px]">
-            <GitHubGrid weeks={contributionData.contributions} total={contributionData.total} period={period} />
-          </div>
-        </div>
-      }
-
-      <div className={`flex justify-center items-center w-full ${hasContributions ? '' : 'md:col-span-1'}`}>
-        <HeroContext />
-      </div>
-
-      <div className={`hidden md:flex relative h-full w-full min-h-[300px] min-h-0 ${hasContributions ? '' : 'md:col-span-1'}`}>
-        <TechCloud />
-      </div>
+      <HeroContext />
+      <SeasonCard />
     </motion.div>
   )
 }
-
