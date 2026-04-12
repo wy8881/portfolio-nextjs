@@ -42,7 +42,7 @@ const ContactIntro = () => {
             
             <BodyLarge>{contactInfo.description}</BodyLarge>
             
-            <div className="bg-[var(--color-contact-card)] border-l-4 border-accent rounded-r-lg px-6 py-4 shadow-sm flex flex-col gap-2.5 w-fit">
+            <div className="relative z-[2] bg-[var(--color-contact-card)] border-l-4 border-accent rounded-r-lg px-6 py-4 shadow-sm flex flex-col gap-2.5 w-fit">
               <div className="text-[10px] tracking-[2px] uppercase font-bold text-accent mb-1">
                 Contact
               </div>

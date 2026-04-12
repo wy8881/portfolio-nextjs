@@ -13,7 +13,8 @@ const ProjectCard = ({ project, isSmallScreen=false }: ProjectCardProps) => {
   return (
     <div
       className="
-
+        relative
+        z-[2]
         flex
         flex-col
         h-full

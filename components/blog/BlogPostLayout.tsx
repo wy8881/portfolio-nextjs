@@ -19,7 +19,7 @@ function formatDate(dateStr: string): string {
 
 export default function BlogPostLayout({ title, date, description, tags, children }: BlogPostLayoutProps) {
   return (
-    <div className="min-h-dvh bg-background pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-24 lg:pb-32 px-6 md:px-12 lg:px-24">
+    <div className="relative z-[2] min-h-dvh bg-background pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-24 lg:pb-32 px-6 md:px-12 lg:px-24">
       <div className="max-w-2xl mx-auto">
 
         <time className="text-sm text-secondary block mb-2">{formatDate(date)}</time>
