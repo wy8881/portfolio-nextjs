@@ -11,6 +11,8 @@ const TimelineItem = ({ item, isLast }: TimelineItemProps) => {
     <>
       <div
         className="
+          relative
+          z-[2]
           hidden
           md:grid
           md:grid-cols-[120px_1fr]
@@ -54,7 +56,7 @@ const TimelineItem = ({ item, isLast }: TimelineItemProps) => {
         </div>
       </div>
       
-      <div className="md:hidden mb-8">
+      <div className="relative z-[2] md:hidden mb-8">
         <div
           className="
             text-[clamp(1rem,3vw,1.125rem)]

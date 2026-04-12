@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Master of Computer Science graduate specializing in full-stack development, data analysis, and machine learning. Based in Adelaide, Australia.',
   keywords: ['full-stack developer', 'React', 'Next.js', 'Spring Boot', 'Machine Learning', 'Adelaide'],
   icons: {
-    icon: '/images/icon.svg',
+    icon: '/images/icon.webp',
   },
   openGraph: {
     title: "Yi's Portfolio",
