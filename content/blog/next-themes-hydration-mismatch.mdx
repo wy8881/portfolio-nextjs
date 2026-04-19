@@ -16,6 +16,25 @@ Next.js renders your components twice:
 
 The second pass is called hydration. React walks the component tree, compares its output to the HTML already on the page, and wires up interactivity. If the output doesn't match, React throws a hydration error and re-renders the entire tree from scratch.
 
+## How autumn ended up in localStorage
+
+When you click the season toggle and pick Autumn, the component calls:
+
+```ts
+setTheme('autumn')
+```
+
+Under the hood, `next-themes` does two things:
+
+1. Sets `data-season="autumn"` on the `<html>` element so CSS variables update immediately
+2. Writes `"autumn"` to `localStorage` under the key `"theme"` so the choice survives a page refresh
+
+On the **next visit**, `next-themes` injects a blocking script into `<head>` — before any React code runs — that reads `localStorage` and sets `data-season` on `<html>` immediately. This prevents the flash of the default theme on page load.
+
+That blocking script is client-only. The server never ran it, never read localStorage, and has no idea the user ever picked Autumn. It just renders with whatever `defaultTheme` you passed to `ThemeProvider` — in this project, `"summer"`.
+
+So every time you reload after picking a non-default season, you get: server renders summer → client hydrates with autumn → mismatch.
+
 ## Why next-themes causes this
 
 `next-themes` stores the user's chosen theme in `localStorage`. The server has no access to `localStorage` — it runs in Node.js, not in the browser. So on the server, `useTheme()` returns `undefined` for `theme`.
