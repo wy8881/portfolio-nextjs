@@ -1,6 +1,5 @@
 import type { NextConfig } from 'next'
 import createMDX from '@next/mdx'
-import rehypePrettyCode from 'rehype-pretty-code'
 
 const nextConfig: NextConfig = {
   pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
@@ -13,7 +12,7 @@ const nextConfig: NextConfig = {
 const withMDX = createMDX({
   options: {
     rehypePlugins: [
-      [rehypePrettyCode, { theme: 'tokyo-night' }],
+      ['rehype-pretty-code', { theme: 'tokyo-night' }],
     ],
   },
 })
