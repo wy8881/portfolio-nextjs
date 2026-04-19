@@ -20,8 +20,12 @@ const ACCENT_COLORS: Record<Season, string> = {
 
 export default function SeasonToggle() {
   const { theme, setTheme } = useTheme()
-  const season = (theme as Season) ?? 'summer'
+  const [mounted, setMounted] = useState(false)
   const [open, setOpen] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
+
+  const season: Season = mounted ? ((theme as Season) ?? 'summer') : 'summer'
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
