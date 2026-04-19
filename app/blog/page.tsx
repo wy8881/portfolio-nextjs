@@ -19,8 +19,8 @@ const CUSTOM_POSTS: BlogPost[] = [
   },
 ]
 
-export default function BlogPage() {
-  const mdxPosts = getAllPosts()
+export default async function BlogPage() {
+  const mdxPosts = await getAllPosts()
   const allPosts = [...CUSTOM_POSTS, ...mdxPosts].sort((a, b) => (a.date < b.date ? 1 : -1))
 
   return (
