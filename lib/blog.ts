@@ -1,49 +1,47 @@
 import fs from 'fs'
 import path from 'path'
-import matter from 'gray-matter'
-import { BlogPost, BlogFrontmatter } from '@/types/blog'
+import { BlogPost, PostMetadata } from '@/types/blog'
 
 const BLOG_DIR = path.join(process.cwd(), 'content/blog')
 
-export function getAllPosts(): BlogPost[] {
+export async function getAllPosts(): Promise<BlogPost[]> {
   if (!fs.existsSync(BLOG_DIR)) return []
 
   const files = fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith('.mdx'))
 
-  const posts = files.map((filename) => {
-    const slug = filename.replace(/\.mdx$/, '')
-    const filePath = path.join(BLOG_DIR, filename)
-    const raw = fs.readFileSync(filePath, 'utf-8')
-    const { data, content } = matter(raw)
-    const frontmatter = data as BlogFrontmatter
+  const posts = await Promise.all(
+    files.map(async (filename) => {
+      const slug = filename.replace(/\.mdx$/, '')
+      const mod = await import(`@/content/blog/${slug}.mdx`)
+      const metadata = mod.metadata as PostMetadata
 
-    return {
-      slug,
-      title: frontmatter.title,
-      date: frontmatter.date,
-      description: frontmatter.description,
-      tags: frontmatter.tags ?? [],
-      content,
-    }
-  })
+      return {
+        slug,
+        title: metadata.title,
+        date: metadata.date,
+        description: metadata.description,
+        tags: metadata.tags ?? [],
+        content: '',
+      } satisfies BlogPost
+    })
+  )
 
   return posts.sort((a, b) => (a.date < b.date ? 1 : -1))
 }
 
-export function getPostBySlug(slug: string): BlogPost | null {
+export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   const filePath = path.join(BLOG_DIR, `${slug}.mdx`)
   if (!fs.existsSync(filePath)) return null
 
-  const raw = fs.readFileSync(filePath, 'utf-8')
-  const { data, content } = matter(raw)
-  const frontmatter = data as BlogFrontmatter
+  const mod = await import(`@/content/blog/${slug}.mdx`)
+  const metadata = mod.metadata as PostMetadata
 
   return {
     slug,
-    title: frontmatter.title,
-    date: frontmatter.date,
-    description: frontmatter.description,
-    tags: frontmatter.tags ?? [],
-    content,
+    title: metadata.title,
+    date: metadata.date,
+    description: metadata.description,
+    tags: metadata.tags ?? [],
+    content: '',
   }
 }
