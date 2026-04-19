@@ -1,0 +1,123 @@
+export const metadata = {
+  title: "Fixing the next-themes hydration mismatch",
+  date: "2026-04-19",
+  description: "Why reading useTheme() directly causes a React hydration error, and how a mounted guard fixes it.",
+  tags: ["nextjs", "react", "next-themes", "hydration", "ssr"],
+}
+
+When you use `next-themes` and read `useTheme()` directly in your render, React throws a hydration error. Here's exactly why — and the one-line fix.
+
+## What hydration is
+
+Next.js renders your components twice:
+
+1. **On the server** — to generate the initial HTML sent to the browser
+2. **On the client** — to attach event listeners to that HTML
+
+The second pass is called hydration. React walks the component tree, compares its output to the HTML already on the page, and wires up interactivity. If the output doesn't match, React throws a hydration error and re-renders the entire tree from scratch.
+
+## Why next-themes causes this
+
+`next-themes` stores the user's chosen theme in `localStorage`. The server has no access to `localStorage` — it runs in Node.js, not in the browser. So on the server, `useTheme()` returns `undefined` for `theme`.
+
+Your code handles this with a fallback:
+
+```ts
+const season = (theme as Season) ?? 'summer'
+```
+
+On the server, `theme` is `undefined`, so `season` becomes `'summer'`. The server writes HTML with summer styles.
+
+Then the browser loads, React hydrates — and now `useTheme()` can read `localStorage`. If the user last picked `'autumn'`, `theme` is `'autumn'`. React renders autumn styles. But the HTML on the page says summer.
+
+Mismatch. Error.
+
+## The wrong flow
+
+```
+Server
+  │
+  ├─ useTheme() → theme: undefined
+  ├─ season = undefined ?? 'summer' → 'summer'
+  └─ renders: ☀️ green border
+        │
+        ▼
+Browser receives HTML (shows ☀️)
+        │
+        ▼
+React hydrates
+  │
+  ├─ useTheme() → theme: 'autumn'  ← reads localStorage
+  ├─ season = 'autumn'
+  └─ renders: 🍂 orange border
+        │
+        ▼
+❌ Mismatch — server said ☀️, client says 🍂
+   React throws hydration error
+   Entire tree re-renders from scratch
+```
+
+The problem is that the server and client run in fundamentally different environments. The server never has access to user-specific state like localStorage, cookies, or the system clock in the user's timezone.
+
+## The fix: a mounted guard
+
+```tsx
+const { theme, setTheme } = useTheme()
+const [mounted, setMounted] = useState(false)
+
+useEffect(() => { setMounted(true) }, [])
+
+const season: Season = mounted ? ((theme as Season) ?? 'summer') : 'summer'
+```
+
+`useState(false)` initialises the same way on server and client. `useEffect` only runs in the browser — never on the server. So:
+
+- Server: `mounted` is `false` → `season` is `'summer'`
+- Client first render: `mounted` is still `false` → `season` is `'summer'` ← matches server
+- After hydration: `useEffect` fires → `mounted` becomes `true` → `season` updates to the real value from localStorage
+
+## The right flow
+
+```
+Server
+  │
+  ├─ mounted = false
+  ├─ season = 'summer'
+  └─ renders: ☀️ green border
+        │
+        ▼
+Browser receives HTML (shows ☀️)
+        │
+        ▼
+React hydrates
+  │
+  ├─ mounted = false  ← same as server
+  ├─ season = 'summer'  ← same as server
+  └─ renders: ☀️ green border
+        │
+        ▼
+✅ Match — hydration succeeds
+        │
+        ▼
+useEffect fires (browser only)
+  │
+  ├─ setMounted(true)
+  └─ season = 'autumn'  ← now reads localStorage
+        │
+        ▼
+React re-renders with correct season
+(no error — this is a normal state update, not a hydration mismatch)
+```
+
+## The rule
+
+Any value that differs between server and client — localStorage, `window`, `navigator`, `Date.now()`, system locale — must not be read during the initial render. Read it in `useEffect`, after hydration has completed.
+
+`next-themes` is the most common place this bites you, but the same pattern applies anywhere you use `typeof window !== 'undefined'` guards in render logic.
+
+<Takeaway>
+- `useTheme()` returns `undefined` on the server — always
+- Reading it directly causes a hydration mismatch if the client has a stored theme
+- Fix: use a `mounted` state, default to your fallback value until `useEffect` fires
+- The same rule applies to any browser-only API: `localStorage`, `window`, `navigator`
+</Takeaway>
