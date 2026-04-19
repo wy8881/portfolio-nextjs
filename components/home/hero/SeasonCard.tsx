@@ -31,11 +31,9 @@ function getCurrentSeason(): Season {
 }
 
 export function SeasonCard() {
-  const [season, setSeason] = useState<Season>('summer')
+  const [season, setSeason] = useState<Season>(() => getCurrentSeason())
 
   useEffect(() => {
-    setSeason(getCurrentSeason())
-
     const observer = new MutationObserver(() => {
       setSeason(getCurrentSeason())
     })

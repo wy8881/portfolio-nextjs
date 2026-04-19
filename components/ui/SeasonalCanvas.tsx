@@ -16,7 +16,10 @@ function Canvas() {
   const { theme } = useTheme()
   const season = (theme as Season) ?? 'summer'
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [reducedMotion, setReducedMotion] = useState(false)
+  const [reducedMotion] = useState(() =>
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
 
   const stateRef = useRef<{
     season: Season
@@ -30,12 +33,9 @@ function Canvas() {
     lastTime: 0,
   })
 
-  // Mount: check reduced motion, set up canvas, RAF loop, ResizeObserver, visibility
+  // Mount: set up canvas, RAF loop, ResizeObserver, visibility
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setReducedMotion(true)
-      return
-    }
+    if (reducedMotion) return
 
     const canvas = canvasRef.current!
     const ctx = canvas.getContext('2d')!
@@ -107,7 +107,7 @@ function Canvas() {
       ro.disconnect()
       document.removeEventListener('visibilitychange', handleVisibility)
     }
-  }, [])
+  }, [reducedMotion])
 
   // Season change: drop already-fading cohort, fade out active, spawn new
   useEffect(() => {
