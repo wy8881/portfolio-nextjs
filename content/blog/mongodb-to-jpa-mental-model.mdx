@@ -5,11 +5,7 @@ export const metadata = {
   tags: ["java", "spring-boot", "jpa", "postgresql", "mongodb"],
 }
 
-## The move
-
 I migrated a Spring Boot project from MongoDB to PostgreSQL. I knew the MongoDB side well. JPA was new to me, and most of the confusion came from carrying MongoDB concepts into a world where they don't apply.
-
-This is what I had to figure out.
 
 ## What JPA actually is
 
@@ -88,7 +84,7 @@ private Ballot ballot;
 
 `@ManyToOne` means: many Votes belong to one Ballot. `@JoinColumn(name = "ballot_id")` means: store the relationship as a column named `ballot_id` in the `votes` table.
 
-```
+```text
 votes table
 ┌─────┬────────────┬───────────┐
 │ id  │ ballot_id  │ choice    │
@@ -145,7 +141,7 @@ Four annotations, one field. Here's what each does:
 
 The resulting table looks like this:
 
-```
+```text
 ballot_preferences table
 ┌───────────┬──────────────────┬───────────────────┐
 │ ballot_id │ preference_order │ preference        │
@@ -193,7 +189,7 @@ Either way: the annotations are the schema. The two-table setup for `@ElementCol
 
 ## The full mapping
 
-```
+```text
 MongoDB                         JPA
 ──────────────────────────────────────────────────────────
 @Document                    →  @Entity + @Table

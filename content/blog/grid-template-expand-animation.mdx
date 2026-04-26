@@ -5,9 +5,11 @@ export const metadata = {
   tags: ["css", "animation", "tailwind", "layout"],
 }
 
+The classic way to animate an element open is `max-height: 0` → `max-height: 500px`. It works, but it has a problem: the browser has no idea how tall the content actually is.
+
 ## The problem with max-height
 
-The classic way to animate an element open is `max-height: 0` → `max-height: 500px`. It works, but it has a problem: the browser has no idea how tall the content actually is. It animates from 0 to 500px regardless of whether the real height is 40px or 490px. The result is a noticeably uneven easing — the element snaps open fast at first, then slows to nothing as it approaches a ceiling that was never real.
+It animates from 0 to 500px regardless of whether the real height is 40px or 490px. The result is a noticeably uneven easing — the element snaps open fast at first, then slows to nothing as it approaches a ceiling that was never real.
 
 You cannot animate to `max-height: auto`. CSS transitions only work between two concrete values.
 
@@ -52,7 +54,7 @@ grid-template-columns: 1fr 1fr;
 
 The season toggle buttons make the difference obvious. Each button has an emoji and a label:
 
-```
+```text
 auto 1fr          1fr 1fr
 
 🌸 Spring         🌸      Spring
@@ -107,7 +109,7 @@ The same trick works on rows — swap `grid-template-columns` for `grid-template
 
 `flex-col` sets `flex-direction: column` on a flex container. Without it, flex items lay out in a row — side by side horizontally. With it, they stack vertically.
 
-```
+```text
 flex-row (default)    flex-col
 ┌──┬──┬──┐            ┌──────┐
 │A │B │C │            │  A   │
@@ -133,7 +135,7 @@ In the season toggle, the outer container uses `flex-col` on mobile so the pill 
 
 On mobile, the container is `flex-col`. The DOM order is pill first, button second — so the pill renders above the button. Adding `mb-2` to the pill adds 8px of space between the bottom of the pill and the top of the button.
 
-```
+```text
 ┌────────────────┐   ← pill
 │  🌸  ☀️  🍂  ❄️  │
 └────────────────┘
@@ -149,7 +151,7 @@ The pill appears to expand upward because the button is anchored to the bottom o
 
 On desktop, the container is `flex-row` and the DOM order is the same — pill first, button second. But now they sit side by side. Adding `mr-2` to the pill adds 8px of space between the right edge of the pill and the left edge of the button.
 
-```
+```text
                 ← 8px (mr-2) →
 ┌────────────────────┐   ┌──────┐
 │ 🌸 ☀️ 🍂 ❄️         │   │  ☀️  │
