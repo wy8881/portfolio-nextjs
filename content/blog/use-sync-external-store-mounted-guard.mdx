@@ -20,7 +20,9 @@ The server and client produce different output on the first render:
 > Server: `theme = undefined` → `season = 'summer'` → HTML: ☀️\
 > Hydration: `theme = 'winter'` → `season = 'winter'` → VDOM: ❄️ ❌ mismatch
 
-The server has no `localStorage`. `next-themes` returns `undefined` for `theme` during SSR — always. The client reads `localStorage` immediately and gets whatever the user last picked. React requires the first client render to match the server HTML exactly. It doesn't.
+<Callout title="In my code">
+  The server has no `localStorage`. `next-themes` returns `undefined` for `theme` during SSR — always. The client reads `localStorage` immediately and gets whatever the user last picked. React requires the first client render to match the server HTML exactly. It doesn't.
+</Callout>
 
 The full breakdown — including the wrong flow, the right flow, and why `next-themes` specifically causes this — is covered in the previous post.
 
