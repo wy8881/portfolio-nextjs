@@ -134,9 +134,9 @@ Any value that differs between server and client — localStorage, `window`, `na
 
 `next-themes` is the most common place this bites you, but the same pattern applies anywhere you use `typeof window !== 'undefined'` guards in render logic.
 
-<Takeaway>
-- `useTheme()` returns `undefined` on the server — always
-- Reading it directly causes a hydration mismatch if the client has a stored theme
-- Fix: use a `mounted` state, default to your fallback value until `useEffect` fires
-- The same rule applies to any browser-only API: `localStorage`, `window`, `navigator`
+<Takeaway title="Key Points">
+- **`useTheme()` returns `theme: undefined` on the server — always.** `useTheme()` exposes the user's actively chosen theme — the value they picked and that was written to `localStorage`. The server has no browser, no `localStorage`, no user context. `next-themes` has nothing to return, so `theme` is `undefined`. This is true even if you set `defaultTheme="summer"` in `ThemeProvider` — that default only controls what CSS attribute gets written to `<html>` as a fallback; it does not populate the JS `theme` value during SSR.
+- **Reading it directly causes a hydration mismatch.** Your `?? 'summer'` fallback works fine in isolation — `undefined ?? 'summer'` gives `'summer'` on the server. But on the client, `useTheme()` can now read `localStorage` and returns `'autumn'`. Server said summer, client says autumn — React throws.
+- **Fix: a `mounted` guard.** Add `const [mounted, setMounted] = useState(false)` and `useEffect(() => { setMounted(true) }, [])`. Use `mounted ? theme : 'summer'` instead of `theme ?? 'summer'`. Both server and client render `'summer'` on the first pass — hydration succeeds. After hydration, `useEffect` fires, `mounted` flips to `true`, and React re-renders with the real value from `localStorage`. This is a normal state update, not a hydration conflict.
+- **The same rule applies to any browser-only value.** `localStorage`, `window`, `navigator`, `Date.now()` in a user timezone, `Intl` locale formatting — anything that differs between server and client must not be read during the initial render. Defer it to `useEffect`.
 </Takeaway>
