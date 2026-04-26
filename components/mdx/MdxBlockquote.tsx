@@ -11,9 +11,9 @@ export default function MdxBlockquote({
       }}
     >
       <div className="py-2 text-secondary">
-        <div className="text-xl text-accent opacity-40 not-italic font-serif leading-none select-none mb-1" aria-hidden="true">"</div>
+        <div className="not-italic font-serif leading-none select-none -mb-3 text-accent opacity-30" style={{ fontSize: '5rem' }} aria-hidden="true">"</div>
         {children}
-        <div className="text-xl text-accent opacity-40 not-italic font-serif leading-none select-none mt-1 text-right" aria-hidden="true">"</div>
+        <div className="not-italic font-serif leading-none select-none -mt-1 text-right text-accent opacity-30" style={{ fontSize: '5rem' }} aria-hidden="true">"</div>
       </div>
     </blockquote>
   );
