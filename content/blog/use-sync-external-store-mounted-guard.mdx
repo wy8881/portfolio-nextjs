@@ -17,8 +17,11 @@ const season = (theme as Season) ?? 'summer'
 
 The server and client produce different output on the first render:
 
-> Server: `theme = undefined` → `season = 'summer'` → HTML: ☀️\
-> Hydration: `theme = 'winter'` → `season = 'winter'` → VDOM: ❄️ ❌ mismatch
+<Callout title="What each pass renders">
+  Server: `theme = undefined` → `season = 'summer'` → HTML: ☀️
+
+  Hydration: `theme = 'winter'` → `season = 'winter'` → VDOM: ❄️ ❌ mismatch
+</Callout>
 
 <Callout title="In my code">
   The server has no `localStorage`. `next-themes` returns `undefined` for `theme` during SSR — always. The client reads `localStorage` immediately and gets whatever the user last picked. React requires the first client render to match the server HTML exactly. It doesn't.
@@ -36,7 +39,7 @@ The standard fix adds a mounted guard:
 const [isMounted, setIsMounted] = useState(false)
 
 useEffect(() => {
-  setIsMounted(true)
+  setIsMounted(true) // ⚠️ react-hooks/set-state-in-effect: Avoid calling setState() in an effect
 }, [])
 
 const season: Season = isMounted ? ((theme as Season) ?? 'summer') : 'summer'
@@ -50,11 +53,7 @@ const season: Season = isMounted ? ((theme as Season) ?? 'summer') : 'summer'
 - **After hydration.** `useEffect` fires for the first time. `setIsMounted(true)` triggers a re-render. Now `isMounted = true`, `theme = 'winter'` is read, and the UI updates to the correct season.
 </Takeaway>
 
-This works correctly at runtime. But the `react-hooks/set-state-in-effect` lint rule flags it:
-
-> Avoid calling setState() directly within an effect
-
-The rule exists because calling `setState` inside `useEffect` often signals a design problem — it triggers a second render after mount, which can cause visible flicker or cascading updates. In most cases there's a better model. For the mounted guard, the rule is technically correct: there is a better model.
+This works correctly at runtime. The lint rule flags it because calling `setState` inside `useEffect` often signals a design problem — it triggers a second render after mount, which can cause visible flicker or cascading updates. In most cases there's a better model. For the mounted guard, the rule is technically correct: there is a better model.
 
 ## useSyncExternalStore: the official hook for this
 
