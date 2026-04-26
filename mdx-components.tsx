@@ -1,5 +1,7 @@
 import type { MDXComponents } from 'mdx/types'
 import Takeaway from '@/components/mdx/Takeaway'
+import LinkCard from '@/components/mdx/LinkCard'
+import FlowCompare from '@/components/mdx/FlowCompare'
 import MdxH1 from '@/components/mdx/MdxH1'
 import MdxH2 from '@/components/mdx/MdxH2'
 import MdxH3 from '@/components/mdx/MdxH3'
@@ -17,6 +19,8 @@ import MdxLi from '@/components/mdx/MdxLi'
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     Takeaway,
+    LinkCard,
+    FlowCompare,
     h1: MdxH1,
     h2: MdxH2,
     h3: MdxH3,

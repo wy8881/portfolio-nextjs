@@ -1,8 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { useTheme } from 'next-themes'
 import type { Season } from '@/lib/types'
+
+const subscribe = () => () => {}
+const mounted = () => true
+const notMounted = () => false
 
 const SEASONS: { id: Season; emoji: string; label: string }[] = [
   { id: 'spring', emoji: '🌸', label: 'Spring' },
@@ -20,12 +24,10 @@ const ACCENT_COLORS: Record<Season, string> = {
 
 export default function SeasonToggle() {
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const isMounted = useSyncExternalStore(subscribe, mounted, notMounted)
   const [open, setOpen] = useState(false)
 
-  useEffect(() => { setMounted(true) }, [])
-
-  const season: Season = mounted ? ((theme as Season) ?? 'summer') : 'summer'
+  const season: Season = isMounted ? ((theme as Season) ?? 'summer') : 'summer'
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

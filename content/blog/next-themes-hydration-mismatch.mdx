@@ -51,30 +51,20 @@ Then the browser loads, React hydrates — and now `useTheme()` can read `localS
 
 Mismatch. Error.
 
-## The wrong flow
+## The wrong code
 
+```tsx
+// 1. next-themes reads localStorage (browser only — never runs on server)
+const storedTheme = localStorage.getItem('theme') // → 'autumn'
+
+// 2. useTheme() surfaces that value
+const { theme, setTheme } = useTheme() // theme = 'autumn'
+
+// 3. your component derives season from it
+const season = (theme as Season) ?? 'summer' // season = 'autumn'
 ```
-Server
-  │
-  ├─ useTheme() → theme: undefined
-  ├─ season = undefined ?? 'summer' → 'summer'
-  └─ renders: ☀️ green border
-        │
-        ▼
-Browser receives HTML (shows ☀️)
-        │
-        ▼
-React hydrates
-  │
-  ├─ useTheme() → theme: 'autumn'  ← reads localStorage
-  ├─ season = 'autumn'
-  └─ renders: 🍂 orange border
-        │
-        ▼
-❌ Mismatch — server said ☀️, client says 🍂
-   React throws hydration error
-   Entire tree re-renders from scratch
-```
+
+No guard. On the server, step 1 never runs — `theme` stays `undefined` and `season` falls back to `'summer'`. On the client, step 1 reads localStorage and `season` becomes `'autumn'`. Two different values from the same code path.
 
 The problem is that the server and client run in fundamentally different environments. The server never has access to user-specific state like localStorage, cookies, or the system clock in the user's timezone.
 
@@ -95,38 +85,30 @@ const season: Season = mounted ? ((theme as Season) ?? 'summer') : 'summer'
 - Client first render: `mounted` is still `false` → `season` is `'summer'` ← matches server
 - After hydration: `useEffect` fires → `mounted` becomes `true` → `season` updates to the real value from localStorage
 
-## The right flow
+## Before vs after
 
-```
-Server
-  │
-  ├─ mounted = false
-  ├─ season = 'summer'
-  └─ renders: ☀️ green border
-        │
-        ▼
-Browser receives HTML (shows ☀️)
-        │
-        ▼
-React hydrates
-  │
-  ├─ mounted = false  ← same as server
-  ├─ season = 'summer'  ← same as server
-  └─ renders: ☀️ green border
-        │
-        ▼
-✅ Match — hydration succeeds
-        │
-        ▼
-useEffect fires (browser only)
-  │
-  ├─ setMounted(true)
-  └─ season = 'autumn'  ← now reads localStorage
-        │
-        ▼
-React re-renders with correct season
-(no error — this is a normal state update, not a hydration mismatch)
-```
+<FlowCompare
+  left={{
+    title: "Without guard (wrong)",
+    steps: [
+      { text: "Server renders", note: "useTheme() → undefined, season = 'summer'" },
+      { text: "Browser receives HTML", note: "shows ☀️" },
+      { text: "React hydrates", note: "localStorage.getItem('theme') → 'autumn', season = 'autumn'" },
+      { text: "❌ Mismatch", status: "error", note: "server said ☀️, client says 🍂 — React throws" },
+    ]
+  }}
+  right={{
+    title: "With mounted guard (right)",
+    steps: [
+      { text: "Server renders", note: "mounted = false, season = 'summer'" },
+      { text: "Browser receives HTML", note: "shows ☀️" },
+      { text: "React hydrates", note: "mounted = false, season = 'summer' — matches server" },
+      { text: "✅ Match", status: "success", note: "hydration succeeds" },
+      { text: "useEffect fires", note: "setMounted(true) → season = 'autumn' from localStorage" },
+      { text: "React re-renders", note: "normal state update, no error" },
+    ]
+  }}
+/>
 
 ## The rule
 
