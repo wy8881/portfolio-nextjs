@@ -9,22 +9,15 @@ The `useEffect` + `useState` mounted guard fixes React hydration mismatches, but
 
 ## Without the guard: the root cause
 
-When you read `useTheme()` directly in render without a mounted guard:
+When you read `useTheme()` directly in render without a mounted guard, the server and client produce different output on the first render. The server has no `localStorage` — `useTheme()` returns `undefined` for `theme` during SSR, always. The client reads `localStorage` immediately and gets whatever the user last picked.
 
-```ts
-const season = (theme as Season) ?? 'summer'
-```
-
-The server and client produce different output on the first render:
-
-<Callout title="What each pass renders">
+<Callout title="In my code">
+  ```ts
+  const season = (theme as Season) ?? 'summer'
+  ```
   Server: `theme = undefined` → `season = 'summer'` → HTML: ☀️
 
   Hydration: `theme = 'winter'` → `season = 'winter'` → VDOM: ❄️ ❌ mismatch
-</Callout>
-
-<Callout title="In my code">
-  The server has no `localStorage`. `next-themes` returns `undefined` for `theme` during SSR — always. The client reads `localStorage` immediately and gets whatever the user last picked. React requires the first client render to match the server HTML exactly. It doesn't.
 </Callout>
 
 The full breakdown — including the wrong flow, the right flow, and why `next-themes` specifically causes this — is covered in the previous post.

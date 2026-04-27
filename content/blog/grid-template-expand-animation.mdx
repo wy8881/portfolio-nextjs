@@ -52,18 +52,20 @@ grid-template-columns: 1fr 1fr;
    col 2: half the total space — content size is irrelevant */
 ```
 
-The season toggle buttons make the difference obvious. Each button has an emoji and a label:
+The difference is clear with any icon-and-label layout:
 
-```text
-auto 1fr          1fr 1fr
+| `auto 1fr` | `1fr 1fr` |
+|---|---|
+| 🌸 Spring | 🌸 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Spring |
+| ☀️ Summer | ☀️ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Summer |
+| 🍂 Autumn | 🍂 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Autumn |
+| ❄️ Winter | ❄️ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Winter |
 
-🌸 Spring         🌸      Spring
-☀️ Summer         ☀️      Summer
-🍂 Autumn         🍂      Autumn
-❄️ Winter         ❄️      Winter
-```
+With `auto 1fr`, the icon column shrinks to the glyph width and the label takes the rest. With `1fr 1fr`, both columns split space equally and the icon sits in a column far wider than a single character. Use `auto` when a track should hug its content; use `fr` when it should fill proportional space.
 
-With `auto 1fr`, the emoji column shrinks to the glyph width and the label takes the rest — the buttons stay compact. With `1fr 1fr`, both columns split space equally and the emoji sits in a column far wider than a single character. Use `auto` when a track should hug its content; use `fr` when it should fill proportional space.
+<Callout title="In my project">
+  The season toggle uses `auto 1fr` for exactly this reason — the emoji column stays tight, and the season name takes the remaining width.
+</Callout>
 
 The interesting unit here is `0fr` — a track that takes zero space.
 
@@ -109,61 +111,67 @@ The same trick works on rows — swap `grid-template-columns` for `grid-template
 
 `flex-col` sets `flex-direction: column` on a flex container. Without it, flex items lay out in a row — side by side horizontally. With it, they stack vertically.
 
-```text
-flex-row (default)    flex-col
+<pre>{`flex-row (default)    flex-col
 ┌──┬──┬──┐            ┌──────┐
 │A │B │C │            │  A   │
 └──┴──┴──┘            ├──────┤
                       │  B   │
                       ├──────┤
                       │  C   │
-                      └──────┘
-```
+                      └──────┘`}</pre>
 
-In the season toggle, the outer container uses `flex-col` on mobile so the pill stacks above the circle button. On desktop it switches to `flex-row` so the pill sits to the left of the button.
+<Callout title="In my code">
+  The season toggle uses `flex-col` on mobile (pill above button) and `flex-row` on desktop (pill to the left).
 
-```tsx
-<div className="flex flex-col items-end sm:flex-row sm:items-center">
-  {/* pill */}
-  {/* circle button */}
-</div>
-```
+  ```tsx
+  <div className="flex flex-col items-end sm:flex-row sm:items-center">
+    {/* pill */}
+    {/* circle button */}
+  </div>
+  ```
 
-`items-end` on the column aligns the pill to the right edge — without it, a short pill would stretch to fill the full width. `items-center` on the row vertically centres the pill and button relative to each other.
+  `items-end` aligns the shorter pill to the right edge of the column — without it, it stretches to full width. `items-center` vertically centres both elements in the row.
+</Callout>
 
 ## Why mb-2 pushes the pill upward, not downward
 
-On mobile, the container is `flex-col`. The DOM order is pill first, button second — so the pill renders above the button. Adding `mb-2` to the pill adds 8px of space between the bottom of the pill and the top of the button.
+In a `flex-col` layout, `mb-2` adds space below the first item. If the container is anchored to the bottom of the viewport, the second item can't move — so the first item is what shifts, and it shifts upward.
 
-```text
-┌────────────────┐   ← pill
-│  🌸  ☀️  🍂  ❄️  │
-└────────────────┘
-        ↕ 8px (mb-2)
-      ┌──────┐
-      │  ☀️  │       ← button
-      └──────┘
-```
+<Callout title="In my project">
+  The DOM order is pill first, button second. The container is `fixed bottom-6`. `mb-2` on the pill adds 8px between the pill and the button. The button stays anchored; the pill pushes upward.
 
-The pill appears to expand upward because the button is anchored to the bottom of the screen via `fixed bottom-6`. Increasing content above it can only go one direction.
+  ```text
+  ┌────────────────┐   ← pill
+  │  🌸  ☀️  🍂  ❄️  │
+  └────────────────┘
+          ↕ 8px (mb-2)
+        ┌──────┐
+        │  ☀️  │       ← button
+        └──────┘
+  ```
+</Callout>
 
 ## Why mr-2 pushes the pill leftward, not rightward
 
-On desktop, the container is `flex-row` and the DOM order is the same — pill first, button second. But now they sit side by side. Adding `mr-2` to the pill adds 8px of space between the right edge of the pill and the left edge of the button.
+In a `flex-row` layout, `mr-2` adds space to the right of the first item. If the container is anchored to the right of the viewport, the second item stays put — so the first item can only expand leftward.
 
-```text
-                ← 8px (mr-2) →
-┌────────────────────┐   ┌──────┐
-│ 🌸 ☀️ 🍂 ❄️         │   │  ☀️  │
-└────────────────────┘   └──────┘
-```
+<Callout title="In my project">
+  On desktop, the DOM order is still pill first, button second — now side by side. The container is `fixed right-6`. `mr-2` on the pill adds 8px between the pill's right edge and the button's left edge. The button stays anchored; the pill expands left.
 
-Because the whole widget is `fixed right-6`, the button is the anchor. The pill can only expand to the left.
+  ```text
+                  ← 8px (mr-2) →
+  ┌────────────────────┐   ┌──────┐
+  │ 🌸 ☀️ 🍂 ❄️         │   │  ☀️  │
+  └────────────────────┘   └──────┘
+  ```
+</Callout>
 
 ## Why 2 and not 4
 
-`mb-2` and `mr-2` are 8px. `mb-4` and `mr-4` would be 16px.
+Gap between related elements should be proportional to the elements' size — tight enough that they read as a unit, loose enough to breathe.
 
-The circle button is `w-14 h-14` — 56px. A 16px gap would be more than a quarter of the button's diameter. At that distance, the pill and button start to feel like two separate things. At 8px they read as a unit — one combined widget with internal breathing room.
+<Callout title="In my project">
+  The button is `w-14 h-14` — 56px. `mb-4`/`mr-4` (16px) would be more than a quarter of the button's diameter. At that distance the pill and button start to feel like separate things. `mb-2`/`mr-2` (8px) keeps them reading as one widget.
 
-The gap is intentionally tight. It says: this pill belongs to that button.
+  The gap is intentionally tight. It says: this pill belongs to that button.
+</Callout>
