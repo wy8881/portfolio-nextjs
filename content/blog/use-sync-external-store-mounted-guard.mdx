@@ -1,0 +1,133 @@
+export const metadata = {
+  title: "From useState to useSyncExternalStore for mounted guards",
+  date: "2026-04-26",
+  description: "Why the useEffect + setState mounted guard triggers a lint rule, and how useSyncExternalStore is the React-official way to handle server/client value differences.",
+  tags: ["react", "nextjs", "hydration", "hooks", "ssr"],
+}
+
+The `useEffect` + `useState` mounted guard fixes React hydration mismatches, but a lint rule flags it. The fix leads to a hook most people haven't needed before.
+
+## Without the guard: the root cause
+
+When you read `useTheme()` directly in render without a mounted guard:
+
+```ts
+const season = (theme as Season) ?? 'summer'
+```
+
+The server and client produce different output on the first render:
+
+<Callout title="What each pass renders">
+  Server: `theme = undefined` → `season = 'summer'` → HTML: ☀️
+
+  Hydration: `theme = 'winter'` → `season = 'winter'` → VDOM: ❄️ ❌ mismatch
+</Callout>
+
+<Callout title="In my code">
+  The server has no `localStorage`. `next-themes` returns `undefined` for `theme` during SSR — always. The client reads `localStorage` immediately and gets whatever the user last picked. React requires the first client render to match the server HTML exactly. It doesn't.
+</Callout>
+
+The full breakdown — including the wrong flow, the right flow, and why `next-themes` specifically causes this — is covered in the previous post.
+
+<LinkCard href="/blog/next-themes-hydration-mismatch" />
+
+## useEffect + useState: works, but the lint rule objects
+
+The standard fix adds a mounted guard:
+
+```ts
+const [isMounted, setIsMounted] = useState(false)
+
+useEffect(() => {
+  setIsMounted(true) // ⚠️ react-hooks/set-state-in-effect: Avoid calling setState() in an effect
+}, [])
+
+const season: Season = isMounted ? ((theme as Season) ?? 'summer') : 'summer'
+```
+
+`useState(false)` starts as `false` on both server and client. `useEffect` is skipped on the server, so it only fires after hydration. Both passes produce `'summer'`, hydration succeeds, then the effect fires and the real theme loads.
+
+<Takeaway title="Sequence">
+- **Server renders.** `useState(false)` initialises `isMounted = false`. `useEffect` is skipped entirely. `season = 'summer'`. HTML is sent to the browser.
+- **Client hydration.** React re-runs the component to compare against the server HTML. `useState(false)` again gives `isMounted = false`. `season = 'summer'`. Output matches — hydration succeeds.
+- **After hydration.** `useEffect` fires for the first time. `setIsMounted(true)` triggers a re-render. Now `isMounted = true`, `theme = 'winter'` is read, and the UI updates to the correct season.
+</Takeaway>
+
+This works correctly at runtime. The lint rule flags it because calling `setState` inside `useEffect` often signals a design problem — it triggers a second render after mount, which can cause visible flicker or cascading updates. In most cases there's a better model. For the mounted guard, the rule is technically correct: there is a better model.
+
+## useSyncExternalStore: the official hook for this
+
+`useSyncExternalStore` was added in React 18 specifically for subscribing to **external stores** — data that lives outside React's state system. Its signature:
+
+```ts
+useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot?)
+```
+
+- **`subscribe`** — registers a listener on the store; returns an unsubscribe function. React calls it to know when to re-render.
+- **`getSnapshot`** — reads the current value on the **client**. Called synchronously during render.
+- **`getServerSnapshot`** — reads the current value on the **server and during hydration**. Must return the same value as the server HTML to avoid mismatches.
+
+For the mounted guard, there's no real store — just a difference between environments:
+
+```ts
+const subscribe = () => () => {}   // no store, nothing to subscribe to
+const mounted = () => true         // client: hydration is done
+const notMounted = () => false     // server + during hydration
+
+const isMounted = useSyncExternalStore(subscribe, mounted, notMounted)
+```
+
+React calls `notMounted` on the server and during the hydration pass, returning `false`. After hydration, it calls `mounted`, returning `true`. The component re-renders once with the real theme. No `useEffect`, no `setState`, no lint error.
+
+The key difference from the `useEffect` pattern: `useSyncExternalStore` handles the server-to-client transition internally. There's no second render triggered by an effect — React manages the handoff as part of hydration itself.
+
+## When useSyncExternalStore is the right tool
+
+The mounted guard is an edge case. The hook's real purpose is wrapping browser APIs and third-party state that React doesn't control.
+
+**Browser online status:**
+
+```ts
+function useOnlineStatus() {
+  return useSyncExternalStore(
+    (cb) => {
+      window.addEventListener('online', cb)
+      window.addEventListener('offline', cb)
+      return () => {
+        window.removeEventListener('online', cb)
+        window.removeEventListener('offline', cb)
+      }
+    },
+    () => navigator.onLine,
+    () => true
+  )
+}
+```
+
+The store is the browser's network state. When it changes, React re-renders all subscribed components synchronously — no `useEffect` polling needed.
+
+**Window size:**
+
+```ts
+function useWindowWidth() {
+  return useSyncExternalStore(
+    (cb) => {
+      window.addEventListener('resize', cb)
+      return () => window.removeEventListener('resize', cb)
+    },
+    () => window.innerWidth,
+    () => 0
+  )
+}
+```
+
+**Third-party stores** — Zustand and Redux both use `useSyncExternalStore` internally. It guarantees that components reading from the same store see the same value within a single render, preventing **tearing** — the bug where two components render with different snapshots of the same data mid-update.
+
+The pattern is: if data lives outside React (a DOM API, a global variable, a library's store), `useSyncExternalStore` is the correct way to read it. `useState` + `useEffect` works too, but with a render delay and no tearing protection.
+
+<Takeaway title="Key Points">
+- **Without a mounted guard, `useTheme()` causes a hydration mismatch.** The server returns `undefined` for `theme` because it has no `localStorage`. The client reads the user's stored value immediately. The two renders disagree and React throws.
+- **`useEffect` + `useState` fixes it but triggers a lint rule.** `useState(false)` starts the same on both environments; `useEffect` fires only after hydration. It works, but `react-hooks/set-state-in-effect` flags `setState` inside effects as a design smell — and it's right that a better model exists.
+- **`useSyncExternalStore` is the React-official solution.** Its `getServerSnapshot` argument lets you return one value during SSR and hydration, and a different value on the client, with no effects or extra renders involved. React manages the transition internally.
+- **Its real purpose is external stores.** Browser APIs (`navigator.onLine`, `window.innerWidth`), WebSocket streams, third-party state managers — any mutable data outside React's control. It also prevents tearing in concurrent mode, which `useEffect` cannot guarantee.
+</Takeaway>
