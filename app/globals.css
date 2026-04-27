@@ -169,3 +169,14 @@ p {
   border-radius: 0.25rem;
   font-size: 0.875rem;
 }
+
+/* ── MDX table: alternating row stripes ── */
+.mdx-table tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--color-artifact) 40%, transparent);
+}
+
+/* ── MDX table: suppress inline code pill inside cells ── */
+.mdx-table td code {
+  background: none;
+  padding: 0;
+}

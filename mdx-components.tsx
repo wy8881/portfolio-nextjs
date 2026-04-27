@@ -16,6 +16,9 @@ import MdxStrong from '@/components/mdx/MdxStrong'
 import MdxUl from '@/components/mdx/MdxUl'
 import MdxOl from '@/components/mdx/MdxOl'
 import MdxLi from '@/components/mdx/MdxLi'
+import MdxTable from '@/components/mdx/MdxTable'
+import MdxTh from '@/components/mdx/MdxTh'
+import MdxTd from '@/components/mdx/MdxTd'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -36,6 +39,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ul: MdxUl,
     ol: MdxOl,
     li: MdxLi,
+    table: MdxTable,
+    th: MdxTh,
+    td: MdxTd,
     ...components,
   }
 }

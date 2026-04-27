@@ -84,18 +84,11 @@ private Ballot ballot;
 
 `@ManyToOne` means: many Votes belong to one Ballot. `@JoinColumn(name = "ballot_id")` means: store the relationship as a column named `ballot_id` in the `votes` table.
 
-```text
-votes table
-┌─────┬────────────┬───────────┐
-│ id  │ ballot_id  │ choice    │
-├─────┼────────────┼───────────┤
-│  1  │     42     │ Option A  │
-│  2  │     42     │ Option B  │
-│  3  │     99     │ Option C  │
-└─────┴────────────┴───────────┘
-         ↑
-         foreign key pointing to ballots.id
-```
+| id | ballot_id | choice |
+|---|---|---|
+| 1 | 42 | Option A |
+| 2 | 42 | Option B |
+| 3 | 99 | Option C |
 
 The "Many" and "One" in `@ManyToOne` describe the relationship from the child's perspective: many Votes, one Ballot.
 
@@ -141,16 +134,11 @@ Four annotations, one field. Here's what each does:
 
 The resulting table looks like this:
 
-```text
-ballot_preferences table
-┌───────────┬──────────────────┬───────────────────┐
-│ ballot_id │ preference_order │ preference        │
-├───────────┼──────────────────┼───────────────────┤
-│    42     │        0         │ Cat Party         │
-│    42     │        1         │ Dog Party         │
-│    42     │        2         │ Neither           │
-└───────────┴──────────────────┴───────────────────┘
-```
+| ballot_id | preference_order | preference |
+|---|---|---|
+| 42 | 0 | Cat Party |
+| 42 | 1 | Dog Party |
+| 42 | 2 | Neither |
 
 When you call `ballot.getPreferences()`, JPA runs the JOIN automatically:
 
@@ -189,17 +177,13 @@ Either way: the annotations are the schema. The two-table setup for `@ElementCol
 
 ## The full mapping
 
-```text
-MongoDB                         JPA
-──────────────────────────────────────────────────────────
-@Document                    →  @Entity + @Table
-@Id ObjectId                 →  @Id @GeneratedValue Long
-@Indexed(unique=true)        →  @Column(unique=true)
-@DBRef                       →  @ManyToOne + @JoinColumn
-List<String> (embedded)      →  @ElementCollection
-                                + @CollectionTable
-                                + @OrderColumn
-MongoRepository<T, ObjectId> →  JpaRepository<T, Long>
-```
+| MongoDB | JPA |
+|---|---|
+| `@Document` | `@Entity` + `@Table` |
+| `@Id ObjectId` | `@Id @GeneratedValue Long` |
+| `@Indexed(unique=true)` | `@Column(unique=true)` |
+| `@DBRef` | `@ManyToOne` + `@JoinColumn` |
+| `List<String>` (embedded) | `@ElementCollection` + `@CollectionTable` + `@OrderColumn` |
+| `MongoRepository<T, ObjectId>` | `JpaRepository<T, Long>` |
 
 The hardest shift wasn't the syntax — it was accepting that a variable-length list can't live in a row. Once that clicked, the rest of the annotations made sense as the SQL workaround for something MongoDB does for free.
