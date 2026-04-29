@@ -183,20 +183,6 @@ In a `flex-col` layout, `mb-2` adds space below the first item. If the container
 
 <Callout title="In my project">
   The DOM order is pill first, button second. The container is `fixed bottom-6`. `mb-2` on the pill adds 8px between the pill and the button. The button stays anchored; the pill pushes upward.
-
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0, marginTop: 12 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ border: '1px solid var(--color-accent)', borderRadius: 20, padding: '5px 14px', fontSize: 13, background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', color: 'var(--color-primary)' }}>🌸 ☀️ 🍂 ❄️</div>
-      <span style={{ fontSize: 11, color: 'var(--color-secondary)' }}>← pill</span>
-    </div>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', paddingRight: 52 }}>
-      <span style={{ fontSize: 11, color: 'var(--color-secondary)', fontStyle: 'italic' }}>↕ 8px (mb-2)</span>
-    </div>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ width: 44, height: 44, border: '1px solid var(--color-accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)' }}>☀️</div>
-      <span style={{ fontSize: 11, color: 'var(--color-secondary)' }}>← button</span>
-    </div>
-  </div>
 </Callout>
 
 ## Why mr-2 pushes the pill leftward, not rightward
@@ -205,15 +191,40 @@ In a `flex-row` layout, `mr-2` adds space to the right of the first item. If the
 
 <Callout title="In my project">
   On desktop, the DOM order is still pill first, button second — now side by side. The container is `fixed right-6`. `mr-2` on the pill adds 8px between the pill's right edge and the button's left edge. The button stays anchored; the pill expands left.
-
-  <div style={{ marginTop: 12 }}>
-    <div style={{ fontSize: 11, color: 'var(--color-secondary)', fontStyle: 'italic', marginBottom: 4, paddingLeft: 4 }}>← 8px (mr-2) →</div>
-    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 0 }}>
-      <div style={{ border: '1px solid var(--color-accent)', borderRadius: 20, padding: '5px 14px', fontSize: 13, background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', color: 'var(--color-primary)', marginRight: 8 }}>🌸 ☀️ 🍂 ❄️</div>
-      <div style={{ width: 44, height: 44, border: '1px solid var(--color-accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)' }}>☀️</div>
-    </div>
-  </div>
 </Callout>
+
+<CSSDemo
+  tabs={[
+    {
+      label: "flex-col + mb-2 (mobile)",
+      code: ".container {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-end;\n}\n\n.pill {\n  margin-bottom: 8px; /* mb-2 */\n}",
+    },
+    {
+      label: "flex-row + mr-2 (desktop)",
+      code: ".container {\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n}\n\n.pill {\n  margin-right: 8px; /* mr-2 */\n}",
+    },
+  ]}
+  previews={[
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ border: '1px solid var(--color-accent)', borderRadius: 20, padding: '5px 14px', fontSize: 13, background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', color: 'var(--color-primary)' }}>🌸 ☀️ 🍂 ❄️</div>
+        <span style={{ fontSize: 11, color: 'var(--color-secondary)' }}>← pill</span>
+      </div>
+      <div style={{ fontSize: 11, color: 'var(--color-secondary)', fontStyle: 'italic', padding: '4px 0', paddingRight: 52 }}>↕ mb-2 (8px)</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ width: 44, height: 44, border: '1px solid var(--color-accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)' }}>☀️</div>
+        <span style={{ fontSize: 11, color: 'var(--color-secondary)' }}>← button</span>
+      </div>
+    </div>,
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div style={{ fontSize: 11, color: 'var(--color-secondary)', fontStyle: 'italic' }}>← mr-2 (8px) →</div>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        <div style={{ border: '1px solid var(--color-accent)', borderRadius: 20, padding: '5px 14px', fontSize: 13, background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', color: 'var(--color-primary)', marginRight: 8 }}>🌸 ☀️ 🍂 ❄️</div>
+        <div style={{ width: 44, height: 44, border: '1px solid var(--color-accent)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, background: 'color-mix(in srgb, var(--color-accent) 8%, transparent)' }}>☀️</div>
+      </div>
+    </div>,
+  ]}
+/>
 
 ## Why 2 and not 4
 
