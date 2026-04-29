@@ -107,6 +107,45 @@ In Tailwind, this pattern looks like:
 
 The same trick works on rows — swap `grid-template-columns` for `grid-template-rows` and `grid-cols-[0fr]` for `grid-rows-[0fr]`.
 
+<CSSDemo
+  tabs={[
+    {
+      label: "0fr — collapsed",
+      code: ".wrapper {\n  display: grid;\n  grid-template-rows: 0fr;\n}\n\n.inner {\n  overflow: hidden;\n}",
+    },
+    {
+      label: "1fr — expanded",
+      code: ".wrapper {\n  display: grid;\n  grid-template-rows: 1fr;\n}\n\n.inner {\n  overflow: hidden;\n}",
+    },
+    {
+      label: "animated",
+      code: ".wrapper {\n  display: grid;\n  grid-template-rows: 0fr;\n  transition: grid-template-rows 300ms ease;\n}\n\n.wrapper.open {\n  grid-template-rows: 1fr;\n}",
+    },
+  ]}
+  previews={[
+    <div style={{ fontFamily: 'monospace', fontSize: 13 }}>
+      <div style={{ marginBottom: 6, color: 'var(--color-accent)' }}>.wrapper</div>
+      <div style={{ display: 'grid', gridTemplateRows: '0fr', overflow: 'hidden', border: '1px dashed var(--color-secondary)', borderRadius: 4 }}>
+        <div style={{ minHeight: 0, overflow: 'hidden', padding: '0 8px', color: 'var(--color-secondary)', fontSize: 12 }}>hidden content</div>
+      </div>
+      <div style={{ marginTop: 6, fontSize: 11, color: 'var(--color-secondary)' }}>height: 0 — invisible</div>
+    </div>,
+    <div style={{ fontFamily: 'monospace', fontSize: 13 }}>
+      <div style={{ marginBottom: 6, color: 'var(--color-accent)' }}>.wrapper</div>
+      <div style={{ display: 'grid', gridTemplateRows: '1fr', overflow: 'hidden', border: '1px dashed var(--color-accent)', borderRadius: 4 }}>
+        <div style={{ minHeight: 0, overflow: 'hidden', padding: 8, color: 'var(--color-primary)', fontSize: 12 }}>hidden content</div>
+      </div>
+      <div style={{ marginTop: 6, fontSize: 11, color: 'var(--color-secondary)' }}>height: natural — visible</div>
+    </div>,
+    <div style={{ fontFamily: 'monospace', fontSize: 13 }}>
+      <div style={{ marginBottom: 6, color: 'var(--color-accent)' }}>click .wrapper to toggle</div>
+      <div style={{ fontSize: 11, color: 'var(--color-secondary)' }}>
+        (interactive toggle not shown in static preview — see transition tab code)
+      </div>
+    </div>,
+  ]}
+/>
+
 ## What flex-col does
 
 `flex-col` sets `flex-direction: column` on a flex container. Without it, flex items lay out in a row — side by side horizontally. With it, they stack vertically.

@@ -19,6 +19,7 @@ import MdxLi from '@/components/mdx/MdxLi'
 import MdxTable from '@/components/mdx/MdxTable'
 import MdxTh from '@/components/mdx/MdxTh'
 import MdxTd from '@/components/mdx/MdxTd'
+import CSSDemo from '@/components/mdx/CSSDemo'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -26,6 +27,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     Callout,
     LinkCard,
     FlowCompare,
+    CSSDemo,
     h1: MdxH1,
     h2: MdxH2,
     h3: MdxH3,
