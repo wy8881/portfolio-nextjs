@@ -197,11 +197,11 @@ In a `flex-row` layout, `mr-2` adds space to the right of the first item. If the
   tabs={[
     {
       label: "flex-col + mb-2 (mobile)",
-      code: ".container {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-end;\n}\n\n.pill {\n  margin-bottom: 8px; /* mb-2 */\n}",
+      code: "/* anchored to bottom-right corner */\n.container {\n  position: fixed;\n  bottom: 24px; /* bottom-6 */\n  right: 24px;  /* right-6 */\n  display: flex;\n  flex-direction: column;\n  align-items: flex-end;\n}\n\n/* pill is first child */\n.pill {\n  margin-bottom: 8px; /* mb-2 */\n  /* button can't move down → pill shifts up */\n}",
     },
     {
       label: "flex-row + mr-2 (desktop)",
-      code: ".container {\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n}\n\n.pill {\n  margin-right: 8px; /* mr-2 */\n}",
+      code: "/* anchored to bottom-right corner */\n.container {\n  position: fixed;\n  bottom: 24px; /* bottom-6 */\n  right: 24px;  /* right-6 */\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n}\n\n/* pill is first child */\n.pill {\n  margin-right: 8px; /* mr-2 */\n  /* button can't move left → pill expands left */\n}",
     },
   ]}
   previews={[
