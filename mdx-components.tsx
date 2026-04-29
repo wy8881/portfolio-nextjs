@@ -20,6 +20,7 @@ import MdxTable from '@/components/mdx/MdxTable'
 import MdxTh from '@/components/mdx/MdxTh'
 import MdxTd from '@/components/mdx/MdxTd'
 import CSSDemo from '@/components/mdx/CSSDemo'
+import GridExpandPreview from '@/components/mdx/GridExpandPreview'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -28,6 +29,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     LinkCard,
     FlowCompare,
     CSSDemo,
+    GridExpandPreview,
     h1: MdxH1,
     h2: MdxH2,
     h3: MdxH3,
