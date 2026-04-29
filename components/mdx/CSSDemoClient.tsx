@@ -35,14 +35,14 @@ export default function CSSDemoClient({ tabs, previews }: CSSDemoClientProps) {
         ))}
       </div>
 
-      {/* Two-column body */}
-      <div className="grid grid-cols-2">
-        {/* Left: preview */}
-        <div className="flex items-center justify-center p-6 border-r border-artifact min-h-40">
+      {/* Body: stacked on mobile, two-column on sm+ */}
+      <div className="flex flex-col sm:grid sm:grid-cols-2">
+        {/* Preview */}
+        <div className="flex items-center justify-center p-6 border-b border-artifact sm:border-b-0 sm:border-r min-h-40">
           {previews[active]}
         </div>
 
-        {/* Right: code — matches MdxPre shell exactly */}
+        {/* Code — matches MdxPre shell exactly */}
         <div
           className="border-l-2 border-accent overflow-x-auto"
           style={{ background: 'var(--color-code-bg)' }}
