@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { codeToHtml } from 'shiki'
 import CSSDemoClient from './CSSDemoClient'
 
@@ -9,7 +10,7 @@ interface TabInput {
 
 interface CSSDemoProps {
   tabs: TabInput[]
-  previews: React.ReactNode[]
+  previews: ReactNode[]
 }
 
 export default async function CSSDemo({ tabs, previews }: CSSDemoProps) {

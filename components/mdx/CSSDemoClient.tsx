@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { useState } from 'react'
 
 interface Tab {
@@ -9,7 +10,7 @@ interface Tab {
 
 interface CSSDemoClientProps {
   tabs: Tab[]
-  previews: React.ReactNode[]
+  previews: ReactNode[]
 }
 
 export default function CSSDemoClient({ tabs, previews }: CSSDemoClientProps) {
