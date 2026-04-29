@@ -57,16 +57,20 @@ Applying it to `<body>` makes it the default for the entire page. It is purely v
 
 ## @theme vs @theme inline in Tailwind v4
 
-This distinction came up while building a four-seasons theme switcher for this portfolio. The goal was to define colour tokens that could be swapped at runtime by setting a `data-season` attribute on the `<html>` element:
+This distinction came up while building a runtime theme switcher. The goal: define colour tokens that update when a data attribute changes on `<html>`.
 
 ```css
-[data-season="winter"] {
+[data-theme="dark"] {
   --color-background: #0a0f1e;
   --color-text: #e8eef8;
 }
 ```
 
 The plan was that Tailwind utilities like `bg-background` and `text-text` would automatically pick up the new values. They did not — and the reason is the difference between `@theme` and `@theme inline`.
+
+<Callout title="In my project">
+  The attribute is `data-season` and the values are the seasonal palette. `SeasonToggle` sets `data-season="winter"` on `<html>` at runtime and expects every colour utility to update instantly.
+</Callout>
 
 ### @theme inline — values baked at build time
 
@@ -106,7 +110,7 @@ Without `inline`, Tailwind writes the CSS variable into `:root` and makes utilit
 }
 ```
 
-Now `bg-background` resolves at runtime. When `[data-season="winter"]` overrides `--color-background`, every element using the utility immediately gets the new value — no JavaScript required, no class toggling, just CSS cascade.
+Now `bg-background` resolves at runtime. When `[data-theme="dark"]` overrides `--color-background`, every element using the utility immediately gets the new value — no JavaScript required, no class toggling, just CSS cascade.
 
 ### When to use which
 
@@ -116,6 +120,8 @@ Use `@theme` for values you intend to override at runtime — colours, any token
 
 ## Putting it together
 
-The season switcher on this site works entirely through CSS variables. Selecting a season sets `data-season="winter"` on the `<html>` element. The cascade does the rest — every Tailwind utility that references a colour variable updates instantly, sitewide, with no JavaScript touching individual elements.
-
 None of this works unless the theme tokens are defined with `@theme`, not `@theme inline`. That single word determines whether your design tokens are frozen at build time or alive at runtime.
+
+<Callout title="In my project">
+  The season switcher works entirely through CSS variables. Selecting a season sets `data-season="winter"` on `<html>`. The cascade does the rest — every Tailwind colour utility updates instantly, sitewide, with no JavaScript touching individual elements.
+</Callout>

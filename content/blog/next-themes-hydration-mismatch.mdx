@@ -16,74 +16,74 @@ Next.js renders your components twice:
 
 The second pass is called hydration. React walks the component tree, compares its output to the HTML already on the page, and wires up interactivity. If the output doesn't match, React throws a hydration error and re-renders the entire tree from scratch.
 
-## How autumn ended up in localStorage
+## How next-themes persists the choice
 
-When you click the season toggle and pick Autumn, the component calls:
+When you call `setTheme`, next-themes does two things:
 
-```ts
-setTheme('autumn')
-```
+1. Sets the theme attribute on `<html>` so CSS variables update immediately
+2. Writes the chosen value to `localStorage` so the choice survives a page refresh
 
-Under the hood, `next-themes` does two things:
+On the **next visit**, next-themes injects a blocking script into `<head>` — before any React code runs — that reads `localStorage` and sets the attribute on `<html>` immediately. This prevents a flash of the default theme on load.
 
-1. Sets `data-season="autumn"` on the `<html>` element so CSS variables update immediately
-2. Writes `"autumn"` to `localStorage` under the key `"theme"` so the choice survives a page refresh
+That script is client-only. The server never ran it, never read `localStorage`, and has no idea what the user previously chose. It renders with whatever `defaultTheme` you configured.
 
-On the **next visit**, `next-themes` injects a blocking script into `<head>` — before any React code runs — that reads `localStorage` and sets `data-season` on `<html>` immediately. This prevents the flash of the default theme on page load.
-
-That blocking script is client-only. The server never ran it, never read localStorage, and has no idea the user ever picked Autumn. It just renders with whatever `defaultTheme` you passed to `ThemeProvider` — in this project, `"summer"`.
-
-So every time you reload after picking a non-default season, you get: server renders summer → client hydrates with autumn → mismatch.
+<Callout title="In my project">
+  `next-themes` is configured with `defaultTheme="summer"` and `attribute="data-season"`. So every reload after picking a non-default season gives: server renders summer → client hydrates with autumn → mismatch.
+</Callout>
 
 ## Why next-themes causes this
 
 `next-themes` stores the user's chosen theme in `localStorage`. The server has no access to `localStorage` — it runs in Node.js, not in the browser. So on the server, `useTheme()` returns `undefined` for `theme`.
 
-Your code handles this with a fallback:
+The typical fallback:
 
 ```ts
-const season = (theme as Season) ?? 'summer'
+const { theme } = useTheme()
+const current = theme ?? 'default'
 ```
 
-On the server, `theme` is `undefined`, so `season` becomes `'summer'`. The server writes HTML with summer styles.
+On the server, `theme` is `undefined`, so `current` becomes `'default'`. The server writes HTML with default styles. Then the browser loads, React hydrates — and `useTheme()` can read `localStorage`. If the user picked something different, `theme` resolves to that value. Server and client disagree. Mismatch. Error.
 
-Then the browser loads, React hydrates — and now `useTheme()` can read `localStorage`. If the user last picked `'autumn'`, `theme` is `'autumn'`. React renders autumn styles. But the HTML on the page says summer.
+<Callout title="In my code">
+  The fallback is `const season = (theme as Season) ?? 'summer'`. On the server, `theme` is `undefined` → `season = 'summer'`. On the client, `localStorage` has the user's last pick — `'autumn'`, `'winter'`, etc. Two different values from the same render.
+</Callout>
 
-Mismatch. Error.
+## The wrong approach
 
-## The wrong code
+No guard. On the server, `useTheme()` returns `undefined` for `theme`. On the client, it reads `localStorage` and returns the stored value. The two renders produce different output:
 
-```tsx
-// 1. next-themes reads localStorage (browser only — never runs on server)
-const storedTheme = localStorage.getItem('theme') // → 'autumn'
+```ts
+// server:  theme = undefined  → current = 'default'
+// client:  theme = 'stored'   → current = 'stored'
 
-// 2. useTheme() surfaces that value
-const { theme, setTheme } = useTheme() // theme = 'autumn'
-
-// 3. your component derives season from it
-const season = (theme as Season) ?? 'summer' // season = 'autumn'
+const current = theme ?? 'default' // ❌ server and client disagree
 ```
 
-No guard. On the server, step 1 never runs — `theme` stays `undefined` and `season` falls back to `'summer'`. On the client, step 1 reads localStorage and `season` becomes `'autumn'`. Two different values from the same code path.
-
-The problem is that the server and client run in fundamentally different environments. The server never has access to user-specific state like localStorage, cookies, or the system clock in the user's timezone.
+The server and client run in fundamentally different environments. The server never has access to user-specific state like `localStorage`, cookies, or the system clock in the user's timezone.
 
 ## The fix: a mounted guard
 
 ```tsx
-const { theme, setTheme } = useTheme()
+const { theme } = useTheme()
 const [mounted, setMounted] = useState(false)
 
 useEffect(() => { setMounted(true) }, [])
 
-const season: Season = mounted ? ((theme as Season) ?? 'summer') : 'summer'
+const current = mounted ? (theme ?? 'default') : 'default'
 ```
 
 `useState(false)` initialises the same way on server and client. `useEffect` only runs in the browser — never on the server. So:
 
-- Server: `mounted` is `false` → `season` is `'summer'`
-- Client first render: `mounted` is still `false` → `season` is `'summer'` ← matches server
-- After hydration: `useEffect` fires → `mounted` becomes `true` → `season` updates to the real value from localStorage
+- Server: `mounted` is `false` → `current` is `'default'`
+- Client first render: `mounted` is still `false` → `current` is `'default'` ← matches server
+- After hydration: `useEffect` fires → `mounted` becomes `true` → `current` updates to the real value from `localStorage`
+
+<Callout title="In my code">
+  ```tsx
+  const season: Season = mounted ? ((theme as Season) ?? 'summer') : 'summer'
+  ```
+  `'summer'` is the `defaultTheme` passed to `ThemeProvider`. `Season` is a string union of the four season values.
+</Callout>
 
 ## Before vs after
 
@@ -91,20 +91,20 @@ const season: Season = mounted ? ((theme as Season) ?? 'summer') : 'summer'
   left={{
     title: "Without guard (wrong)",
     steps: [
-      { text: "Server renders", note: "useTheme() → undefined, season = 'summer'" },
-      { text: "Browser receives HTML", note: "shows ☀️" },
-      { text: "React hydrates", note: "localStorage.getItem('theme') → 'autumn', season = 'autumn'" },
-      { text: "❌ Mismatch", status: "error", note: "server said ☀️, client says 🍂 — React throws" },
+      { text: "Server renders", note: "useTheme() → undefined, current = 'default'" },
+      { text: "Browser receives HTML", note: "shows default" },
+      { text: "React hydrates", note: "localStorage → 'stored', current = 'stored'" },
+      { text: "❌ Mismatch", status: "error", note: "server said default, client says stored — React throws" },
     ]
   }}
   right={{
     title: "With mounted guard (right)",
     steps: [
-      { text: "Server renders", note: "mounted = false, season = 'summer'" },
-      { text: "Browser receives HTML", note: "shows ☀️" },
-      { text: "React hydrates", note: "mounted = false, season = 'summer' — matches server" },
+      { text: "Server renders", note: "mounted = false, current = 'default'" },
+      { text: "Browser receives HTML", note: "shows default" },
+      { text: "React hydrates", note: "mounted = false, current = 'default' — matches server" },
       { text: "✅ Match", status: "success", note: "hydration succeeds" },
-      { text: "useEffect fires", note: "setMounted(true) → season = 'autumn' from localStorage" },
+      { text: "useEffect fires", note: "setMounted(true) → current = real value from localStorage" },
       { text: "React re-renders", note: "normal state update, no error" },
     ]
   }}
@@ -112,13 +112,13 @@ const season: Season = mounted ? ((theme as Season) ?? 'summer') : 'summer'
 
 ## The rule
 
-Any value that differs between server and client — localStorage, `window`, `navigator`, `Date.now()`, system locale — must not be read during the initial render. Read it in `useEffect`, after hydration has completed.
+Any value that differs between server and client — `localStorage`, `window`, `navigator`, `Date.now()`, system locale — must not be read during the initial render. Read it in `useEffect`, after hydration has completed.
 
 `next-themes` is the most common place this bites you, but the same pattern applies anywhere you use `typeof window !== 'undefined'` guards in render logic.
 
 <Takeaway title="Key Points">
-- **`useTheme()` returns `theme: undefined` on the server — always.** `useTheme()` exposes the user's actively chosen theme — the value they picked and that was written to `localStorage`. The server has no browser, no `localStorage`, no user context. `next-themes` has nothing to return, so `theme` is `undefined`. This is true even if you set `defaultTheme="summer"` in `ThemeProvider` — that default only controls what CSS attribute gets written to `<html>` as a fallback; it does not populate the JS `theme` value during SSR.
-- **Reading it directly causes a hydration mismatch.** Your `?? 'summer'` fallback works fine in isolation — `undefined ?? 'summer'` gives `'summer'` on the server. But on the client, `useTheme()` can now read `localStorage` and returns `'autumn'`. Server said summer, client says autumn — React throws.
-- **Fix: a `mounted` guard.** Add `const [mounted, setMounted] = useState(false)` and `useEffect(() => { setMounted(true) }, [])`. Use `mounted ? theme : 'summer'` instead of `theme ?? 'summer'`. Both server and client render `'summer'` on the first pass — hydration succeeds. After hydration, `useEffect` fires, `mounted` flips to `true`, and React re-renders with the real value from `localStorage`. This is a normal state update, not a hydration conflict.
+- **`useTheme()` returns `theme: undefined` on the server — always.** The server has no browser, no `localStorage`, no user context. This is true even if you set `defaultTheme` in `ThemeProvider` — that default controls the CSS attribute fallback; it does not populate the JS `theme` value during SSR.
+- **Reading it directly causes a hydration mismatch.** Your fallback works fine in isolation — `undefined ?? 'default'` gives the default on the server. But on the client, `useTheme()` reads `localStorage` and returns whatever the user last picked. Server said one thing, client says another — React throws.
+- **Fix: a `mounted` guard.** Add `const [mounted, setMounted] = useState(false)` and `useEffect(() => { setMounted(true) }, [])`. Use `mounted ? theme : 'default'` instead of `theme ?? 'default'`. Both passes render the default on first pass — hydration succeeds. After hydration, `useEffect` fires, `mounted` flips, and React re-renders with the real value.
 - **The same rule applies to any browser-only value.** `localStorage`, `window`, `navigator`, `Date.now()` in a user timezone, `Intl` locale formatting — anything that differs between server and client must not be read during the initial render. Defer it to `useEffect`.
 </Takeaway>
