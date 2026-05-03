@@ -1,0 +1,255 @@
+export const metadata = {
+  title: "Why Your Scraper Gets Nothing: SSR vs CSR Explained",
+  date: "2026-05-03",
+  description: "Whether you need a headless browser or a plain fetch call depends on when the framework builds the HTML — server-side or client-side.",
+  tags: ["web-scraping", "playwright", "cheerio", "next.js", "typescript"],
+}
+
+I was building a job scraper for two sites — LinkedIn and Seek — and expected to write the same code twice. LinkedIn worked with four lines of fetch. Seek returned nothing. Same URL, same approach, completely different result.
+
+## The one DevTools check that tells you everything
+
+Before writing a single line of scraping code, open DevTools on the target site. Go to the **Network** tab, reload the page, and click the first HTML document request. Open the **Response** tab.
+
+If you can read the job titles in the raw response, a plain `fetch()` call is all you need.
+
+If you see something like `<div id="app"></div>` — an empty shell and nothing else — you need a real browser.
+
+This check takes ten seconds and saves hours.
+
+## Server-side rendering: HTML arrives fully built
+
+In a server-side rendered app, the server does the work. It fetches the data, runs the template, and sends back a complete HTML page. By the time the response arrives, the content is already there.
+
+`fetch()` + a parsing library like Cheerio is all you need. Call `fetch()`, hand the response text to Cheerio, and query the DOM exactly like you would in a browser.
+
+<Callout title="In my code">
+LinkedIn's jobs API is SSR. `fetch()` returns a page full of `.job-search-card` elements — readable immediately with Cheerio.
+
+```ts
+const res = await fetch(url, { headers: HEADERS })
+const html = await res.text()
+const $ = cheerio.load(html)
+
+$('.job-search-card').each((_, el) => {
+  const title = $(el).find('.base-search-card__title').text().trim()
+  const company = $(el).find('.base-search-card__subtitle').text().trim() || null
+  const location = $(el).find('.job-search-card__location').text().trim()
+})
+```
+</Callout>
+
+## Client-side rendering: you get an empty box
+
+In a client-side rendered app, the server sends an empty HTML shell and a JavaScript bundle. Your browser downloads the bundle, executes it, and the JavaScript builds the DOM — filling in the content after the initial response arrives.
+
+`fetch()` only sees what the server sent: the empty shell. The job listings, the prices, the content — none of it exists in the response. It's built later, inside a browser, in memory.
+
+<FlowCompare
+  left={{
+    title: "SSR — HTML arrives built",
+    steps: [
+      { text: "Your script calls fetch()" },
+      { text: "Server fetches data and builds HTML" },
+      { text: "Response arrives — content is in the HTML", status: "success" },
+      { text: "Cheerio reads it directly", status: "success" },
+    ]
+  }}
+  right={{
+    title: "CSR — HTML is an empty shell",
+    steps: [
+      { text: "Your script calls fetch()" },
+      { text: "Server sends empty <div> + JS bundle" },
+      { text: "JS runs in the browser and builds the DOM", note: "not in your script" },
+      { text: "fetch() response has no content", status: "error" },
+    ]
+  }}
+/>
+
+To scrape a CSR site you need to do what the browser does: download the JS, run it, wait for the DOM to populate. That's what Playwright (or Puppeteer) does — it launches a real browser, navigates to the page, and lets the JavaScript finish before you read anything.
+
+<Callout title="In my code">
+Seek is CSR. Playwright navigates to the page and waits for job cards to appear before reading them.
+
+```ts
+await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 })
+
+await page.waitForSelector('[data-testid="job-card"], [data-testid="no-results"]', {
+  timeout: 15000,
+}).catch(() => {})
+
+const pageJobs = await page.evaluate(() => {
+  const cards = document.querySelectorAll('[data-testid="job-card"]')
+  return Array.from(cards).map(card => {
+    const titleEl = card.querySelector<HTMLAnchorElement>('[data-testid="job-card-title"]')
+    const companyEl = card.querySelector('[data-automation="jobCompany"]')
+    // ...
+  })
+})
+```
+
+`waitForSelector` blocks until the JS has run and the cards exist in the DOM. Without it, `evaluate()` runs too early and returns an empty array.
+</Callout>
+
+## Which frameworks use which model
+
+Most frameworks commit to one side.
+
+| Framework | Rendering | `fetch()` works? |
+|---|---|---|
+| PHP, Rails, Django | SSR | Yes |
+| WordPress | SSR | Yes |
+| Next.js (`getServerSideProps`) | SSR | Yes |
+| Next.js (`getStaticProps`) | SSG — pre-built at deploy | Yes |
+| React (Vite / CRA) | CSR | No |
+| Vue (default) | CSR | No |
+| Angular | CSR | No |
+
+**SSG** (static site generation) is a third option — the server pre-builds all HTML at deploy time instead of per-request. From a scraping perspective it behaves exactly like SSR: the response already contains the content.
+
+## Next.js: the framework that can do both
+
+Next.js is not purely SSR or CSR — each page chooses its own rendering mode independently.
+
+| Rendering mode | Signal | `fetch()` works? |
+|---|---|---|
+| `getServerSideProps` | Exported from the page file | Yes |
+| `getStaticProps` | Exported from the page file | Yes — HTML pre-built at deploy |
+| No data fetching export | Default in Pages Router | No |
+| React Server Components | App Router default | Yes |
+| `"use client"` component | App Router | No |
+
+<FlowCompare
+  left={{
+    title: "getServerSideProps — on every request",
+    steps: [
+      { text: "User visits the page", note: "one per page load" },
+      { text: "Server calls getServerSideProps" },
+      { text: "Function fetches fresh data", note: "DB, API, etc." },
+      { text: "Next.js builds HTML with that data" },
+      { text: "Complete HTML sent to user", status: "success", note: "next page load repeats from the top" },
+    ]
+  }}
+  right={{
+    title: "getStaticProps — once at build time",
+    steps: [
+      { text: "npm run build runs before deploy", note: "before the server starts — part of CI/CD" },
+      { text: "Next.js calls getStaticProps once" },
+      { text: "Function fetches data", note: "never called again after this" },
+      { text: "Next.js writes static HTML files to disk" },
+      { text: "Server starts and serves those files", status: "success", note: "data is frozen until next build" },
+    ]
+  }}
+/>
+
+This means the same domain can behave completely differently across pages. The search results page might be CSR while the job detail page is SSR. The DevTools check is the only reliable way to know — you have to run it per page, not per site.
+
+## Bot detection on top of CSR
+
+Playwright launches a real browser — same Chromium engine, same JavaScript runtime. But an automated browser is still subtly different from a human's, and those differences are measurable. Seek checks for five of them.
+
+Seek doesn't write this detection code themselves — they use a third-party service like DataDome or PerimeterX that injects a script into every page. Simplified, it looks like this:
+
+```js
+// injected by bot detection service — runs before any content renders
+const score = 0
+
+if (navigator.webdriver === true)          score += 100
+if (/HeadlessChrome/.test(navigator.userAgent)) score += 100
+if (window.innerWidth === 0)               score += 50
+if (!navigator.language.startsWith('en-AU')) score += 30
+if (requestsAreTooFast())                  score += 50
+
+if (score >= 100) {
+  renderCaptcha()  // or silently show empty results
+  return
+}
+
+renderJobListings()
+```
+
+The flow from page load to content rendering looks like this:
+
+<FlowCompare
+  left={{
+    title: "Without stealth — bot caught",
+    steps: [
+      { text: "Browser receives empty HTML shell" },
+      { text: "JS bundle downloads and runs" },
+      { text: "Detection script checks navigator.webdriver", note: "finds true — bot score hits 100" },
+      { text: "Captcha or empty results rendered", status: "error" },
+      { text: "Your scraper gets nothing", status: "error" },
+    ]
+  }}
+  right={{
+    title: "With stealth — checks pass",
+    steps: [
+      { text: "Browser receives empty HTML shell" },
+      { text: "addInitScript injects our code", note: "Playwright API — runs before any page script" },
+      { text: "Our code overrides navigator.webdriver → undefined", note: "property redefined before Seek can read it" },
+      { text: "JS bundle downloads and runs" },
+      { text: "Detection script checks navigator.webdriver", note: "finds undefined — score stays low" },
+      { text: "Job listings rendered", status: "success" },
+    ]
+  }}
+/>
+
+### navigator.webdriver
+
+Every browser exposes a JavaScript property called `navigator.webdriver`. In a normal human's browser it's `undefined`. In any automated browser — Playwright, Puppeteer, Selenium — it's automatically set to `true`.
+
+Seek's page checks this in JavaScript before showing content. If it's `true`, you get nothing.
+
+`addInitScript` runs our code before the page's own JavaScript executes — so by the time Seek checks, the flag is already overridden.
+
+```ts
+await context.addInitScript(() => {
+  Object.defineProperty(navigator, 'webdriver', { get: () => undefined })
+})
+```
+
+### User-Agent string
+
+Every browser sends a `User-Agent` header identifying its type and OS. Playwright's default user agent contains the word `HeadlessChrome` — an immediate giveaway.
+
+```ts
+userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+```
+
+### Viewport size
+
+A headless browser with no screen reports a 0×0 or unusually small viewport. That's detectable.
+
+```ts
+viewport: { width: 1280, height: 800 }
+```
+
+### Language and locale headers
+
+Real Australian users send `Accept-Language: en-AU`. A generic bot sends nothing or `en-US`. Seek can serve different content — or block entirely — based on locale mismatch.
+
+```ts
+extraHTTPHeaders: {
+  'Accept-Language': 'en-AU,en;q=0.9',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+}
+```
+
+### Request timing
+
+Bots hit pages as fast as possible — zero delay between requests. Seek tracks timing. A short pause between page loads is enough to look human.
+
+```ts
+await new Promise(r => setTimeout(r, 1500)) // after each page.goto
+await new Promise(r => setTimeout(r, 1000)) // between categories
+```
+
+| What Seek checks | What gives bots away | The fix |
+|---|---|---|
+| `navigator.webdriver` | `true` in automation | Override to `undefined` before page loads |
+| User-Agent header | Contains "HeadlessChrome" | Replace with real Mac Chrome string |
+| Viewport size | 0×0 or unusually small | Set to 1280×800 |
+| `Accept-Language` header | Missing or `en-US` | Set to `en-AU` |
+| Request timing | Instant, no delays | Add 1–2s pauses between pages |
+
+None of these individually is foolproof — Seek could add more checks at any time. Together they're enough to pass Seek's current detection.
