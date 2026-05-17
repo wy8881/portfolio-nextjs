@@ -7,10 +7,7 @@ interface RelatedReadingProps {
 export default function RelatedReading({ slugs }: RelatedReadingProps) {
   return (
     <div className="mt-16 pt-8 border-t border-artifact">
-      <div className="flex items-baseline gap-4 mb-6">
-        <h2 className="text-xl font-bold text-primary shrink-0">Further Reading</h2>
-        <div className="h-px flex-1" style={{ background: 'var(--color-artifact)' }} />
-      </div>
+      <h2 className="text-xl font-bold text-primary mb-6">Further Reading</h2>
       {slugs.map((slug) => (
         <LinkCard key={slug} href={`/blog/${slug}`} />
       ))}
