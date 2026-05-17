@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useSyncExternalStore } from 'react'
 import { motion } from 'framer-motion'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
 import type { Season } from '@/lib/types'
@@ -24,26 +24,24 @@ const SEASON_NOTES: Record<Season, { emoji: string; note: string }> = {
   },
 }
 
-function getCurrentSeason(): Season {
-  if (typeof window === 'undefined') return 'summer'
+function subscribeToDocSeason(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange)
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-season'],
+  })
+  return () => observer.disconnect()
+}
+
+function getDocSeason(): Season {
   const val = document.documentElement.getAttribute('data-season')
   return (val as Season) ?? 'summer'
 }
 
+const getServerSeason = (): Season => 'summer'
+
 export function SeasonCard() {
-  const [season, setSeason] = useState<Season>(() => getCurrentSeason())
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setSeason(getCurrentSeason())
-    })
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-season'],
-    })
-
-    return () => observer.disconnect()
-  }, [])
+  const season = useSyncExternalStore(subscribeToDocSeason, getDocSeason, getServerSeason)
 
   const { emoji, note } = SEASON_NOTES[season]
 

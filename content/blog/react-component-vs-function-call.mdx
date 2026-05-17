@@ -1,0 +1,116 @@
+export const metadata = {
+  title: "Why <Component /> and Component() are not the same thing",
+  date: "2026-05-09",
+  description: "JSX and direct function calls produce identical output but React treats them completely differently — because only one of them gets a fiber.",
+  tags: ["react", "typescript", "hooks"],
+}
+
+Both syntaxes call the same function and return JSX. React doesn't see them the same way — and the difference explains more about how React works internally than almost anything else.
+
+## What React builds from `<Child />`
+
+When React encounters `<Child prop={value} />`, it doesn't immediately call the `Child` function. First it creates a **fiber** — an internal JavaScript object that represents one instance of that component in the tree. The fiber holds everything React needs to manage the component across renders:
+
+```ts
+{
+  type: Child,           // the function to call
+  memoizedState: ...,    // hook values, stored as a linked list
+  memoizedProps: ...,    // props from the previous render
+  pendingProps: ...,     // props for this render
+  child: ...,            // first child fiber
+  sibling: ...,          // next sibling fiber
+  return: ...,           // parent fiber
+}
+```
+
+When you write `Child()` instead, React never sees a `<Child />` element. It sees the JSX the function returned as if you'd written it inline. No fiber is created. The output is merged directly into the parent's fiber.
+
+This distinction is what the reconciler — the part of React that decides what to update — operates on. It works with fibers, not function calls.
+
+## Hooks are stored on the fiber as a linked list
+
+Each hook call appends an entry to the fiber's `memoizedState` list. React identifies hooks by their **position** in that list, not by name:
+
+```ts
+function Counter() {
+  const [count, setCount] = useState(0)   // position 0
+  const [label, setLabel] = useState('')  // position 1
+  useEffect(() => { ... }, [count])       // position 2
+}
+```
+
+The fiber for `Counter` holds:
+
+```
+memoizedState → { val: 0, next →
+                { val: '', next →
+                { effect: fn, next: null } } }
+```
+
+React advances a cursor through this list on every render. The first `useState` call reads position 0, the second reads position 1, and so on.
+
+When you call `Child()` directly, its hooks don't register on a `Child` fiber — they append to the **parent's** hook list. The child's state appears inside the parent in React DevTools. More importantly, if `Child()` is ever called conditionally, hooks can be added or removed from the middle of the parent's list without React knowing.
+
+## What conditional hooks break
+
+Here's what happens when a direct-called component contains a hook and the call is conditional:
+
+```tsx
+function Parent({ show }) {
+  const [x, setX] = useState('x')   // position 0
+  if (show) Child()                 // Child's useState lands at position 1
+  const [z, setZ] = useState('z')   // position 1 or 2 depending on `show`
+}
+```
+
+First render with `show = true` — the list has three slots:
+
+```
+position 0 → { val: 'x' }
+position 1 → { val: ... }   ← Child's hook
+position 2 → { val: 'z' }
+```
+
+Re-render with `show = false` — `Child()` is skipped:
+
+```
+position 0 → reads 'x'   ✓
+// Child() not called, position 1 skipped
+position 1 → reads Child's stale value as 'z'   ✗
+```
+
+`z` is now reading the wrong slot. React throws a hook count mismatch error in development when the list length changes, but if the count stays the same while the order shifts, the values are silently wrong.
+
+The rule — always call hooks at the top level, never conditionally — exists because of this positional identity. The correct pattern is to put the condition **inside** the hook, not around it:
+
+```tsx
+useEffect(() => {
+  if (!show) return  // condition inside, not outside
+  // ...
+}, [show])
+```
+
+The hook always runs — maintaining its position — but the logic inside is conditional.
+
+## What you lose without a fiber
+
+A fiber gives React an independent handle on that component instance. Without one, everything collapses into the parent:
+
+| | `<Child />` | `Child()` |
+|---|---|---|
+| Has its own fiber | Yes | No — merged into parent |
+| Hooks scoped to itself | Yes | No — appended to parent's list |
+| State preserved independently | Yes | No |
+| Can skip re-renders (`React.memo`) | Yes | No |
+| Caught by error boundaries | Yes | No — error attributed to parent |
+| Works with `<Suspense>` | Yes | No |
+
+Error boundaries and `<Suspense>` work by catching behavior from **child fibers**. `Child()` has no fiber, so there's nothing to catch from — errors and suspended renders surface as if they came from the parent itself, potentially outside the boundary you intended.
+
+The direct-call pattern is safe only for a pure helper that returns JSX and has no hooks. Even then, it reads better as a plain function (`buildHeader(props)`) rather than a Pascal-cased component name, because the naming implies fiber semantics that don't apply.
+
+<Takeaway title="Key Points">
+- **A fiber is React's internal object for one component instance.** It holds the hook linked list, current and pending props, and metadata React uses to schedule and commit updates. `<Child />` creates a fiber; `Child()` does not.
+- **Hooks are identified by position, not name.** React stores hooks as a linked list on the fiber and advances a cursor through it on every render. Calling hooks conditionally shifts list positions and causes React to read the wrong state for the wrong variable.
+- **Without a fiber, React has no independent handle on the component.** Memoization, error boundaries, Suspense, and DevTools visibility all require a fiber. Direct function calls merge into the parent and lose all of these.
+</Takeaway>

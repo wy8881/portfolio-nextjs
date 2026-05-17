@@ -1,0 +1,153 @@
+export const metadata = {
+  title: "What's Inside Elysia's Context Object",
+  date: "2026-05-03",
+  description: "Elysia passes a single context object to every handler — understanding what's in it and how it's built explains every pattern you'll encounter.",
+  tags: ["elysia", "bun", "typescript", "web-framework"],
+}
+
+The first time you write an Elysia handler, the `{ query, set }` argument looks like magic. It's not — when a request arrives, Elysia parses it and assembles the useful parts into a single plain object called the **context**. Your handler receives that object, mutates what it needs, and returns the body.
+
+## What context consists of
+
+The fields map to the incoming request and one special scratchpad for your response.
+
+| Field | What it holds |
+|---|---|
+| `request` | The raw Web API `Request` object |
+| `query` | Parsed URL query params (`?from=2024-01-01`) |
+| `params` | URL path params (`/user/:id`) |
+| `body` | Parsed request body (POST/PUT) |
+| `headers` | Request headers |
+| `set` | Response control: `{ status, headers, redirect }` |
+
+"Context" is Elysia's term for this object, not a variable name you're required to use. Most people destructure it immediately, taking only the fields they need — a GET handler that reads query params and sets a status code only needs `query` and `set`, so that's all it destructures:
+
+```ts
+// src/api/stats.ts
+export const statsRoutes = new Elysia()
+  .get("/stats", ({ query, set }) => {
+    const { from, to } = query
+    // ...
+  })
+```
+
+You could also receive it whole and name it whatever you want:
+
+```ts
+.get("/stats", (ctx) => {
+  const { query, set } = ctx
+})
+```
+
+The field names inside — `query`, `set`, `params`, `body`, `headers` — are fixed. The outer variable name is yours.
+
+## How `set` works — shared reference, not magic
+
+`set` is not a proxy or special object. Elysia creates `{ status: 200, headers: {} }` before your handler runs and passes it in. JavaScript passes objects by reference, so any mutation your handler makes is visible to Elysia after the function returns.
+
+After your handler returns the body, Elysia calls `new Response(body, { status: set.status, headers: set.headers })`.
+
+<Callout title="In my code">
+  In `statsRoutes`, the pattern is to set `set.status = 400` then return the error payload separately — the body and the status code are decoupled:
+
+  ```ts
+  if (from && isNaN(Date.parse(from))) {
+    set.status = 400
+    return { error: "invalid 'from' date" }
+  }
+  ```
+</Callout>
+
+This is why the status and the body are separate expressions. `set.status` controls the HTTP status line; the return value becomes the response body.
+
+## The request lifecycle
+
+Understanding the lifecycle matters when you start adding plugins. Each `.use()` call can inject middleware that runs before your handler or intercepts after it.
+
+<FlowCompare
+  left={{
+    title: "Request in",
+    steps: [
+      { text: "Parse query / params / body" },
+      { text: "Build context object", note: "set = { status: 200, headers: {} }" },
+      { text: "Run plugins (e.g. cors)", note: "plugins can mutate context" },
+      { text: "Call your handler" },
+    ]
+  }}
+  right={{
+    title: "Response out",
+    steps: [
+      { text: "Handler returns body" },
+      { text: "Read set.status and set.headers" },
+      { text: "Build Response object", note: "new Response(body, set)" },
+      { text: "Send response" },
+    ]
+  }}
+/>
+
+`cors()` runs before your handler and sets CORS headers on `context.set.headers`. Your handler doesn't need to know — it just receives the already-mutated context.
+
+```ts
+// src/index.ts
+const app = new Elysia()
+  .use(cors())
+  .use(statsRoutes)
+  .listen(3000)
+```
+
+## Why not `req`/`res` like Express?
+
+Express couples status to the response chain — you call methods on `res` to build and send the response imperatively.
+
+```ts
+// Express
+app.get("/stats", (req, res) => {
+  if (!req.query.from) {
+    res.status(400).json({ error: "missing 'from'" })
+    return
+  }
+  res.json(fetchStats(req.query.from))
+})
+```
+
+Elysia separates concerns: return the body, mutate `set` for everything else.
+
+```ts
+// Elysia
+.get("/stats", ({ query, set }) => {
+  if (!query.from) {
+    set.status = 400
+    return { error: "missing 'from'" }
+  }
+  return fetchStats(query.from)
+})
+```
+
+The benefit is that Elysia can statically analyze and type your return value. Since the body comes from a `return`, it's just a TypeScript expression — no `res.json()` wrapping needed.
+
+Newer versions also expose an `error()` helper (`return error(400, { error: "..." })`) as sugar for the same pattern. `set.status` is always available; `error()` is an alias added later.
+
+## Validation shapes the context types
+
+Without a schema, `query` is untyped — every field is `string | undefined` and none are guaranteed to exist. A validation schema, passed as the third argument to `.get()`, changes this.
+
+```ts
+.get("/stats", ({ query, set }) => {
+  // query.from is string | undefined — TypeScript knows
+  // query.from is optional, so this is safe
+  const from = query.from
+}, {
+  query: t.Object({
+    from: t.Optional(t.String()),
+    to: t.Optional(t.String()),
+  })
+})
+```
+
+`t.Optional(t.String())` makes `query.from` typed as `string | undefined`. Without the schema, `query` would be `Record<string, string>`. Elysia also validates the incoming request against this schema at runtime and returns a 422 automatically if it doesn't match.
+
+<Takeaway title="Key Points">
+- **Context is a plain object.** Elysia builds it before your handler runs — no proxy, no magic, just a JavaScript object passed by reference.
+- **`set` is a shared reference.** Your handler mutates `set.status` and `set.headers`; Elysia reads them after your handler returns to build the `Response`.
+- **Return value is the body.** Returning from your handler is all you need for the response body — Elysia serializes it automatically, which is why the return type can be statically typed.
+</Takeaway>

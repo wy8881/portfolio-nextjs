@@ -1,0 +1,163 @@
+export const metadata = {
+  title: "useState lazy initializers are a hidden hydration trap",
+  date: "2026-05-04",
+  description: "Why typeof window guards don't protect lazy initializers from hydration mismatches, and how useSyncExternalStore fixes it with real subscriptions.",
+  tags: ["react", "nextjs", "hydration", "ssr", "hooks"],
+}
+
+You added `typeof window === 'undefined'` to your `useState` initializer to protect against SSR. The server is fine. Then you get a hydration warning anyway.
+
+## Why the guard doesn't help
+
+A **lazy initializer** is the function form of `useState` — `useState(() => expr)` instead of `useState(value)`. React calls it once to compute the initial state. The reason to use it here rather than a plain value like `useState('summer')` is to avoid a flash: if you always initialise with `'summer'`, the component renders the wrong content until a `useEffect` fires and corrects it. Reading the real value immediately means the first paint is already correct.
+
+The reason you need a guard at all is that Next.js runs your components on the server first, in a Node.js environment where `window`, `document`, and other browser globals don't exist. Accessing them there throws a `ReferenceError`.
+
+The standard fix is a `typeof window` check — return a safe default on the server, read the real value on the client:
+
+```ts
+const [season, setSeason] = useState<Season>(() => {
+  if (typeof window === 'undefined') return 'summer'
+  return document.documentElement.getAttribute('data-season') as Season ?? 'summer'
+})
+```
+
+On the server, `typeof window === 'undefined'` is `true` — the guard fires, `'summer'` is returned, no error. That part works.
+
+The problem is **hydration**. Hydration is the client-side pass where React re-runs your components to attach event listeners to the server-rendered HTML. It happens in the browser — `typeof window === 'undefined'` is `false`. The lazy initializer runs in full, reads the real DOM value, and may return something different from what the server sent.
+
+<Callout title="In my code">
+  `SeasonCard` reads `document.documentElement.getAttribute('data-season')` — the season the user last picked, stored by `next-themes`. If they'd chosen autumn, the initializer returns `'autumn'`. The server sent `'summer'`. React throws a hydration mismatch.
+</Callout>
+
+This is a different bug from the `useTheme()` case covered in the previous posts. There, `useTheme()` returns `undefined` on the server — the mismatch comes from the value not existing at all. Here, the value exists and the guard returns it correctly — the mismatch comes from the guard not running during hydration.
+
+<LinkCard href="/blog/next-themes-hydration-mismatch" />
+
+## The same pattern, a different API
+
+`SeasonalCanvas` had the same bug with `window.matchMedia`:
+
+```ts
+const [reducedMotion] = useState(() =>
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+)
+```
+
+Server: `typeof window !== 'undefined'` is `false` → `reducedMotion = false` → renders `<canvas>`.
+
+Hydration: `typeof window !== 'undefined'` is `true` → `window.matchMedia(...).matches` is called → if `prefers-reduced-motion` is enabled, returns `true` → component returns `null`.
+
+Server rendered a `<canvas>`. Client rendered nothing. Mismatch.
+
+## useSyncExternalStore with a real subscribe function
+
+The previous post in this series showed `useSyncExternalStore` with a no-op subscribe — an empty function that subscribes to nothing, used only to distinguish server from client:
+
+<LinkCard href="/blog/use-sync-external-store-mounted-guard" />
+
+These bugs need the full version. `useSyncExternalStore` takes three arguments:
+
+```ts
+useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+```
+
+- **`subscribe`** — registers a listener on the external data source; returns a cleanup function. React calls it after hydration and re-renders whenever the listener fires.
+- **`getSnapshot`** — reads the current value on the client. Called synchronously during every render.
+- **`getServerSnapshot`** — reads the value on the server and during the hydration pass. Must match what the server HTML contains.
+
+The key guarantee: React uses `getServerSnapshot` for both the server render and the hydration comparison. Hydration succeeds because both sides return the same value. After hydration, React calls `subscribe`, and `getSnapshot` takes over for future renders.
+
+## SeasonCard: subscribing to a DOM attribute
+
+`data-season` is an HTML attribute on `<html>` — it changes whenever the user picks a new season. `MutationObserver` is the browser API for watching attribute changes on DOM nodes.
+
+```ts
+function subscribeToDocSeason(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange)
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-season'],
+  })
+  return () => observer.disconnect()
+}
+
+function getDocSeason(): Season {
+  const val = document.documentElement.getAttribute('data-season')
+  return (val as Season) ?? 'summer'
+}
+
+const getServerSeason = (): Season => 'summer'
+```
+
+The component becomes:
+
+```tsx
+export function SeasonCard() {
+  const season = useSyncExternalStore(subscribeToDocSeason, getDocSeason, getServerSeason)
+  // ...
+}
+```
+
+`getServerSeason` returns `'summer'` — the same default the server renders. `getDocSeason` reads the real attribute on the client. After hydration, `subscribeToDocSeason` wires up the observer so the component re-renders on every season change.
+
+No `useState`. No `useEffect`. No lint error. And the live updates that used to require a separate `useEffect` come for free from the subscribe function.
+
+## SeasonalCanvas: subscribing to a media query
+
+`MediaQueryList` — the object returned by `window.matchMedia` — fires a `change` event whenever the query result flips. That makes it a natural fit for `useSyncExternalStore`.
+
+```ts
+function subscribeToReducedMotion(onStoreChange: () => void) {
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+  mq.addEventListener('change', onStoreChange)
+  return () => mq.removeEventListener('change', onStoreChange)
+}
+
+const getReducedMotion = () =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+const getServerReducedMotion = () => false
+```
+
+```tsx
+const reducedMotion = useSyncExternalStore(
+  subscribeToReducedMotion,
+  getReducedMotion,
+  getServerReducedMotion
+)
+```
+
+`getServerReducedMotion` returns `false` — the server has no way to know the user's OS preference, so it renders the canvas. After hydration, if the user has reduced motion enabled, `getReducedMotion` returns `true` and the canvas unmounts. If the user toggles the setting mid-session, the subscribe listener fires and React re-renders.
+
+## The warning that wasn't from the code
+
+After fixing both components, a hydration warning was still appearing in the console. The diff showed this:
+
+```diff
+  <body
+    className="inter_d3423db7-module__9Xo3fG__variable antialiased"
+-   data-new-gr-c-s-check-loaded="9.95.0"
+-   data-gr-ext-installed=""
+  >
+```
+
+Those attributes aren't from the code. They're injected by the Grammarly browser extension before React hydrates. The server never wrote them; React sees them on `<body>` during the client pass and throws.
+
+The fix is `suppressHydrationWarning` on `<body>` — the same attribute already on `<html>` for next-themes:
+
+```tsx
+<body className={`${inter.variable} antialiased`} suppressHydrationWarning>
+```
+
+`suppressHydrationWarning` tells React to ignore attribute mismatches on that specific element. It doesn't suppress mismatches in children — just the element it's placed on. `<html>` and `<body>` are the right places because they're the most common targets for extension injection.
+
+Not every hydration warning points at a React bug. If you've audited your components and the warning persists, check the browser console diff for unfamiliar attributes — a browser extension is a likely culprit.
+
+<Takeaway title="Key Points">
+- **`typeof window` guards don't protect lazy initializers during hydration.** Hydration runs on the client, where `window` exists. The guard returns `false`, the full expression evaluates, and if the result differs from the server output, React throws.
+- **`useSyncExternalStore` handles both the mismatch and the live subscription.** `getServerSnapshot` ensures the hydration pass matches the server HTML; `subscribe` keeps the value current after hydration. One hook replaces a lazy initializer plus a `useEffect` listener.
+- **`MutationObserver` and `MediaQueryList` are natural subscribe targets.** DOM attribute changes and media query flips both have event-based APIs that map directly to the `subscribe` argument — register a listener, return the cleanup.
+- **Browser extensions can trigger hydration warnings.** If your components look correct but the warning persists, inspect the console diff for attributes on `<html>` or `<body>` you didn't write. `suppressHydrationWarning` on those elements is the right fix.
+</Takeaway>

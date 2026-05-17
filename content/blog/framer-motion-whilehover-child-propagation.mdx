@@ -1,0 +1,121 @@
+export const metadata = {
+  title: "whileHover on a child motion element doesn't respond to parent hover",
+  date: "2026-05-04",
+  description: "Why a child motion element's whileHover only fires on its own hit area, and when to use Framer Motion variants vs CSS group-hover instead.",
+  tags: ["framer-motion", "react", "css", "tailwind"],
+}
+
+The button turns black on hover. The arrow icon was supposed to turn white at the same time. It didn't — unless the pointer happened to be directly over the icon.
+
+## What the component looked like
+
+The intent was a carousel button that inverts colors on hover: white background with a black icon at rest, black background with a white icon when hovered. Both elements were Framer Motion components with their own `whileHover` props:
+
+```tsx
+<motion.button
+  whileHover={{ scale: 1.1, backgroundColor: "#000000" }}
+  whileTap={{ scale: 0.95 }}
+  className="w-11 h-11 rounded-full bg-white border-2 border-black ..."
+>
+  <motion.svg
+    className="w-5 h-5 stroke-black stroke-2"
+    initial={{ stroke: "#000000" }}
+    whileHover={{ stroke: "#ffffff" }}
+  >
+    <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+  </motion.svg>
+</motion.button>
+```
+
+The button scales and turns black on hover. The svg was supposed to turn its stroke white. It didn't.
+
+## Why `whileHover` doesn't cross element boundaries
+
+`whileHover` — the Framer Motion prop that applies a set of styles when the pointer enters an element — tracks the **hover target** of the element it's placed on, not any ancestor's hover state.
+
+When the pointer enters the `motion.button`'s bounding box, the button's `whileHover` fires. The `motion.svg` is a separate element with its own independent hover tracking. Its `whileHover` only fires when the pointer enters the *svg's* bounding box.
+
+The svg is nested inside the button, but its bounding box is smaller — it covers just the icon area. Hovering the button's padding, corners, or border doesn't trigger the svg's `whileHover`. The icon stays black unless you hover it directly.
+
+## The Framer Motion way: variant propagation
+
+Framer Motion does support coordinating hover states across a parent and its children — through **variants**, which are named sets of animation targets that cascade down the component tree.
+
+```tsx
+const buttonVariants = {
+  rest: { scale: 1, backgroundColor: "#ffffff" },
+  hover: { scale: 1.1, backgroundColor: "#000000" },
+}
+
+const iconVariants = {
+  rest: { stroke: "#000000" },
+  hover: { stroke: "#ffffff" },
+}
+
+<motion.button
+  variants={buttonVariants}
+  initial="rest"
+  whileHover="hover"
+>
+  <motion.svg variants={iconVariants}>
+    <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+  </motion.svg>
+</motion.button>
+```
+
+When the parent has `whileHover="hover"` and a child has a `variants` prop with a matching `"hover"` key, Framer Motion propagates the named state down the tree. The child animates to its `"hover"` variant when the parent is hovered — without needing its own `whileHover`.
+
+This is the Framer Motion-native approach. It works, but it means defining named variant objects for every element involved.
+
+## Why CSS `group-hover` is simpler here
+
+For a color change driven purely by hover state, CSS already handles it — with less code.
+
+Tailwind's `group`/`group-hover` utilities let a descendant react to an ancestor's hover. Adding `group` to the parent marks it as the hover reference; any descendant can then use `group-hover:` to apply styles whenever that ancestor is hovered — regardless of which part of the ancestor the pointer is over.
+
+```tsx
+<motion.button
+  className="group bg-white hover:bg-black transition-colors duration-300 ..."
+  whileHover={{ scale: 1.1 }}
+  whileTap={{ scale: 0.95 }}
+>
+  <svg className="stroke-black group-hover:stroke-white stroke-2 transition-colors duration-300 ...">
+    <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+</motion.button>
+```
+
+The `motion.svg` becomes a plain `<svg>`. Framer Motion owns the scale; CSS owns the color. Hovering anywhere on the button — border, padding, icon — changes the stroke.
+
+## When to split the work between Framer Motion and CSS
+
+Framer Motion and CSS overlap significantly. Both can animate color, opacity, scale, and more. Setting the same property with both creates competing transitions.
+
+A useful split:
+
+| Use Framer Motion | Use CSS |
+|---|---|
+| Spring-based scale and position | Background color on hover |
+| Drag and gesture interactions | Stroke / fill color on hover |
+| Layout animations (`layoutId`) | Opacity, border, box-shadow |
+| Coordinated multi-element sequences | Transitions driven by `:hover`, `:focus`, `:disabled` |
+
+Framer Motion owns the motion. CSS owns state-driven visual changes. When a hover effect is purely cosmetic and doesn't need spring physics or gesture coordination, reach for `group-hover:` first.
+
+## The redundant `initial` prop
+
+The original `motion.svg` had both `className="stroke-black"` and `initial={{ stroke: "#000000" }}` — the same property set two ways.
+
+Framer Motion renders `initial` values as inline `style` attributes during SSR and hydration. Inline styles have higher CSS specificity than class-based styles, so the Tailwind `stroke-black` class was silently overridden by the inline style. It was dead code from the start.
+
+<Callout title="In my code">
+  `motion.svg` had `className="... stroke-black stroke-2"` alongside `initial={{ stroke: "#000000" }}`. Once I noticed both were setting the same property, removing `motion.svg` entirely and keeping only the Tailwind class was the obvious cleanup.
+</Callout>
+
+There is also a subtler concern: Framer Motion processes color values internally and may normalize `#000000` to `rgb(0, 0, 0)` on the client. The server renders `style="stroke: #000000"`; the client may produce `style="stroke: rgb(0, 0, 0)"`. React sees a mismatch in the `style` attribute and can throw a hydration warning. Removing the `initial` prop eliminates the potential entirely.
+
+<Takeaway title="Key Points">
+- **`whileHover` targets the element's own hit area, not the parent's.** A child `motion.*` with `whileHover` only animates when the pointer enters the child's bounding box. For parent-driven hover, use Framer Motion variants with a matching key on the child, or use CSS `group-hover`.
+- **CSS `group-hover` is the right tool for state-driven color changes.** Hover-triggered color swaps don't need spring physics. `group` on the parent and `group-hover:` on descendants covers the pattern with less code and no competing transitions.
+- **Don't set the same property with both a Tailwind class and Framer Motion `initial`.** Inline styles override class-based styles — one of them is always dead code. The redundancy also risks producing different `style` attribute values between server and client during hydration.
+</Takeaway>

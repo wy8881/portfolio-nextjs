@@ -1,5 +1,3 @@
-'use client'
-
 import Image from 'next/image'
 import { personalInfo } from '@/data/about/personal-info'
 import catPic from '@/public/images/about/profile-cats.webp'

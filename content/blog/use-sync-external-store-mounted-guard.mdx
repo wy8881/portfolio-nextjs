@@ -124,3 +124,7 @@ The pattern is: if data lives outside React (a DOM API, a global variable, a lib
 - **`useSyncExternalStore` is the React-official solution.** Its `getServerSnapshot` argument lets you return one value during SSR and hydration, and a different value on the client, with no effects or extra renders involved. React manages the transition internally.
 - **Its real purpose is external stores.** Browser APIs (`navigator.onLine`, `window.innerWidth`), WebSocket streams, third-party state managers — any mutable data outside React's control. It also prevents tearing in concurrent mode, which `useEffect` cannot guarantee.
 </Takeaway>
+
+The next post in this series shows `useSyncExternalStore` with real subscribe functions — `MutationObserver` for DOM attribute changes and `MediaQueryList` for media queries — and covers a related trap where `typeof window` guards fail during hydration.
+
+<LinkCard href="/blog/usestate-lazy-initializer-hydration-trap" />

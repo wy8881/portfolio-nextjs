@@ -1,0 +1,165 @@
+export const metadata = {
+  title: "What Happens When a Request Hits Your Next.js App",
+  date: "2026-05-17",
+  description: "Every request passes through middleware, layouts, and the page component in a fixed order. Knowing that order tells you exactly where to put auth guards, session refreshes, and data fetching.",
+  tags: ["next.js", "app-router", "middleware", "server-components", "architecture"],
+}
+
+When a browser requests a page, Next.js doesn't call your page component directly. The request passes through a layered pipeline — middleware runs first, then layouts wrap the page from outside in, then the page itself renders. Knowing the order tells you exactly where each concern belongs.
+
+## Stage 1: Static assets never reach your app
+
+Vercel (and most Next.js hosts) put your built JavaScript bundles, CSS files, and images on a CDN — a **Content Delivery Network**, a set of servers distributed worldwide that cache and serve files from locations close to the user. When the browser requests a static file, the CDN responds directly. Your application code never runs.
+
+Only dynamic requests — pages, Server Actions, Route Handlers — continue past this point.
+
+## Stage 2: Middleware intercepts before any React code
+
+**Middleware** is a single file at the project root: `middleware.ts`. It intercepts every request that matches its `matcher` config and can read, rewrite, or redirect before any component renders.
+
+```ts
+// middleware.ts
+export async function middleware(request: NextRequest) {
+  const response = NextResponse.next()
+
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll: () => request.cookies.getAll(),
+      setAll: (cookies) =>
+        cookies.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options)
+        ),
+    },
+  })
+
+  await supabase.auth.getUser() // refreshes the session token in the cookie
+
+  return response
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+}
+```
+
+There's no registration step. Next.js discovers `middleware.ts` by convention and runs it automatically on every matching request.
+
+The `matcher` pattern here excludes static assets — no need to refresh the session for every CSS file. For all other routes, middleware runs, refreshes the session cookie, and passes the request forward.
+
+Middleware is the right place for work that must happen before React renders: session token refreshes, simple redirects, request rewriting. It is not the right place for auth guards — middleware runs before any layout or page has rendered, so it can't present a proper login page or use layout-provided context.
+
+## Why middleware and layouts run in different environments
+
+Middleware runs on the **Edge Runtime** — a stripped-down JavaScript environment built on V8 (the same engine as Chrome) with no Node.js APIs. No `fs`, no `path`, no native database drivers. What it trades for that constraint: it starts in microseconds with no warm-up time, and Vercel runs it on servers geographically close to the user. A request from Tokyo gets middleware running in Tokyo.
+
+This matters because middleware intercepts every single request. If it had the same startup cost as a full server, that cost would stack on top of every page load.
+
+Layouts and pages run on **Node.js serverless functions** — full Node.js with access to any npm package, native modules, and database drivers. The trade-off is a **cold start**: a serverless function spins down when idle to save resources. The next request after a period of inactivity has to spin it back up — loading the runtime, your code, and any connections. That startup takes anywhere from 50ms to 500ms depending on how much code is involved.
+
+Once the function is running, subsequent requests are fast. The cold start only happens after idle periods.
+
+Supabase's JavaScript client uses `fetch` internally, which is available in both runtimes. That's why `getUser()` works in middleware. A raw Postgres driver — which requires native Node.js networking APIs — would not.
+
+| | Edge Runtime | Node.js serverless |
+|---|---|---|
+| Startup | Microseconds, always warm | 50–500ms cold start after idle |
+| Runs near | The user (worldwide edge nodes) | A fixed region |
+| Node.js APIs | No | Yes |
+| Supabase JS client | Yes | Yes |
+| Raw Postgres driver | No | Yes |
+| Used for | Middleware | Layouts, pages, Server Actions |
+
+## Stage 3: The root layout wraps everything
+
+`app/layout.tsx` is the outermost React layer. It wraps every page in the app and renders on every request. This is where global structure lives: the `<html>` and `<body>` tags, fonts, and providers.
+
+```tsx
+// app/layout.tsx
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
+    </html>
+  )
+}
+```
+
+It runs on the server. Its output — the shell — becomes the outermost layer of the HTML sent to the browser.
+
+## Stage 4: Nested layouts run in order, outside in
+
+Layouts can nest. A folder with its own `layout.tsx` wraps all pages inside that folder. The nesting order is always root layout → inner layouts → page. Each outer layer renders and passes its `children` inward.
+
+**Route groups** — folders whose names are wrapped in parentheses like `(app)` — don't affect the URL but can have their own layout. This is how you apply a different shell to a section of the app without repeating it in every page.
+
+For authenticated pages, the group layout is where the auth guard lives:
+
+```tsx
+// app/(app)/layout.tsx
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  return (
+    <div>
+      <Sidebar />
+      <main>{children}</main>
+    </div>
+  )
+}
+```
+
+Every page inside `app/(app)/` goes through this layout. The auth check runs once, in one place. If there's no session, the user is redirected before any page component renders.
+
+## Stage 5: The page component renders last
+
+After all layouts have run, the page component executes. By this point the session is refreshed (middleware), auth is checked (app layout), and the structural shell is in place. The page can focus on its own data.
+
+```tsx
+// app/(app)/page.tsx
+export default async function DashboardPage() {
+  const supabase = createClient()
+  const { data: items } = await supabase.from('items').select('*')
+
+  return <ItemList items={items} />
+}
+```
+
+## Stage 6: HTML streams to the browser
+
+Next.js doesn't wait for the full page to finish rendering before responding. It **streams** HTML: the outer shell (head, body, sidebar) arrives in the browser as soon as it's ready, while slower parts — components that wait on database queries further down the tree — flush incrementally.
+
+The browser can start painting content before the server has finished producing it.
+
+## Stage 7: Hydration makes the page interactive
+
+The HTML the browser received is static. To make it interactive, React runs in the browser.
+
+Once the JavaScript bundles download, React **hydrates** the page — it walks the component tree, matches its output against the existing HTML, and attaches event listeners. After hydration, `useState`, `useEffect`, and click handlers are all live. Client Components (files marked `'use client'`) become interactive.
+
+Server Components don't hydrate — no JavaScript for them was sent to the browser. They produced HTML during the server render and are done.
+
+## Which layer handles what
+
+| Layer | Runs when | Use for |
+|---|---|---|
+| CDN | Before app code | Static files — JS, CSS, images |
+| Middleware | Before any React renders | Session refresh, redirects, request rewriting |
+| Root layout | Every request | `<html>`, `<body>`, global fonts, global providers |
+| Group layout | Pages inside the folder | Auth guard, section shell (sidebar, nav) |
+| Page | After all layouts | Data fetching specific to that page |
+| Hydration | After JS loads in browser | Interactivity — event handlers, hooks |
+
+The auth guard belongs in a layout because the layout runs before the page and wraps a set of routes. Middleware doesn't own the redirect because it runs before React — it can't render a proper response and shouldn't need to inspect complex session state. Each layer does what it's structurally positioned to do.
+
+<Takeaway title="Key Points">
+- **Middleware runs before React.** `middleware.ts` is discovered by convention and intercepts matching requests. Use it for session cookie refreshes and simple rewrites — not for auth guards that need to render a response or access React context.
+- **Middleware and layouts run in different environments.** Middleware runs on the Edge Runtime — no Node.js APIs, but starts in microseconds with no cold start. Layouts and pages run on Node.js serverless functions — full Node.js, but with a startup cost after idle periods.
+- **Layouts handle shared concerns once.** Nested layouts wrap pages from outside in. An auth check in a group layout applies to every page in that group without being repeated in each page file.
+- **Pages get a clean slate.** By the time a page component runs, middleware has already refreshed the session and the layout has already enforced auth. The page can focus entirely on its own data fetching.
+- **Hydration is a second pass.** The browser receives static HTML, then React runs to attach interactivity. Server Components contribute HTML and nothing else — no client-side JavaScript for them is ever sent to the browser.
+</Takeaway>
+
+<LinkCard href="/blog/nextjs-server-first-use-server" />

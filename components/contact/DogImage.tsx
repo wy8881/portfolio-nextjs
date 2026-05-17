@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { contactInfo } from "@/data/contact/contact-info";
 import dogPic from "@/public/images/contact/dog.webp";

@@ -1,12 +1,20 @@
 // components/ui/SeasonalCanvas.tsx
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
 import { useTheme } from 'next-themes'
 import { createParticles, updateParticle, drawParticle, type Particle } from './particles'
 import type { Season } from '@/lib/types'
 
 const FADE_SECS = 0.6
+
+function subscribeToReducedMotion(onStoreChange: () => void) {
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+  mq.addEventListener('change', onStoreChange)
+  return () => mq.removeEventListener('change', onStoreChange)
+}
+const getReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const getServerReducedMotion = () => false
 
 export default function SeasonalCanvas() {
   return <Canvas />
@@ -16,10 +24,7 @@ function Canvas() {
   const { theme } = useTheme()
   const season = (theme as Season) ?? 'summer'
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [reducedMotion] = useState(() =>
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  )
+  const reducedMotion = useSyncExternalStore(subscribeToReducedMotion, getReducedMotion, getServerReducedMotion)
 
   const stateRef = useRef<{
     season: Season
