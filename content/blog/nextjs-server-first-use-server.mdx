@@ -1,0 +1,191 @@
+export const metadata = {
+  title: "Next.js Components Are Server-First — and That Changes Everything",
+  date: "2026-05-17",
+  description: "App Router components run on the server by default. That one inversion explains why 'use client', 'use server', Server Actions, and Route Handlers all exist.",
+  tags: ["next.js", "react", "server-components", "server-actions", "app-router"],
+}
+
+Every Next.js tutorial shows `'use client'` like it's turning something on. It's not — it's opting out of the default. Components run on the server unless you say otherwise, and understanding that one inversion explains why `'use server'`, Server Actions, and Route Handlers exist.
+
+## Components run on the server by default
+
+App Router flips the React model: **server is the default, browser is the opt-in.**
+
+A **Server Component** is a React component with no directive at the top of the file. It runs once at request time, generates HTML, and sends it to the browser. No JavaScript for the component itself is shipped to the client.
+
+```tsx
+// No directive — this is a Server Component
+export default async function DueItems() {
+  const items = await db.items.findMany({ where: { due: true } })
+  return <ul>{items.map(i => <li key={i.id}>{i.word}</li>)}</ul>
+}
+```
+
+This component can query the database directly, read secret environment variables, and use top-level `await`. The browser never sees any of that code — only the resulting HTML arrives.
+
+## `'use client'` — opting a component into the browser
+
+`'use client'` marks a **boundary**: this file and everything it imports runs in the browser.
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+
+export function ReviewSession({ items }: { items: Item[] }) {
+  const [queue, setQueue] = useState(items)
+
+  return (
+    <div>
+      <p>{queue[0]?.word}</p>
+      <button onClick={() => setQueue(q => q.slice(1))}>Next</button>
+    </div>
+  )
+}
+```
+
+Inside a Client Component you can use `useState`, `useEffect`, `onClick` — anything that requires the DOM or interactivity. The trade-off: no direct database access, no secret environment variables.
+
+## What directives actually are
+
+A **directive** is a string literal at the very top of a file. The Next.js build tool reads it at bundle time — not at runtime — to decide where the code runs.
+
+`'use strict'` in JavaScript is the same concept: a signal to the tooling, not executable code. Both `'use client'` and `'use server'` follow the same mechanism.
+
+The directive must be the first statement in the file. An import, a variable declaration, or any expression above it turns it into a plain string the bundler ignores.
+
+## The boundary problem — how do you trigger server code from a button click?
+
+A Server Component runs at request time, not in response to events. A Client Component handles events but can't reach the database. Neither alone can handle a button that writes to the database.
+
+The pre-Server Actions solution: write a Route Handler and call it with `fetch()`.
+
+```tsx
+// app/api/ratings/route.ts
+export async function POST(req: Request) {
+  const { itemId, rating } = await req.json()
+  await db.reviews.create({ data: { itemId, rating } })
+  return Response.json({ ok: true })
+}
+```
+
+```tsx
+// client component
+async function handleRate(rating: number) {
+  await fetch('/api/ratings', {
+    method: 'POST',
+    body: JSON.stringify({ itemId, rating }),
+  })
+}
+```
+
+This works, but it's boilerplate: a separate file, JSON serialization on both sides, a URL string that must stay in sync across both.
+
+## `'use server'` — not "server code" but "generate a proxy"
+
+`'use server'` doesn't mean "this code runs on the server." All code outside `'use client'` files already runs on the server. What `'use server'` does is tell Next.js to **generate a proxy function** in the browser bundle.
+
+When a Client Component imports a `'use server'` function, it doesn't receive the real implementation. It receives a thin wrapper that POSTs to Next.js's internal endpoint. The real function runs on the server. The result comes back to the client. This pattern is what Next.js calls a **Server Action**.
+
+```tsx
+// actions/ratings.ts
+'use server'
+
+export async function submitRating(itemId: string, rating: number) {
+  const user = await getAuthenticatedUser()
+  await db.reviews.create({ data: { itemId, rating, userId: user.id } })
+}
+```
+
+```tsx
+// client component — no fetch(), no URL, no JSON.stringify
+import { submitRating } from '@/actions/ratings'
+
+function RatingButtons({ itemId }: { itemId: string }) {
+  return (
+    <div>
+      <button onClick={() => submitRating(itemId, 1)}>👍</button>
+      <button onClick={() => submitRating(itemId, 0)}>👎</button>
+    </div>
+  )
+}
+```
+
+The browser calls `submitRating(itemId, 1)` as if it's a normal async function. Under the hood, Next.js serializes the arguments, POSTs to an internal URL, runs the real function, and returns the result. The client never received the real code — only the proxy.
+
+<FlowCompare
+  left={{
+    title: "Manual Route Handler",
+    steps: [
+      { text: "Write route.ts", note: "POST handler with JSON parsing" },
+      { text: "Write fetch() call in client", note: "URL, method, headers, body, error handling" },
+      { text: "Keep URL and types in sync", note: "rename a param → update both files" },
+    ]
+  }}
+  right={{
+    title: "Server Action",
+    steps: [
+      { text: "Write function with 'use server'", note: "typed arguments, real return value" },
+      { text: "Import and call directly", note: "Next.js generates the POST under the hood" },
+      { text: "✅ One source of truth", status: "success", note: "rename a param → TypeScript catches both sides" },
+    ]
+  }}
+/>
+
+## When to reach for each pattern
+
+| Pattern | Runs when | Use for |
+|---|---|---|
+| No directive (Server Component) | Request arrives | Data that loads with the page — async DB reads |
+| `'use client'` | Browser renders | Hooks, event handlers, browser APIs |
+| `'use server'` (Server Action) | User triggers an action | User-initiated mutations — writes, form submissions |
+| Route Handler | External HTTP caller | Webhooks, Vercel cron jobs, mobile clients |
+
+Server Actions are **internal** — Next.js exposes them via an auto-generated URL that isn't designed to be called from outside your app. Route Handlers are for callers that live outside your React tree and need a stable, documented HTTP endpoint.
+
+## Security — what Server Actions actually are under the hood
+
+A Server Action looks like a function call, but it's an HTTP POST endpoint. Anyone who discovers the internal URL and the function identifier could call it directly — bypassing your UI entirely.
+
+Three rules follow from this:
+
+**Always authenticate inside the function.** Read the session from cookies on the server side. Never accept the user's identity as an argument — a caller can pass any value.
+
+```tsx
+'use server'
+
+export async function createItem(word: string) {
+  const supabase = createServerClient(url, key, { cookies })
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) throw new Error('Unauthorized') // auth from cookies, not a param
+
+  await db.items.create({ data: { word, userId: user.id } })
+}
+```
+
+**Constrain what you return.** Return only what the UI needs. A raw database record can include password hashes, internal flags, or data belonging to other users.
+
+```tsx
+// ❌ returns the full row
+return await db.users.create({ data })
+
+// ✅ return only what the client renders
+const user = await db.users.create({ data })
+return { id: user.id, name: user.name }
+```
+
+**Validate inputs.** Arguments from the client are user input. Apply length limits, type checks, and strip unexpected fields before they reach the database.
+
+<Callout title="In my project">
+  `submitRating()` takes two arguments: `itemId` (a UUID) and `rating` (0 or 1). Before any DB write, it reads the authenticated user from Supabase cookies and validates that `rating` is strictly `0` or `1` — not just truthy. A caller who sends `rating: 999` would otherwise write a corrupt review row.
+</Callout>
+
+<Takeaway title="Key Points">
+- **Server is the default.** App Router components run on the server unless `'use client'` appears at the top of the file. No directive means the component generates HTML on the server and ships no JavaScript to the browser.
+- **`'use client'` opts out into the browser.** It marks a boundary — everything in that file and its imports runs in the browser. Use it for `useState`, event handlers, and browser APIs.
+- **`'use server'` generates a proxy, not just server code.** Marking a function with `'use server'` tells Next.js to replace the import in the browser bundle with a thin POST call. The real function stays on the server. This is a Server Action — and its route is internal, not a public API.
+- **Server Actions are POST endpoints under the hood.** Always authenticate inside the function by reading the session from cookies. Constrain what you return. Validate all arguments as untrusted input — because they are.
+</Takeaway>
+
+<LinkCard href="/blog/ssr-vs-csr-web-scraping" />
