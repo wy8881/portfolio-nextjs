@@ -21,6 +21,7 @@ import MdxTh from '@/components/mdx/MdxTh'
 import MdxTd from '@/components/mdx/MdxTd'
 import CSSDemo from '@/components/mdx/CSSDemo'
 import GridExpandPreview from '@/components/mdx/GridExpandPreview'
+import RelatedReading from '@/components/mdx/RelatedReading'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -30,6 +31,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     FlowCompare,
     CSSDemo,
     GridExpandPreview,
+    RelatedReading,
     h1: MdxH1,
     h2: MdxH2,
     h3: MdxH3,

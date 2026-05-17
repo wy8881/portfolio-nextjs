@@ -122,3 +122,9 @@ Any value that differs between server and client — `localStorage`, `window`, `
 - **Fix: a `mounted` guard.** Add `const [mounted, setMounted] = useState(false)` and `useEffect(() => { setMounted(true) }, [])`. Use `mounted ? theme : 'default'` instead of `theme ?? 'default'`. Both passes render the default on first pass — hydration succeeds. After hydration, `useEffect` fires, `mounted` flips, and React re-renders with the real value.
 - **The same rule applies to any browser-only value.** `localStorage`, `window`, `navigator`, `Date.now()` in a user timezone, `Intl` locale formatting — anything that differs between server and client must not be read during the initial render. Defer it to `useEffect`.
 </Takeaway>
+
+The next post in this series covers the `useEffect` + `setState` lint rule this fix triggers, and how `useSyncExternalStore` replaces it entirely.
+
+<LinkCard href="/blog/use-sync-external-store-mounted-guard" />
+
+<RelatedReading slugs={["use-sync-external-store-mounted-guard"]} />
