@@ -6,11 +6,11 @@ interface RelatedReadingProps {
 
 export default function RelatedReading({ slugs }: RelatedReadingProps) {
   return (
-    <div className="my-10">
-      <p className="text-xs font-semibold uppercase tracking-widest text-accent mb-4">
-        Further Reading
-      </p>
-      <hr className="border-artifact mb-2" />
+    <div className="mt-16 pt-8 border-t border-artifact">
+      <div className="flex items-baseline gap-4 mb-6">
+        <h2 className="text-xl font-bold text-primary shrink-0">Further Reading</h2>
+        <div className="h-px flex-1" style={{ background: 'var(--color-artifact)' }} />
+      </div>
       {slugs.map((slug) => (
         <LinkCard key={slug} href={`/blog/${slug}`} />
       ))}
