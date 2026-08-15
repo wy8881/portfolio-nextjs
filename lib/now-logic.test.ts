@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import type { Constellation, Catalog, Goal } from '../types/now.ts'
-import { starPoints, validateGoal, isActive, findActive } from './now-logic.ts'
+import { starPoints, validateGoal, isActive, findActive, resolveItems } from './now-logic.ts'
 
 const square: Constellation = {
   name: 'Square',
@@ -95,4 +95,37 @@ test('findActive throws when two goals are active', () => {
   const a = validateGoal('cru', valid, catalog)
   const b: Goal = { ...a, slug: 'cas' }
   assert.throws(() => findActive([a, b]), /more than one goal is active: cru, cas/i)
+})
+
+const items = [
+  { id: 'a', text: 'A', completedAt: '2026-08-02' },
+  { id: 'b', text: 'B', completedAt: null },
+]
+
+test('resolveItems keeps the committed date when there is one', () => {
+  const merged = resolveItems(items, { a: { completedAt: '2026-08-09', base: null } })
+  assert.equal(merged[0].completedAt, '2026-08-02')
+})
+
+test('resolveItems applies a fresh override', () => {
+  const merged = resolveItems(items, { b: { completedAt: '2026-08-09', base: null } })
+  assert.equal(merged[1].completedAt, '2026-08-09')
+})
+
+test('resolveItems drops a stale override', () => {
+  // base says the file used to hold a date; the file now says null, so the
+  // override is from a previous state and must not resurrect itself
+  const merged = resolveItems(items, { b: { completedAt: '2026-08-09', base: '2026-08-03' } })
+  assert.equal(merged[1].completedAt, null)
+})
+
+test('resolveItems ignores overrides for unknown ids', () => {
+  const merged = resolveItems(items, { zzz: { completedAt: '2026-08-09', base: null } })
+  assert.deepEqual(merged, items)
+})
+
+test('resolveItems does not mutate its input', () => {
+  const before = JSON.stringify(items)
+  resolveItems(items, { b: { completedAt: '2026-08-09', base: null } })
+  assert.equal(JSON.stringify(items), before)
 })

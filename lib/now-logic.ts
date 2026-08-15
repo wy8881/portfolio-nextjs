@@ -1,7 +1,7 @@
 // Pure logic for the /now page. NO VALUE IMPORTS — `import type` is erased before
 // execution, so this file runs directly under `node --test`. A plain import would
 // need the `@/` alias, which Node cannot resolve.
-import type { Constellation, Point, Catalog, Goal, GoalFile, NowItem } from '@/types/now'
+import type { Constellation, Point, Catalog, Goal, GoalFile, NowItem, Overrides } from '@/types/now'
 
 /** Maps normalised 0–1 catalog coordinates into a padded square of `size` pixels. */
 export function starPoints(figure: Constellation, size: number, padding: number): Point[] {
@@ -64,4 +64,18 @@ export function findActive(goals: Goal[]): Goal | null {
     )
   }
   return active[0] ?? null
+}
+
+/**
+ * Committed data always wins. A local override applies only while its `base`
+ * still matches what the file says — once the real date is committed, the
+ * override no longer matches and drops itself. No cleanup step needed.
+ */
+export function resolveItems(items: NowItem[], overrides: Overrides): NowItem[] {
+  return items.map((item) => {
+    if (item.completedAt !== null) return item
+    const override = overrides[item.id]
+    if (!override || override.base !== item.completedAt) return item
+    return { ...item, completedAt: override.completedAt }
+  })
 }
