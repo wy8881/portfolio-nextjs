@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import type { Constellation, Catalog, Goal } from '../types/now.ts'
-import { starPoints, validateGoal, isActive, findActive, resolveItems, addDays, dayOfWeek, dailyCounts, computeStreaks, monthCount, heatmapGrid } from './now-logic.ts'
+import { starPoints, validateGoal, isActive, findActive, resolveItems, addDays, dayOfWeek, dailyCounts, computeStreaks, monthCount, heatmapGrid, availableFigures, pickFigure, nearestCounts } from './now-logic.ts'
 
 const square: Constellation = {
   name: 'Square',
@@ -209,4 +209,28 @@ test('heatmapGrid returns weeks of seven days ending with this week', () => {
 test('heatmapGrid reports zero for days with no completions', () => {
   const grid = heatmapGrid({}, '2026-08-14', 1)
   assert.equal(grid[0][0]?.count, 0)
+})
+
+const pickCatalog: Catalog = {
+  cru: { name: 'Crux', abbr: 'Cru', aspect: 1, stars: [[0, 0], [1, 1], [0, 1], [1, 0]], lines: [] },
+  lyr: { name: 'Lyra', abbr: 'Lyr', aspect: 1, stars: [[0, 0], [1, 1], [0, 1], [1, 0]], lines: [] },
+  cas: { name: 'Cassiopeia', abbr: 'Cas', aspect: 1, stars: [[0, 0], [0.5, 0.5]], lines: [] },
+  ori: { name: 'Orion', abbr: 'Ori', aspect: 1, stars: [[0, 0], [1, 1], [0.5, 0.5]], lines: [] },
+}
+
+test('availableFigures matches the star count and skips used figures', () => {
+  assert.deepEqual(availableFigures(pickCatalog, ['cru'], 4), ['lyr'])
+})
+
+test('pickFigure is deterministic under a seeded random', () => {
+  assert.equal(pickFigure(pickCatalog, [], 4, () => 0)?.slug, 'cru')
+  assert.equal(pickFigure(pickCatalog, [], 4, () => 0.99)?.slug, 'lyr')
+})
+
+test('pickFigure returns null when nothing matches', () => {
+  assert.equal(pickFigure(pickCatalog, [], 9, () => 0), null)
+})
+
+test('nearestCounts suggests the closest available star counts', () => {
+  assert.deepEqual(nearestCounts(pickCatalog, [], 9, 2), [4, 3])
 })

@@ -155,3 +155,34 @@ export function heatmapGrid(
 
   return grid
 }
+
+export function availableFigures(catalog: Catalog, used: string[], starCount: number): string[] {
+  const taken = new Set(used)
+  return Object.keys(catalog)
+    .filter((slug) => !taken.has(slug) && catalog[slug].stars.length === starCount)
+    .sort()
+}
+
+/** `random` is injected so the scaffolder is deterministic under test. */
+export function pickFigure(
+  catalog: Catalog,
+  used: string[],
+  starCount: number,
+  random: () => number
+): { slug: string; figure: Constellation } | null {
+  const slugs = availableFigures(catalog, used, starCount)
+  if (slugs.length === 0) return null
+  const slug = slugs[Math.min(slugs.length - 1, Math.floor(random() * slugs.length))]
+  return { slug, figure: catalog[slug] }
+}
+
+export function nearestCounts(catalog: Catalog, used: string[], starCount: number, limit = 3): number[] {
+  const taken = new Set(used)
+  const counts = new Set<number>()
+  for (const [slug, figure] of Object.entries(catalog)) {
+    if (!taken.has(slug)) counts.add(figure.stars.length)
+  }
+  return [...counts]
+    .sort((a, b) => Math.abs(a - starCount) - Math.abs(b - starCount) || a - b)
+    .slice(0, limit)
+}
