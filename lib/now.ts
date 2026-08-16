@@ -8,10 +8,11 @@ import {
   findActive,
   isActive,
   monthCount,
+  SITE_TIMEZONE,
   validateGoal,
 } from '@/lib/now-logic'
 
-export const SITE_TIMEZONE = 'Australia/Adelaide'
+export { SITE_TIMEZONE }
 
 const NOW_DIR = path.join(process.cwd(), 'data/now')
 

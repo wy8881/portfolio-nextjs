@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useSyncExternalStore } from 'react'
+import { SITE_TIMEZONE } from '@/lib/now-logic'
 import type { NowItem, Overrides } from '@/types/now'
 
 const EMPTY: Overrides = Object.freeze({})
@@ -25,7 +26,13 @@ function read(slug: string | null): Overrides {
   let parsed: Overrides = EMPTY
   if (raw) {
     try {
-      parsed = JSON.parse(raw) as Overrides
+      const candidate: unknown = JSON.parse(raw)
+      // JSON.parse succeeds on "null", "42", "[...]", etc. without throwing, so the
+      // parsed value must be confirmed to be a genuine object before it is trusted
+      // as Overrides — otherwise a corrupt key can crash resolveItems downstream.
+      if (candidate !== null && typeof candidate === 'object' && !Array.isArray(candidate)) {
+        parsed = candidate as Overrides
+      }
     } catch {
       parsed = EMPTY
     }
@@ -45,7 +52,7 @@ function subscribe(onChange: () => void): () => void {
 
 /** Today in the author's timezone, so a late-night tick lands on the right day. */
 export function localToday(): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Australia/Adelaide' }).format(new Date())
+  return new Intl.DateTimeFormat('en-CA', { timeZone: SITE_TIMEZONE }).format(new Date())
 }
 
 export function useLocalCompletions(slug: string | null) {
@@ -58,6 +65,10 @@ export function useLocalCompletions(slug: string | null) {
   const toggle = useCallback(
     (item: NowItem) => {
       if (!slug) return
+      // An already-committed item has no override resolveItems will ever apply
+      // (it short-circuits on a non-null committed completedAt) — writing one
+      // anyway would just be permanent junk in localStorage.
+      if (item.completedAt !== null) return
       const current = read(slug)
       const next = { ...current }
       if (next[item.id]) {

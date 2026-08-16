@@ -3,6 +3,8 @@
 // need the `@/` alias, which Node cannot resolve.
 import type { Constellation, Point, Catalog, Goal, GoalFile, NowItem, Overrides, Streaks, HeatmapCell } from '@/types/now'
 
+export const SITE_TIMEZONE = 'Australia/Adelaide'
+
 /** Maps normalised 0–1 catalog coordinates into a padded square of `size` pixels. */
 export function starPoints(figure: Constellation, size: number, padding: number): Point[] {
   const inner = size - padding * 2
