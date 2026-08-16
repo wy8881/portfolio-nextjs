@@ -1,7 +1,7 @@
 // Pure logic for the /now page. NO VALUE IMPORTS — `import type` is erased before
 // execution, so this file runs directly under `node --test`. A plain import would
 // need the `@/` alias, which Node cannot resolve.
-import type { Constellation, Point, Catalog, Goal, GoalFile, NowItem, Overrides } from '@/types/now'
+import type { Constellation, Point, Catalog, Goal, GoalFile, NowItem, Overrides, Streaks, HeatmapCell } from '@/types/now'
 
 /** Maps normalised 0–1 catalog coordinates into a padded square of `size` pixels. */
 export function starPoints(figure: Constellation, size: number, padding: number): Point[] {
@@ -78,4 +78,80 @@ export function resolveItems(items: NowItem[], overrides: Overrides): NowItem[] 
     if (!override || override.base !== item.completedAt) return item
     return { ...item, completedAt: override.completedAt }
   })
+}
+
+const DAY_MS = 86_400_000
+
+/** Day arithmetic through UTC so a DST shift can never add or eat a day. */
+export function addDays(date: string, delta: number): string {
+  const [y, m, d] = date.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 1, d) + delta * DAY_MS).toISOString().slice(0, 10)
+}
+
+/** 0 = Monday … 6 = Sunday. */
+export function dayOfWeek(date: string): number {
+  const [y, m, d] = date.split('-').map(Number)
+  return (new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7
+}
+
+export function dailyCounts(goals: Goal[]): Record<string, number> {
+  const counts: Record<string, number> = {}
+  for (const goal of goals) {
+    for (const item of goal.items) {
+      if (item.completedAt) counts[item.completedAt] = (counts[item.completedAt] ?? 0) + 1
+    }
+  }
+  return counts
+}
+
+export function computeStreaks(dates: string[], today: string): Streaks {
+  const days = [...new Set(dates)].sort()
+  if (days.length === 0) return { current: 0, longest: 0 }
+
+  let longest = 1
+  let run = 1
+  for (let i = 1; i < days.length; i++) {
+    run = days[i] === addDays(days[i - 1], 1) ? run + 1 : 1
+    if (run > longest) longest = run
+  }
+
+  // A streak stays alive until the day after the last completion — otherwise
+  // it would read as broken all morning before you got to today's chapter.
+  const last = days[days.length - 1]
+  let current = 0
+  if (last === today || last === addDays(today, -1)) {
+    current = 1
+    for (let i = days.length - 1; i > 0; i--) {
+      if (days[i - 1] !== addDays(days[i], -1)) break
+      current++
+    }
+  }
+
+  return { current, longest }
+}
+
+export function monthCount(dates: string[], today: string): number {
+  const prefix = today.slice(0, 7)
+  return dates.filter((date) => date.startsWith(prefix)).length
+}
+
+export function heatmapGrid(
+  counts: Record<string, number>,
+  today: string,
+  weeks: number
+): (HeatmapCell | null)[][] {
+  const monday = addDays(today, -dayOfWeek(today))
+  const start = addDays(monday, -(weeks - 1) * 7)
+  const grid: (HeatmapCell | null)[][] = []
+
+  for (let w = 0; w < weeks; w++) {
+    const week: (HeatmapCell | null)[] = []
+    for (let d = 0; d < 7; d++) {
+      const date = addDays(start, w * 7 + d)
+      week.push(date > today ? null : { date, count: counts[date] ?? 0 })
+    }
+    grid.push(week)
+  }
+
+  return grid
 }

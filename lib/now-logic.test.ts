@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import type { Constellation, Catalog, Goal } from '../types/now.ts'
-import { starPoints, validateGoal, isActive, findActive, resolveItems } from './now-logic.ts'
+import { starPoints, validateGoal, isActive, findActive, resolveItems, addDays, dayOfWeek, dailyCounts, computeStreaks, monthCount, heatmapGrid } from './now-logic.ts'
 
 const square: Constellation = {
   name: 'Square',
@@ -128,4 +128,85 @@ test('resolveItems does not mutate its input', () => {
   const before = JSON.stringify(items)
   resolveItems(items, { b: { completedAt: '2026-08-09', base: null } })
   assert.equal(JSON.stringify(items), before)
+})
+
+test('addDays steps across month and year boundaries', () => {
+  assert.equal(addDays('2026-08-31', 1), '2026-09-01')
+  assert.equal(addDays('2026-01-01', -1), '2025-12-31')
+  assert.equal(addDays('2024-02-28', 1), '2024-02-29')
+})
+
+test('addDays is immune to DST — Adelaide shifts on 2026-10-04', () => {
+  assert.equal(addDays('2026-10-03', 1), '2026-10-04')
+  assert.equal(addDays('2026-10-04', 1), '2026-10-05')
+})
+
+test('dayOfWeek counts Monday as 0', () => {
+  assert.equal(dayOfWeek('2026-08-10'), 0) // Monday
+  assert.equal(dayOfWeek('2026-08-16'), 6) // Sunday
+})
+
+test('dailyCounts sums completions per day across goals', () => {
+  const goals: Goal[] = [
+    { slug: 'cru', startedAt: '2026-08-01', items: [
+      { id: 'a', text: 'A', completedAt: '2026-08-02' },
+      { id: 'b', text: 'B', completedAt: '2026-08-02' },
+      { id: 'c', text: 'C', completedAt: null },
+    ] },
+    { slug: 'cas', startedAt: '2026-08-01', items: [
+      { id: 'd', text: 'D', completedAt: '2026-08-03' },
+    ] },
+  ]
+  assert.deepEqual(dailyCounts(goals), { '2026-08-02': 2, '2026-08-03': 1 })
+})
+
+test('computeStreaks counts a run ending today', () => {
+  const dates = ['2026-08-12', '2026-08-13', '2026-08-14']
+  assert.deepEqual(computeStreaks(dates, '2026-08-14'), { current: 3, longest: 3 })
+})
+
+test('computeStreaks keeps the streak alive on the day after', () => {
+  const dates = ['2026-08-12', '2026-08-13']
+  assert.deepEqual(computeStreaks(dates, '2026-08-14'), { current: 2, longest: 2 })
+})
+
+test('computeStreaks breaks after a missed day', () => {
+  const dates = ['2026-08-10', '2026-08-11']
+  assert.deepEqual(computeStreaks(dates, '2026-08-14'), { current: 0, longest: 2 })
+})
+
+test('computeStreaks reports longest separately from current', () => {
+  const dates = ['2026-08-01', '2026-08-02', '2026-08-03', '2026-08-13', '2026-08-14']
+  assert.deepEqual(computeStreaks(dates, '2026-08-14'), { current: 2, longest: 3 })
+})
+
+test('computeStreaks counts a day once no matter how many items landed on it', () => {
+  const dates = ['2026-08-13', '2026-08-13', '2026-08-14']
+  assert.deepEqual(computeStreaks(dates, '2026-08-14'), { current: 2, longest: 2 })
+})
+
+test('computeStreaks handles no completions', () => {
+  assert.deepEqual(computeStreaks([], '2026-08-14'), { current: 0, longest: 0 })
+})
+
+test('monthCount counts only the current calendar month', () => {
+  const dates = ['2026-07-31', '2026-08-01', '2026-08-14', '2026-08-14']
+  assert.equal(monthCount(dates, '2026-08-14'), 3)
+})
+
+test('heatmapGrid returns weeks of seven days ending with this week', () => {
+  const grid = heatmapGrid({ '2026-08-13': 2 }, '2026-08-14', 4)
+  assert.equal(grid.length, 4)
+  assert.ok(grid.every((week) => week.length === 7))
+  const last = grid[3]
+  assert.equal(last[0]?.date, '2026-08-10') // Monday of the current week
+  assert.equal(last[3]?.date, '2026-08-13')
+  assert.equal(last[3]?.count, 2)
+  assert.equal(last[4]?.date, '2026-08-14') // today, still rendered
+  assert.equal(last[5], null) // tomorrow is not
+})
+
+test('heatmapGrid reports zero for days with no completions', () => {
+  const grid = heatmapGrid({}, '2026-08-14', 1)
+  assert.equal(grid[0][0]?.count, 0)
 })
