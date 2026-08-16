@@ -32,7 +32,13 @@ export function getGoals(): Goal[] {
     .filter((file) => file.endsWith('.json'))
     .map((file) => {
       const slug = file.replace(/\.json$/, '')
-      const raw = JSON.parse(fs.readFileSync(path.join(NOW_DIR, file), 'utf8'))
+      let raw: unknown
+      try {
+        raw = JSON.parse(fs.readFileSync(path.join(NOW_DIR, file), 'utf8'))
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err)
+        throw new Error(`data/now/${slug}.json: ${message}`)
+      }
       return validateGoal(slug, raw, catalog)
     })
 }
@@ -67,7 +73,7 @@ export function getNowData(): NowData {
       finishedAt: goal.items.reduce((latest, item) => (item.completedAt! > latest ? item.completedAt! : latest), ''),
       items: goal.items,
     }))
-    .sort((a, b) => (a.finishedAt < b.finishedAt ? 1 : -1))
+    .sort((a, b) => b.finishedAt.localeCompare(a.finishedAt))
 
   const counts = dailyCounts(goals)
   const dates = goals.flatMap((goal) =>
