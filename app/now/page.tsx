@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { getNowData } from '@/lib/now'
-import ConstellationFigureClient from '@/components/now/ConstellationFigureClient'
+import ActiveConstellation from '@/components/now/ActiveConstellation'
 
 export const metadata: Metadata = {
   title: 'Now - Yi Wang',
@@ -23,9 +23,9 @@ export default function NowPage() {
         </p>
 
         {active ? (
-          <ConstellationFigureClient figure={catalog[active.slug]} items={active.items} />
+          <ActiveConstellation figure={catalog[active.slug]} goal={active} />
         ) : (
-          <p className="text-secondary">Between constellations.</p>
+          <p className="text-secondary">Between constellations — the next one starts with npm run now:new.</p>
         )}
       </div>
     </div>
