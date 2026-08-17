@@ -1,7 +1,6 @@
 'use client'
 
 import { motion, useReducedMotion } from 'framer-motion'
-import { useEffect, useRef, useSyncExternalStore } from 'react'
 import { ANIMATION_EASING } from '@/lib/animations'
 import { starPoints } from '@/lib/now-logic'
 import type { Constellation, NowItem } from '@/types/now'
@@ -14,6 +13,14 @@ export interface ConstellationFigureProps {
   items: NowItem[]
   activeIndex: number | null
   onActivate: (index: number | null) => void
+  /**
+   * Ids of items toggled lit during *this* session (owned by `ActiveConstellation`,
+   * which is the only thing that knows for certain — it's the one calling `toggle`).
+   * Starts empty on every load, so nothing restored from localStorage is ever in it,
+   * and nothing restored ever animates. Only ids in this set count as "new" for the
+   * pop-in / draw-in / bloom animations below.
+   */
+  newlyLitIds: Set<string>
 }
 
 function formatDate(date: string): string {
@@ -26,49 +33,20 @@ function formatDate(date: string): string {
   })
 }
 
-// `useLocalCompletions` (owned by the parent) reads localStorage through its own
-// useSyncExternalStore, whose getServerSnapshot is EMPTY so hydration matches the
-// server HTML. That means *this* component's very first render — even though it
-// already runs on the client — reflects the committed-only state, not yet the
-// restored ticks; React corrects it with a second render immediately after.
-// This hook gives that boundary a name: it mirrors the same getServerSnapshot=false
-// / getSnapshot=true idiom SeasonalCanvas already uses for reduced motion, so
-// `isHydrated` flips to true starting on that same corrective render — never
-// before. Seeding the "seen" ref only once `isHydrated` is true (see below) skips
-// the stale first render, so restored ticks never get mistaken for a fresh one.
-const subscribeHydrated = () => () => {}
-const getHydrated = () => true
-const getServerHydrated = () => false
-
-const ConstellationFigure = ({ figure, items, activeIndex, onActivate }: ConstellationFigureProps) => {
+const ConstellationFigure = ({ figure, items, activeIndex, onActivate, newlyLitIds }: ConstellationFigureProps) => {
   const points = starPoints(figure, SIZE, PADDING)
   const lit = items.map((item) => item.completedAt !== null)
 
   const reduced = useReducedMotion()
-  const isHydrated = useSyncExternalStore(subscribeHydrated, getHydrated, getServerHydrated)
 
-  // react-hooks/refs (a React Compiler diagnostic surfaced through eslint-plugin-react-hooks)
-  // flags reading a ref's value during render, because a compiled/memoized component could
-  // skip re-rendering and miss the read. This project doesn't run the compiler (no
-  // babel-plugin-react-compiler, no experimental.reactCompiler), and reading a ref during
-  // render to diff against the previous commit is exactly the "usePrevious" pattern this
-  // task calls for — deferring the read to an effect would arrive one render too late to
-  // decide *this* render's animation props. Disabled deliberately, not overlooked.
-  /* eslint-disable react-hooks/refs */
-  const seen = useRef<boolean[] | null>(null)
-  // Seeded only once hydration has settled (see `isHydrated` above), which already
-  // includes any stored local ticks, so a reload renders the existing figure at
-  // rest and only ticks made in this session animate.
-  const previouslyLit = seen.current
-  useEffect(() => {
-    if (isHydrated) seen.current = lit
-  })
-
-  const isNew = (i: number) => previouslyLit !== null && !previouslyLit[i] && lit[i]
+  // A star counts as "new" only if the parent recorded it as toggled this session —
+  // never derived from comparing renders, so there's nothing to get wrong about which
+  // render is the "real" post-hydration one.
+  const isNew = (i: number) => newlyLitIds.has(items[i].id)
   const complete = lit.every(Boolean)
-  // Gate the bloom on completion becoming true *this* session, not merely being
-  // true — otherwise reloading an already-finished figure would replay it forever.
-  const justCompleted = complete && previouslyLit !== null && !previouslyLit.every(Boolean)
+  // The completing tick happened *this* session iff at least one item was toggled this
+  // session — a reload that restores an already-finished figure never touches this set.
+  const bloom = complete && newlyLitIds.size > 0 && !reduced
 
   return (
     <div className="relative w-full" onPointerLeave={() => onActivate(null)}>
@@ -97,7 +75,7 @@ const ConstellationFigure = ({ figure, items, activeIndex, onActivate }: Constel
               strokeDasharray={on ? undefined : '10 14'}
               initial={drawing ? { pathLength: 0, opacity: 0.9 } : false}
               animate={{ pathLength: 1, opacity: on ? 0.9 : 0.35 }}
-              transition={drawing ? { duration: 0.3, ease: ANIMATION_EASING.standard } : undefined}
+              transition={reduced ? { duration: 0 } : drawing ? { duration: 0.3, ease: ANIMATION_EASING.standard } : undefined}
             />
           )
         })}
@@ -105,6 +83,7 @@ const ConstellationFigure = ({ figure, items, activeIndex, onActivate }: Constel
         {points.map((point, i) => {
           const isLit = lit[i]
           const isActive = activeIndex === i
+          const isNewStar = !reduced && isNew(i)
           const label = isLit
             ? `${items[i].text} — finished ${formatDate(items[i].completedAt as string)}`
             : `${items[i].text} — not finished yet`
@@ -129,9 +108,9 @@ const ConstellationFigure = ({ figure, items, activeIndex, onActivate }: Constel
                   fill="var(--color-accent)"
                   initial={false}
                   animate={{
-                    opacity: isActive ? 0.32 : justCompleted && !reduced ? [0.18, 0.45, 0.18] : 0.18,
+                    opacity: isActive ? 0.32 : bloom ? [0.18, 0.45, 0.18] : 0.18,
                   }}
-                  transition={justCompleted && !reduced ? { duration: 0.9, delay: i * 0.05 } : { duration: 0.2 }}
+                  transition={reduced ? { duration: 0 } : bloom ? { duration: 0.9, delay: i * 0.05 } : { duration: 0.2 }}
                 />
               )}
               <motion.circle
@@ -142,9 +121,9 @@ const ConstellationFigure = ({ figure, items, activeIndex, onActivate }: Constel
                 stroke={isLit ? 'none' : 'var(--color-secondary)'}
                 strokeWidth={2.5}
                 strokeDasharray={isLit ? undefined : '6 6'}
-                initial={isNew(i) && !reduced ? { opacity: 0, scale: 0.4 } : false}
+                initial={isNewStar ? { opacity: 0, scale: 0.4 } : false}
                 animate={{ opacity: isLit ? 1 : 0.55, scale: 1 }}
-                transition={isNew(i) && !reduced ? { duration: 0.3, ease: ANIMATION_EASING.standard } : undefined}
+                transition={reduced ? { duration: 0 } : isNewStar ? { duration: 0.3, ease: ANIMATION_EASING.standard } : undefined}
                 style={{ transformOrigin: `${point.x}px ${point.y}px` }}
               />
               {/* Generous invisible hit area — the visible star is far too small to hover on a phone. */}
