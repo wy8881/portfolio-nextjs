@@ -73,8 +73,14 @@ const ConstellationFigure = ({ figure, items, activeIndex, onActivate, newlyLitI
               stroke={on ? 'var(--color-accent)' : 'var(--color-secondary)'}
               strokeWidth={on ? 3 : 2.5}
               strokeDasharray={on ? undefined : '10 14'}
-              initial={drawing ? { pathLength: 0, opacity: 0.9 } : false}
-              animate={{ pathLength: 1, opacity: on ? 0.9 : 0.35 }}
+              initial={false}
+              // `initial` only applies at mount, and this line is mounted from first
+              // paint — a tick just changes props on an already-mounted element. A
+              // constant animate.pathLength of 1 would never change value, so "drawing
+              // in" has to be expressed as an in-place keyframe animation instead: the
+              // target becomes the array [0, 1] only while `drawing` is true, which
+              // framer-motion runs as a fresh tween on that value each time it appears.
+              animate={{ pathLength: drawing ? [0, 1] : 1, opacity: on ? 0.9 : 0.35 }}
               transition={reduced ? { duration: 0 } : drawing ? { duration: 0.3, ease: ANIMATION_EASING.standard } : undefined}
             />
           )
@@ -143,8 +149,12 @@ const ConstellationFigure = ({ figure, items, activeIndex, onActivate, newlyLitI
                 stroke={isLit ? 'none' : 'var(--color-secondary)'}
                 strokeWidth={2.5}
                 strokeDasharray={isLit ? undefined : '6 6'}
-                initial={isNewStar ? { opacity: 0, scale: 0.4 } : false}
-                animate={{ opacity: isLit ? 1 : 0.55, scale: 1 }}
+                initial={false}
+                // Same reasoning as the edge line above: this circle is mounted from
+                // first paint, so `initial` is dead on a tick, and a constant
+                // animate.scale of 1 would never change value. The pop is the keyframe
+                // array [0.4, 1], present only while `isNewStar` is true.
+                animate={{ opacity: isLit ? 1 : 0.55, scale: isNewStar ? [0.4, 1] : 1 }}
                 transition={reduced ? { duration: 0 } : isNewStar ? { duration: 0.3, ease: ANIMATION_EASING.standard } : undefined}
                 style={{ transformOrigin: `${point.x}px ${point.y}px` }}
               />
