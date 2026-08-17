@@ -101,16 +101,38 @@ const ConstellationFigure = ({ figure, items, activeIndex, onActivate, newlyLitI
               className="cursor-pointer focus:outline-none"
             >
               {isLit && (
+                // Hover/idle only — this value's target is always a plain number, on
+                // purpose. If it ever also had to become the bloom's keyframe array
+                // conditionally, a hover flipping `isActive` mid-bloom would flip the
+                // *type* of the target (number <-> array) on the same motion value,
+                // which skips framer-motion's array shallow-compare and replays the
+                // bloom. Keeping this element's target type fixed avoids that.
                 <motion.circle
                   cx={point.x}
                   cy={point.y}
                   r={26}
                   fill="var(--color-accent)"
                   initial={false}
-                  animate={{
-                    opacity: isActive ? 0.32 : bloom ? [0.18, 0.45, 0.18] : 0.18,
-                  }}
-                  transition={reduced ? { duration: 0 } : bloom ? { duration: 0.9, delay: i * 0.05 } : { duration: 0.2 }}
+                  animate={{ opacity: isActive ? 0.32 : 0.18 }}
+                  transition={reduced ? { duration: 0 } : { duration: 0.2 }}
+                />
+              )}
+              {bloom && (
+                // A separate element, mounted only while `bloom` is true (which already
+                // folds in `!reduced`, so this never mounts under reduced motion). Its
+                // target is *always* the same keyframe array for as long as it's
+                // mounted — array-to-array on every re-render, so framer-motion's
+                // shallow-compare recognises "unchanged" and re-renders (e.g. a hover
+                // on a different star) leave it alone. It mounts once, when the figure
+                // completes, plays once, and settles.
+                <motion.circle
+                  cx={point.x}
+                  cy={point.y}
+                  r={26}
+                  fill="var(--color-accent)"
+                  initial={{ opacity: 0.18 }}
+                  animate={{ opacity: [0.18, 0.45, 0.18] }}
+                  transition={{ duration: 0.9, delay: i * 0.05 }}
                 />
               )}
               <motion.circle
