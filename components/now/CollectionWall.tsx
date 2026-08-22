@@ -13,7 +13,16 @@ export interface CollectionWallProps {
 
 const CollectionWall = ({ catalog, collected, activeSlug }: CollectionWallProps) => {
   const bySlug = new Map(collected.map((goal) => [goal.slug, goal]))
-  const slugs = Object.keys(catalog).sort((a, b) => catalog[a].name.localeCompare(catalog[b].name))
+  // Collected figures cluster at the front, newest first, so the trophies are not lost
+  // among 85 faint silhouettes; only the uncollected remainder falls back to alphabetical.
+  const slugs = Object.keys(catalog).sort((a, b) => {
+    const goalA = bySlug.get(a)
+    const goalB = bySlug.get(b)
+    if (goalA && goalB) return goalB.finishedAt.localeCompare(goalA.finishedAt)
+    if (goalA) return -1
+    if (goalB) return 1
+    return catalog[a].name.localeCompare(catalog[b].name)
+  })
 
   return (
     <section aria-label="Collection" className="mt-16">
