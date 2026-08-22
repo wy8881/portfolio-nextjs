@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import type { Constellation, Catalog, Goal } from '../types/now.ts'
-import { starPoints, validateGoal, isActive, findActive, resolveItems, addDays, dayOfWeek, dailyCounts, computeStreaks, monthCount, heatmapGrid, availableFigures, pickFigure, nearestCounts } from './now-logic.ts'
+import { starPoints, figureViewBox, DATE, validateGoal, isActive, findActive, resolveItems, addDays, dayOfWeek, dailyCounts, computeStreaks, monthCount, heatmapGrid, availableFigures, pickFigure, nearestCounts } from './now-logic.ts'
 
 const square: Constellation = {
   name: 'Square',
@@ -27,6 +27,38 @@ test('starPoints keeps every point inside the box', () => {
 
 test('starPoints handles a figure with no stars', () => {
   assert.deepEqual(starPoints({ ...square, stars: [] }, 100, 10), [])
+})
+
+test('figureViewBox reduces to the full padded square for a figure spanning the whole box', () => {
+  // `square`'s stars touch both corners of the unit box, so its tight bbox is already
+  // the full padded square — the crop should be a no-op here.
+  assert.deepEqual(figureViewBox(square, 100, 10), { x: 0, y: 0, width: 100, height: 100 })
+})
+
+test('figureViewBox crops tightly around a figure narrower than the padded square', () => {
+  const wide: Constellation = {
+    name: 'Wide',
+    abbr: 'Wid',
+    aspect: 5,
+    stars: [[0, 0.4], [1, 0.6]],
+    lines: [[0, 1]],
+  }
+  // points: (10, 42) and (90, 58) inside a 100x100/pad-10 box (inner = 80)
+  assert.deepEqual(figureViewBox(wide, 100, 10), { x: 0, y: 32, width: 100, height: 36 })
+})
+
+test('figureViewBox does not divide by zero for a single-star figure', () => {
+  const point: Constellation = { name: 'Point', abbr: 'Pt', aspect: 1, stars: [[0.5, 0.5]], lines: [] }
+  assert.deepEqual(figureViewBox(point, 100, 10), { x: 40, y: 40, width: 20, height: 20 })
+})
+
+test('figureViewBox falls back to the full padded square when there are no stars', () => {
+  assert.deepEqual(figureViewBox({ ...square, stars: [] }, 100, 10), { x: 0, y: 0, width: 100, height: 100 })
+})
+
+test('DATE matches YYYY-MM-DD and rejects other formats', () => {
+  assert.equal(DATE.test('2026-08-14'), true)
+  assert.equal(DATE.test('14/08/2026'), false)
 })
 
 const catalog: Catalog = {

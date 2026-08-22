@@ -1,7 +1,7 @@
 // Pure logic for the /now page. NO VALUE IMPORTS — `import type` is erased before
 // execution, so this file runs directly under `node --test`. A plain import would
 // need the `@/` alias, which Node cannot resolve.
-import type { Constellation, Point, Catalog, Goal, GoalFile, NowItem, Overrides, Streaks, HeatmapCell } from '@/types/now'
+import type { Constellation, Point, Catalog, Goal, GoalFile, NowItem, Overrides, Streaks, HeatmapCell, ViewBox } from '@/types/now'
 
 export const SITE_TIMEZONE = 'Australia/Adelaide'
 
@@ -14,7 +14,33 @@ export function starPoints(figure: Constellation, size: number, padding: number)
   }))
 }
 
-const DATE = /^\d{4}-\d{2}-\d{2}$/
+/**
+ * Tight pixel-space bounding box around a figure's stars, in the same size/padding
+ * coordinate space `starPoints` maps into — expanded by `padding` again so a star sitting
+ * right at the bbox edge keeps its full hover halo and hit-area inside the viewBox instead
+ * of being clipped by it. A wide or tall figure (the catalog normalises every figure into a
+ * centred box the *longer* axis of which spans the full unit square) gets a viewBox that
+ * matches its actual footprint instead of the fixed square that leaves it a thin band with
+ * empty space above and below. Falls back to the full padded square when there are no stars.
+ */
+export function figureViewBox(figure: Constellation, size: number, padding: number): ViewBox {
+  const points = starPoints(figure, size, padding)
+  if (points.length === 0) return { x: 0, y: 0, width: size, height: size }
+  const xs = points.map((p) => p.x)
+  const ys = points.map((p) => p.y)
+  const minX = Math.min(...xs)
+  const maxX = Math.max(...xs)
+  const minY = Math.min(...ys)
+  const maxY = Math.max(...ys)
+  return {
+    x: minX - padding,
+    y: minY - padding,
+    width: maxX - minX + padding * 2,
+    height: maxY - minY + padding * 2,
+  }
+}
+
+export const DATE = /^\d{4}-\d{2}-\d{2}$/
 
 /** Validates one goal file. Throws with the filename so a bad file fails `next build` loudly. */
 export function validateGoal(slug: string, raw: unknown, catalog: Catalog): Goal {

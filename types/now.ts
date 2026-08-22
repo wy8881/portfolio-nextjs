@@ -35,6 +35,14 @@ export interface Point {
   y: number
 }
 
+/** An SVG viewBox, in the same pixel space as `Point`. */
+export interface ViewBox {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 export interface Override {
   completedAt: string
   base: string | null
