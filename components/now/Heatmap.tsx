@@ -5,7 +5,10 @@ import { heatmapGrid, resolveItems } from '@/lib/now-logic'
 import type { NowItem } from '@/types/now'
 
 const WEEKS = 52
-const LEVELS = [0.12, 0.35, 0.6, 0.85]
+// Empty cells must read as a faint substrate, not compete with lit ones — so this
+// stays well below LEVELS[0] in every season. See the opacity note below.
+const EMPTY_OPACITY = 0.12
+const LEVELS = [0.3, 0.5, 0.7, 0.9]
 
 export interface HeatmapProps {
   counts: Record<string, number>
@@ -47,9 +50,13 @@ const Heatmap = ({ counts, today, activeSlug, activeItems }: HeatmapProps) => {
                       // season background (e.g. autumn's artifact #fef3c7 on #fffbeb
                       // background is nearly invisible) — not a foreground mark color.
                       // --color-secondary is what the rest of /now uses for faint-but-
-                      // legible marks (see ConstellationFigure's unlit stars).
+                      // legible marks (see ConstellationFigure's unlit stars). It must
+                      // render lighter than every lit tier — EMPTY_OPACITY sits well
+                      // under LEVELS[0] across all four seasons (verified in the task
+                      // report), so an empty day never outweighs a 1-star day the way a
+                      // flat 0.45 did.
                       background: cell.count === 0 ? 'var(--color-secondary)' : 'var(--color-accent)',
-                      opacity: cell.count === 0 ? 0.45 : LEVELS[Math.min(cell.count - 1, LEVELS.length - 1)],
+                      opacity: cell.count === 0 ? EMPTY_OPACITY : LEVELS[Math.min(cell.count - 1, LEVELS.length - 1)],
                     }}
                   />
                 )
