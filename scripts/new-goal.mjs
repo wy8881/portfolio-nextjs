@@ -3,7 +3,7 @@
 // and the build all share exactly one copy of this logic.
 import fs from 'node:fs'
 import path from 'node:path'
-import { pickFigure, nearestCounts, isActive, validateGoal } from '../lib/now-logic.ts'
+import { pickFigure, nearestCounts, isActive, validateGoal, SITE_TIMEZONE } from '../lib/now-logic.ts'
 
 const ROOT = process.cwd()
 const NOW_DIR = path.join(ROOT, 'data/now')
@@ -48,7 +48,7 @@ if (chosen.figure.stars.length !== starCount) {
   process.exit(1)
 }
 
-const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Australia/Adelaide' }).format(new Date())
+const today = new Intl.DateTimeFormat('en-CA', { timeZone: SITE_TIMEZONE }).format(new Date())
 const goal = {
   startedAt: today,
   items: Array.from({ length: starCount }, (_, i) => ({
