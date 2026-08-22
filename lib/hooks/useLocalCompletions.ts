@@ -1,8 +1,8 @@
 'use client'
 
 import { useCallback, useSyncExternalStore } from 'react'
-import { SITE_TIMEZONE } from '@/lib/now-logic'
-import type { NowItem, Overrides } from '@/types/now'
+import { DATE, SITE_TIMEZONE } from '@/lib/now-logic'
+import type { NowItem, Override, Overrides } from '@/types/now'
 
 const EMPTY: Overrides = Object.freeze({})
 const listeners = new Set<() => void>()
@@ -15,6 +15,18 @@ const storageKey = (slug: string) => `now:${slug}`
 
 function emit() {
   for (const listener of listeners) listener()
+}
+
+// Confirms one stored entry actually has the shape `resolveItems` expects — a raw string
+// that fails `formatDate`'s `.split('-')` assumption (or a non-date `base`) would crash
+// downstream rendering rather than just being ignored, so entries that don't match are
+// dropped individually instead of discarding the whole container.
+function isValidOverride(value: unknown): value is Override {
+  if (typeof value !== 'object' || value === null) return false
+  const { completedAt, base } = value as Record<string, unknown>
+  if (typeof completedAt !== 'string' || !DATE.test(completedAt)) return false
+  if (base !== null && (typeof base !== 'string' || !DATE.test(base))) return false
+  return true
 }
 
 function read(slug: string | null): Overrides {
@@ -31,7 +43,11 @@ function read(slug: string | null): Overrides {
       // parsed value must be confirmed to be a genuine object before it is trusted
       // as Overrides — otherwise a corrupt key can crash resolveItems downstream.
       if (candidate !== null && typeof candidate === 'object' && !Array.isArray(candidate)) {
-        parsed = candidate as Overrides
+        const valid: Overrides = {}
+        for (const [id, entry] of Object.entries(candidate as Record<string, unknown>)) {
+          if (isValidOverride(entry)) valid[id] = entry
+        }
+        parsed = valid
       }
     } catch {
       parsed = EMPTY
