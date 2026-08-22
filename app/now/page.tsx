@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { getNowData } from '@/lib/now'
 import ActiveConstellation from '@/components/now/ActiveConstellation'
+import Heatmap from '@/components/now/Heatmap'
 
 export const metadata: Metadata = {
   title: 'Now - Yi Wang',
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 export const revalidate = 3600
 
 export default function NowPage() {
-  const { active, catalog } = getNowData()
+  const { active, catalog, counts, today } = getNowData()
 
   return (
     <div className="min-h-dvh pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-24 lg:pb-32">
@@ -27,6 +28,13 @@ export default function NowPage() {
         ) : (
           <p className="text-secondary">Between constellations — the next one starts with npm run now:new.</p>
         )}
+
+        <Heatmap
+          counts={counts}
+          today={today}
+          activeSlug={active?.slug ?? null}
+          activeItems={active?.items ?? []}
+        />
       </div>
     </div>
   )
