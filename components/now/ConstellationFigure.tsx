@@ -2,11 +2,19 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 import { ANIMATION_EASING } from '@/lib/animations'
-import { starPoints } from '@/lib/now-logic'
+import { starPoints, figureViewBox } from '@/lib/now-logic'
 import type { Constellation, NowItem } from '@/types/now'
 
 const SIZE = 1000
 const PADDING = 70
+
+// The tooltip's own max-width is a fixed pixel value (not a percentage of the wrapper)
+// so `clamp()` below can guarantee containment using simple arithmetic: as long as the
+// wrapper is wider than TOOLTIP_MAX_WIDTH (true for any realistic phone viewport once the
+// page's own horizontal padding is subtracted), the whole tooltip box stays inside the
+// wrapper's bounds for every star position, with nothing cut off.
+const TOOLTIP_MAX_WIDTH = 200
+const TOOLTIP_HALF_WIDTH = TOOLTIP_MAX_WIDTH / 2
 
 export interface ConstellationFigureProps {
   figure: Constellation
@@ -35,6 +43,11 @@ function formatDate(date: string): string {
 
 const ConstellationFigure = ({ figure, items, activeIndex, onActivate, newlyLitIds }: ConstellationFigureProps) => {
   const points = starPoints(figure, SIZE, PADDING)
+  // A wide or tall figure only fills a thin band of the fixed SIZE x SIZE square (the
+  // catalog normalises every figure's longer axis to span the full unit box, so the
+  // shorter axis can be a small fraction of it) — crop the viewBox to the figure's actual
+  // footprint instead of always rendering the full square.
+  const viewBox = figureViewBox(figure, SIZE, PADDING)
   const lit = items.map((item) => item.completedAt !== null)
 
   const reduced = useReducedMotion()
@@ -51,7 +64,7 @@ const ConstellationFigure = ({ figure, items, activeIndex, onActivate, newlyLitI
   return (
     <div className="relative w-full" onPointerLeave={() => onActivate(null)}>
       <svg
-        viewBox={`0 0 ${SIZE} ${SIZE}`}
+        viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
         className="w-full h-auto"
         role="group"
         aria-label={`${figure.name} — ${lit.filter(Boolean).length} of ${items.length} stars lit`}
@@ -167,10 +180,20 @@ const ConstellationFigure = ({ figure, items, activeIndex, onActivate, newlyLitI
 
       {activeIndex !== null && (
         <div
-          className="absolute -translate-x-1/2 -translate-y-full pointer-events-none px-3 py-2 rounded-lg text-xs whitespace-nowrap max-w-[80%] overflow-hidden text-ellipsis"
+          className="absolute -translate-x-1/2 -translate-y-full pointer-events-none px-3 py-2 rounded-lg text-xs whitespace-nowrap max-w-[200px] overflow-hidden text-ellipsis"
           style={{
-            left: `${(points[activeIndex].x / SIZE) * 100}%`,
-            top: `${(points[activeIndex].y / SIZE) * 100 - 2}%`,
+            // Percentages are of the viewBox's own width/height, not the fixed SIZE
+            // constant — the viewBox is cropped to the figure's footprint (see above), so
+            // dividing by SIZE would misplace the tooltip for anything but a perfectly
+            // square figure. Horizontally, `left` is clamped via CSS clamp() so the
+            // tooltip's box (bounded by its fixed TOOLTIP_MAX_WIDTH) can never extend past
+            // the wrapper's edges — this is what stops a star near the edge of a narrow
+            // phone viewport from pushing the page into horizontal scroll. Clamping (rather
+            // than `overflow-x: clip` on the wrapper) was chosen because clipping would
+            // slice the already near-max-width tooltip text for an edge star instead of
+            // just repositioning it, which would fail "remains fully readable".
+            left: `clamp(${TOOLTIP_HALF_WIDTH}px, ${((points[activeIndex].x - viewBox.x) / viewBox.width) * 100}%, calc(100% - ${TOOLTIP_HALF_WIDTH}px))`,
+            top: `${((points[activeIndex].y - viewBox.y) / viewBox.height) * 100 - 2}%`,
             background: 'var(--color-primary)',
             color: 'var(--color-background)',
           }}
