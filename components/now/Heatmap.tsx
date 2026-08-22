@@ -1,7 +1,7 @@
 'use client'
 
-import { useLocalCompletions } from '@/lib/hooks/useLocalCompletions'
-import { heatmapGrid, resolveItems } from '@/lib/now-logic'
+import { useMergedDates } from '@/lib/hooks/useMergedDates'
+import { heatmapGrid } from '@/lib/now-logic'
 import type { NowItem } from '@/types/now'
 
 const WEEKS = 52
@@ -18,17 +18,16 @@ export interface HeatmapProps {
 }
 
 const Heatmap = ({ counts, today, activeSlug, activeItems }: HeatmapProps) => {
-  const { overrides } = useLocalCompletions(activeSlug)
+  const { localDates, effectiveToday } = useMergedDates(activeSlug, activeItems, today)
 
   // Local ticks count toward today immediately — otherwise the streak would look
   // broken on the very day you kept it alive.
   const merged = { ...counts }
-  for (const item of resolveItems(activeItems, overrides)) {
-    const committed = activeItems.find((i) => i.id === item.id)?.completedAt ?? null
-    if (item.completedAt && !committed) merged[item.completedAt] = (merged[item.completedAt] ?? 0) + 1
+  for (const date of localDates) {
+    merged[date] = (merged[date] ?? 0) + 1
   }
 
-  const grid = heatmapGrid(merged, today, WEEKS)
+  const grid = heatmapGrid(merged, effectiveToday, WEEKS)
 
   return (
     <section aria-label="Daily activity" className="mt-16">

@@ -2,15 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import catalogFile from '@/data/constellations.json'
 import type { Catalog, Goal, NowItem } from '@/types/now'
-import {
-  computeStreaks,
-  dailyCounts,
-  findActive,
-  isActive,
-  monthCount,
-  SITE_TIMEZONE,
-  validateGoal,
-} from '@/lib/now-logic'
+import { dailyCounts, findActive, isActive, SITE_TIMEZONE, validateGoal } from '@/lib/now-logic'
 
 export { SITE_TIMEZONE }
 
@@ -58,7 +50,7 @@ export interface NowData {
   counts: Record<string, number>
   dates: string[]
   today: string
-  stats: { current: number; longest: number; thisMonth: number; collected: number; total: number }
+  stats: { collected: number; total: number }
 }
 
 export function getNowData(): NowData {
@@ -81,7 +73,6 @@ export function getNowData(): NowData {
     goal.items.map((item) => item.completedAt).filter((date): date is string => date !== null)
   )
   const now = today()
-  const streaks = computeStreaks(dates, now)
 
   return {
     catalog,
@@ -91,9 +82,6 @@ export function getNowData(): NowData {
     dates,
     today: now,
     stats: {
-      current: streaks.current,
-      longest: streaks.longest,
-      thisMonth: monthCount(dates, now),
       collected: collected.length,
       total: Object.keys(catalog).length,
     },
