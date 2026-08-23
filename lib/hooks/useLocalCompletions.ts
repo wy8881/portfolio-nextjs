@@ -1,8 +1,8 @@
 'use client'
 
 import { useCallback, useSyncExternalStore } from 'react'
-import { DATE, SITE_TIMEZONE } from '@/lib/now-logic'
-import type { NowItem, Override, Overrides } from '@/types/now'
+import { isValidOverride, SITE_TIMEZONE } from '@/lib/now-logic'
+import type { NowItem, Overrides } from '@/types/now'
 
 const EMPTY: Overrides = Object.freeze({})
 const listeners = new Set<() => void>()
@@ -15,18 +15,6 @@ const storageKey = (slug: string) => `now:${slug}`
 
 function emit() {
   for (const listener of listeners) listener()
-}
-
-// Confirms one stored entry actually has the shape `resolveItems` expects — a raw string
-// that fails `formatDate`'s `.split('-')` assumption (or a non-date `base`) would crash
-// downstream rendering rather than just being ignored, so entries that don't match are
-// dropped individually instead of discarding the whole container.
-function isValidOverride(value: unknown): value is Override {
-  if (typeof value !== 'object' || value === null) return false
-  const { completedAt, base } = value as Record<string, unknown>
-  if (typeof completedAt !== 'string' || !DATE.test(completedAt)) return false
-  if (base !== null && (typeof base !== 'string' || !DATE.test(base))) return false
-  return true
 }
 
 function read(slug: string | null): Overrides {

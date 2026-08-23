@@ -1,7 +1,7 @@
 // Pure logic for the /now page. NO VALUE IMPORTS — `import type` is erased before
 // execution, so this file runs directly under `node --test`. A plain import would
 // need the `@/` alias, which Node cannot resolve.
-import type { Constellation, Point, Catalog, Goal, GoalFile, NowItem, Overrides, Streaks, HeatmapCell, ViewBox } from '@/types/now'
+import type { Constellation, Point, Catalog, Goal, GoalFile, NowItem, Override, Overrides, Streaks, HeatmapCell, ViewBox } from '@/types/now'
 
 export const SITE_TIMEZONE = 'Australia/Adelaide'
 
@@ -41,6 +41,22 @@ export function figureViewBox(figure: Constellation, size: number, padding: numb
 }
 
 export const DATE = /^\d{4}-\d{2}-\d{2}$/
+
+/**
+ * Confirms one localStorage-stored entry actually has the shape `resolveItems` expects —
+ * a raw string that fails `formatDate`'s `.split('-')` assumption (or a non-date `base`)
+ * would crash downstream rendering rather than just being ignored, so an entry that
+ * doesn't match should be dropped, not trusted. Lives here rather than in the hook that
+ * uses it because it's pure and needs to be testable under `node --test`, same as
+ * `clampToday` below.
+ */
+export function isValidOverride(value: unknown): value is Override {
+  if (typeof value !== 'object' || value === null) return false
+  const { completedAt, base } = value as Record<string, unknown>
+  if (typeof completedAt !== 'string' || !DATE.test(completedAt)) return false
+  if (base !== null && (typeof base !== 'string' || !DATE.test(base))) return false
+  return true
+}
 
 /** Validates one goal file. Throws with the filename so a bad file fails `next build` loudly. */
 export function validateGoal(slug: string, raw: unknown, catalog: Catalog): Goal {
@@ -114,6 +130,22 @@ const DAY_MS = 86_400_000
 export function addDays(date: string, delta: number): string {
   const [y, m, d] = date.split('-').map(Number)
   return new Date(Date.UTC(y, m - 1, d) + delta * DAY_MS).toISOString().slice(0, 10)
+}
+
+/**
+ * Clamps `today` forward past a local (client-side) tick's date, but never by more than
+ * one day. `today` is baked into the page at ISR generation; a local tick's date is
+ * computed on the device at the moment it's made, so between local midnight and the next
+ * regeneration the two can legitimately disagree by a day — that gap is the only thing
+ * this exists to close (see `useMergedDates`). Bounding it to `addDays(today, 1)` — rather
+ * than trusting `localDates` outright — is what stops a validly-formatted but implausible
+ * date (clock skew, a hand-edited localStorage entry) from becoming a silent, persistent
+ * "today" that breaks the heatmap and streaks until that item is committed.
+ */
+export function clampToday(localDates: string[], today: string): string {
+  const ceiling = addDays(today, 1)
+  const maxDate = localDates.reduce((max, d) => (d > max ? d : max), today)
+  return maxDate > ceiling ? ceiling : maxDate
 }
 
 /** 0 = Monday … 6 = Sunday. */

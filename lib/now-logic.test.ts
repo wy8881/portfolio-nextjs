@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import type { Constellation, Catalog, Goal } from '../types/now.ts'
-import { starPoints, figureViewBox, DATE, validateGoal, isActive, findActive, resolveItems, addDays, dayOfWeek, dailyCounts, computeStreaks, monthCount, heatmapGrid, availableFigures, pickFigure, nearestCounts } from './now-logic.ts'
+import { starPoints, figureViewBox, DATE, isValidOverride, validateGoal, isActive, findActive, resolveItems, addDays, dayOfWeek, dailyCounts, computeStreaks, monthCount, heatmapGrid, clampToday, availableFigures, pickFigure, nearestCounts } from './now-logic.ts'
 
 const square: Constellation = {
   name: 'Square',
@@ -59,6 +59,42 @@ test('figureViewBox falls back to the full padded square when there are no stars
 test('DATE matches YYYY-MM-DD and rejects other formats', () => {
   assert.equal(DATE.test('2026-08-14'), true)
   assert.equal(DATE.test('14/08/2026'), false)
+})
+
+test('isValidOverride accepts a well-formed entry with base null', () => {
+  assert.equal(isValidOverride({ completedAt: '2026-08-14', base: null }), true)
+})
+
+test('isValidOverride accepts a well-formed entry with a valid base date', () => {
+  assert.equal(isValidOverride({ completedAt: '2026-08-14', base: '2026-08-01' }), true)
+})
+
+test('isValidOverride rejects a non-string completedAt', () => {
+  assert.equal(isValidOverride({ completedAt: 123, base: null }), false)
+})
+
+test('isValidOverride rejects a malformed completedAt date string', () => {
+  assert.equal(isValidOverride({ completedAt: '14/08/2026', base: null }), false)
+})
+
+test('isValidOverride rejects a malformed base', () => {
+  assert.equal(isValidOverride({ completedAt: '2026-08-14', base: 'nope' }), false)
+})
+
+test('clampToday keeps today unchanged when there are no local dates', () => {
+  assert.equal(clampToday([], '2026-08-21'), '2026-08-21')
+})
+
+test('clampToday clamps forward to a local date one day ahead', () => {
+  assert.equal(clampToday(['2026-08-22'], '2026-08-21'), '2026-08-22')
+})
+
+test('clampToday bounds a far-future local date to today + 1, never the future date itself', () => {
+  assert.equal(clampToday(['2030-01-01'], '2026-08-21'), '2026-08-22')
+})
+
+test('clampToday leaves today unchanged when the local date is in the past', () => {
+  assert.equal(clampToday(['2026-08-19'], '2026-08-21'), '2026-08-21')
 })
 
 const catalog: Catalog = {

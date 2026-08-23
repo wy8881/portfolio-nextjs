@@ -1,14 +1,15 @@
 'use client'
 
 import { useLocalCompletions } from '@/lib/hooks/useLocalCompletions'
-import { resolveItems } from '@/lib/now-logic'
+import { clampToday, resolveItems } from '@/lib/now-logic'
 import type { NowItem } from '@/types/now'
 
 export interface MergedDates {
   /** Dates from local-only ticks on the active goal — resolved but not yet committed. */
   localDates: string[]
   /**
-   * `today`, clamped forward past any local date.
+   * `today`, clamped forward past any local date (see `clampToday` in `lib/now-logic.ts`
+   * for the one-day ceiling and why it's there).
    *
    * `today` is baked into the page at ISR generation (`revalidate = 3600`), while a local
    * tick's date is computed client-side, on this device, at the moment it's made. Between
@@ -35,7 +36,7 @@ export function useMergedDates(activeSlug: string | null, activeItems: NowItem[]
     .filter((item, i) => item.completedAt !== null && activeItems[i].completedAt === null)
     .map((item) => item.completedAt as string)
 
-  const effectiveToday = localDates.reduce((max, d) => (d > max ? d : max), today)
+  const effectiveToday = clampToday(localDates, today)
 
   return { localDates, effectiveToday }
 }
