@@ -4,7 +4,7 @@
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ANIMATION_DURATION, ANIMATION_EASING } from '@/lib/animations'
-import { heroQuestions, supportMessage, supportResources } from '@/data/home/questions'
+import { heroQuestions, closingMessage } from '@/data/home/questions'
 import { useSeasonConfetti } from '@/components/home/hero/useSeasonConfetti'
 
 const SWAP_TRANSITION = { duration: 0.25, ease: ANIMATION_EASING.standard }
@@ -29,6 +29,11 @@ export function ConfettiPanel() {
   function handleNo() {
     setCelebrated(false)
     setStep(current => current + 1)
+  }
+
+  function handleStartOver() {
+    setCelebrated(false)
+    setStep(0)
   }
 
   return (
@@ -129,28 +134,26 @@ export function ConfettiPanel() {
             ) : (
               <>
                 <p
-                  className="text-sm leading-relaxed mb-4"
+                  className="text-sm leading-relaxed mb-5"
                   style={{ color: 'var(--color-primary)' }}
                 >
-                  {supportMessage}
+                  {closingMessage}
                 </p>
 
-                <ul className="flex flex-col gap-2.5">
-                  {supportResources.map(resource => (
-                    <li key={resource.name} className="text-sm leading-snug">
-                      <a
-                        href={resource.href}
-                        className="font-medium underline underline-offset-4 transition-opacity duration-200 hover:opacity-70"
-                        style={{ color: 'var(--color-accent)' }}
-                      >
-                        {resource.name}
-                      </a>
-                      <span className="block" style={{ color: 'var(--color-secondary)' }}>
-                        {resource.detail}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <button
+                  type="button"
+                  onClick={handleStartOver}
+                  className="
+                    px-4 py-2.5 -ml-4
+                    font-medium rounded-sm
+                    underline underline-offset-4
+                    transition-opacity duration-200
+                    hover:opacity-70
+                  "
+                  style={{ color: 'var(--color-accent)' }}
+                >
+                  Start over
+                </button>
               </>
             )}
           </motion.div>
