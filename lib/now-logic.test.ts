@@ -131,9 +131,18 @@ test('validateGoal rejects duplicate ids', () => {
   assert.throws(() => validateGoal('cru', dup, catalog), /duplicate item id "i1"/)
 })
 
-test('validateGoal rejects empty text', () => {
-  const blank = { ...valid, items: valid.items.map((i, n) => (n === 2 ? { ...i, text: '  ' } : i)) }
-  assert.throws(() => validateGoal('cru', blank, catalog), /item "i3" has no text/)
+test('validateGoal rejects empty text on a finished item', () => {
+  // i1 is the completed one — a lit star with no label is meaningless once published.
+  const blank = { ...valid, items: valid.items.map((i, n) => (n === 0 ? { ...i, text: '  ' } : i)) }
+  assert.throws(() => validateGoal('cru', blank, catalog), /item "i1" has no text/)
+})
+
+test('validateGoal accepts empty text on an unfinished item', () => {
+  // A goal starts with every star blank and undated; the text is written on the day
+  // the work happens, so a blank unfinished item must survive `next build`.
+  const blank = { ...valid, items: valid.items.map((i) => ({ ...i, text: '', completedAt: null })) }
+  const goal = validateGoal('cru', blank, catalog)
+  assert.equal(goal.items.every((i) => i.text === '' && i.completedAt === null), true)
 })
 
 test('validateGoal rejects a malformed date', () => {

@@ -1,10 +1,10 @@
 {
   "startedAt": "2026-08-14",
   "items": [
-    { "id": "i1", "text": "Ch 1 · Reliable, Scalable, Maintainable", "completedAt": "2026-08-14" },
-    { "id": "i2", "text": "Ch 2 · Data Models and Query Languages", "completedAt": null },
-    { "id": "i3", "text": "Ch 3 · Storage and Retrieval", "completedAt": null },
-    { "id": "i4", "text": "Ch 4 · Encoding and Evolution", "completedAt": null },
-    { "id": "i5", "text": "Ch 5 · Replication", "completedAt": null }
+    { "id": "i1", "text": "", "completedAt": null },
+    { "id": "i2", "text": "", "completedAt": null },
+    { "id": "i3", "text": "", "completedAt": null },
+    { "id": "i4", "text": "", "completedAt": null },
+    { "id": "i5", "text": "", "completedAt": null }
   ]
 }

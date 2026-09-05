@@ -79,8 +79,8 @@ export function validateGoal(slug: string, raw: unknown, catalog: Catalog): Goal
     if (!item || typeof item.id !== 'string' || item.id === '') throw new Error(`${where}: every item needs an id`)
     if (seen.has(item.id)) throw new Error(`${where}: duplicate item id "${item.id}"`)
     seen.add(item.id)
-    if (typeof item.text !== 'string' || item.text.trim() === '') {
-      throw new Error(`${where}: item "${item.id}" has no text`)
+    if (typeof item.text !== 'string') {
+      throw new Error(`${where}: item "${item.id}" text must be a string`)
     }
     if (item.completedAt !== null) {
       if (typeof item.completedAt !== 'string' || !DATE.test(item.completedAt)) {
@@ -88,6 +88,12 @@ export function validateGoal(slug: string, raw: unknown, catalog: Catalog): Goal
       }
       if (item.completedAt < startedAt) {
         throw new Error(`${where}: item "${item.id}" completed before the goal started`)
+      }
+      // A *finished* star must say what it was — a lit star with nothing beside it is
+      // meaningless on the published page. An unfinished star may be blank on purpose:
+      // the text gets written on the day the work actually happens.
+      if (item.text.trim() === '') {
+        throw new Error(`${where}: item "${item.id}" has no text`)
       }
     }
   }
