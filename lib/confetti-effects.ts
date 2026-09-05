@@ -45,13 +45,14 @@ const stars: Effect = (fire, colors) => {
   return () => timers.forEach(window.clearTimeout)
 }
 
-/** Soft and slow — low gravity so the hearts drift rather than drop. */
+/** Soft and slow — low gravity so the hearts drift up from the bottom. */
 const hearts: Effect = (fire, colors) => {
   fire({
     particleCount: 45,
+    origin: { y: 1 },
     spread: 70,
     startVelocity: 32,
-    gravity: 0.55,
+    gravity: 0.35,
     decay: 0.94,
     ticks: 220,
     scalar: 1.6,
@@ -61,12 +62,13 @@ const hearts: Effect = (fire, colors) => {
   return NO_CLEANUP
 }
 
-/** The classic layered burst: five overlapping shots of varying weight. */
+/** The classic layered burst: five overlapping shots rising from the bottom edge. */
 const realistic: Effect = (fire, colors) => {
   const count = 200
   const shoot = (particleRatio: number, opts: confetti.Options) => {
     fire({
-      origin: { y: 0.7 },
+      origin: { y: 1 },
+      gravity: 0.6,
       colors,
       ...opts,
       particleCount: Math.floor(count * particleRatio),
@@ -82,7 +84,7 @@ const realistic: Effect = (fire, colors) => {
   return NO_CLEANUP
 }
 
-/** Two edge cannons firing at each other — the room cheering for you. */
+/** Two cannons from the bottom corners, arcing inward — the room cheering for you. */
 const schoolPride: Effect = (fire, colors) => {
   const end = Date.now() + 1200
   let rafId = 0
@@ -90,8 +92,8 @@ const schoolPride: Effect = (fire, colors) => {
 
   const frame = () => {
     if (cancelled) return
-    fire({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors })
-    fire({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors })
+    fire({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 1 }, gravity: 0.65, colors })
+    fire({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 1 }, gravity: 0.65, colors })
     if (Date.now() < end) rafId = requestAnimationFrame(frame)
   }
   frame()
