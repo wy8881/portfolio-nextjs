@@ -1,0 +1,10 @@
+{
+  "startedAt": "2026-08-14",
+  "items": [
+    { "id": "i1", "text": "App Service", "completedAt": null },
+    { "id": "i2", "text": "Web Apps", "completedAt": null },
+    { "id": "i3", "text": "", "completedAt": null },
+    { "id": "i4", "text": "", "completedAt": null },
+    { "id": "i5", "text": "", "completedAt": null }
+  ]
+}
