@@ -40,7 +40,7 @@ export function ConfettiPanel() {
         delay: 0.3,
         ease: ANIMATION_EASING.easeOut,
       }}
-      className="relative overflow-hidden rounded-lg p-6 border-l-[3px] h-full min-h-64 flex flex-col justify-center"
+      className="relative z-[2] overflow-hidden rounded-lg p-6 border-l-[3px] h-full min-h-64 flex flex-col justify-center"
       style={{
         backgroundColor: 'var(--color-artifact)',
         borderColor: 'var(--color-accent)',
