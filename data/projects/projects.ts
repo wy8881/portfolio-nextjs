@@ -1,18 +1,6 @@
 import { Project } from '@/types/projects'
 
 export const projects: Project[] = [
-    {
-    id: 7,
-    title: "Aura Solutions Business Website",
-    description: "A custom-developed business solution leveraging WordPress and Divi to deliver a sophisticated web experience. The project focuses on high-quality design consistency and optimized asset delivery for superior performance. Deployed on Amazon Lightsail via a virtual private server, the architecture is configured for reliability and scalability to support professional corporate operations.",
-    tags: ["CMS Development", "WordPress", "Divi", "Amazon Lightsail"],
-    category: "Frontend",
-    github: "",
-    liveDemo: "https://aurasolutions.wyprojects.com/",
-    featured: true,
-    coverImage: "/images/projects/aurosolutions-cover.png",
-    shortTitle: "Aura Solutions"
-  },
   {
     id: 1,
     title: "Full-Stack Voting System",
