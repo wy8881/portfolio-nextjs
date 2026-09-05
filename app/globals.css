@@ -180,3 +180,92 @@ p {
   background: none;
   padding: 0;
 }
+
+/* ── Collection dialog: frosted-glass panel over a grey mask ── */
+/* The dialog element fills the viewport and paints the mask itself, rather than
+   leaving that to ::backdrop. Two reasons: a click landing on the dialog is then
+   unambiguously a click outside the panel (which is what dismisses it), and the
+   mask colour stays in the author stylesheet — browsers disagree about whether
+   custom properties inherit into ::backdrop. The UA backdrop is cleared so the
+   two layers cannot stack into a darker grey than intended. */
+.collection-dialog {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 1.5rem;
+  border: none;
+  /* Grey enough to mute the page, light enough that the blur behind it still reads
+     as frosted rather than as a flat slab. */
+  background: rgb(0 0 0 / 0.32);
+  /* Deliberately unprefixed: Lightning CSS adds -webkit- from the browser targets.
+     Writing the prefixed form by hand makes it collapse the pair and keep only the
+     prefixed one, which silently drops the blur in Firefox. */
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  /* `allow-discrete` is what lets the closing frame animate: without it `display`
+     flips to none immediately and the fade-out is never seen. */
+  transition:
+    opacity 200ms ease,
+    overlay 200ms ease allow-discrete,
+    display 200ms ease allow-discrete;
+}
+
+/* `display` is set only here, never on the base rule — an author `display` that
+   applied while closed would beat the UA's `dialog:not([open]) { display: none }`
+   and leave the mask covering the page permanently. */
+.collection-dialog[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+}
+
+.collection-dialog::backdrop {
+  background: transparent;
+}
+
+.collection-dialog__panel {
+  width: 100%;
+  max-width: 42rem;
+  /* Two thirds of the viewport, fixed rather than capped: the wall is always 88
+     figures tall, so a max-height would just resolve to this same value with a
+     less predictable result on short screens. The dialog's flex centring is what
+     places the remaining third as equal space above and below. */
+  height: 66.667vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  /* Mixed from the season token rather than a fixed white, so the glass tints with
+     the active season instead of washing out in spring and autumn. */
+  background: color-mix(in srgb, var(--color-background) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.25);
+  /* Modest, because the dialog behind already blurs the page — an element with
+     backdrop-filter starts a backdrop root, so this samples that blurred grey
+     rather than the page itself. The tint and border do most of the work here. */
+  backdrop-filter: blur(8px) saturate(1.4);
+  transform: scale(0.97);
+  transition: transform 200ms ease;
+}
+
+.collection-dialog[open] .collection-dialog__panel {
+  transform: scale(1);
+}
+
+@starting-style {
+  .collection-dialog[open] {
+    opacity: 0;
+  }
+  .collection-dialog[open] .collection-dialog__panel {
+    transform: scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collection-dialog,
+  .collection-dialog__panel {
+    transition: none;
+  }
+}

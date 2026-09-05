@@ -4,6 +4,7 @@ import ActiveConstellation from '@/components/now/ActiveConstellation'
 import NowStats from '@/components/now/NowStats'
 import Heatmap from '@/components/now/Heatmap'
 import CollectionWall from '@/components/now/CollectionWall'
+import CollectionDialog from '@/components/now/CollectionDialog'
 
 export const metadata: Metadata = {
   title: 'Now - Yi Wang',
@@ -20,7 +21,12 @@ export default function NowPage() {
   return (
     <div className="min-h-dvh pt-16 md:pt-24 lg:pt-32 pb-16 md:pb-24 lg:pb-32">
       <div className="max-w-2xl mx-auto px-6">
-        <h1 className="text-4xl font-bold text-primary mb-4">Now</h1>
+        <div className="flex items-center gap-3 mb-4">
+          <h1 className="text-4xl font-bold text-primary">Now</h1>
+          <CollectionDialog collected={stats.collected} total={stats.total}>
+            <CollectionWall catalog={catalog} collected={collected} activeSlug={active?.slug ?? null} />
+          </CollectionDialog>
+        </div>
         <p className="text-secondary mb-16">
           What I&apos;m learning at the moment, one star at a time.
         </p>
@@ -46,8 +52,6 @@ export default function NowPage() {
           activeSlug={active?.slug ?? null}
           activeItems={active?.items ?? []}
         />
-
-        <CollectionWall catalog={catalog} collected={collected} activeSlug={active?.slug ?? null} />
       </div>
     </div>
   )

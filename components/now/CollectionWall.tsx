@@ -25,7 +25,7 @@ const CollectionWall = ({ catalog, collected, activeSlug }: CollectionWallProps)
   })
 
   return (
-    <section aria-label="Collection" className="mt-16">
+    <section aria-label="Collection">
       <div className="flex items-baseline justify-between mb-4">
         <h2 className="text-sm uppercase tracking-wide text-secondary">Collection</h2>
         <p className="text-sm text-secondary">
