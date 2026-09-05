@@ -71,8 +71,11 @@ export default function SeasonToggle() {
     >
       {/* Mobile: vertical expand upward */}
       <div
+        inert={!open}
         className={`sm:hidden grid transition-[grid-template-rows,opacity,margin] duration-300 ease-in-out ${
-          open ? 'grid-rows-[1fr] opacity-100 mb-2' : 'grid-rows-[0fr] opacity-0 mb-0'
+          open
+            ? 'grid-rows-[1fr] opacity-100 mb-2'
+            : 'grid-rows-[0fr] opacity-0 mb-0 pointer-events-none'
         }`}
       >
         <div className="overflow-hidden flex flex-col bg-white rounded-[28px] p-2 gap-1 shadow-[0_4px_24px_rgba(0,0,0,0.18)]">
@@ -82,8 +85,11 @@ export default function SeasonToggle() {
 
       {/* Desktop: horizontal expand leftward */}
       <div
+        inert={!open}
         className={`hidden sm:grid transition-[grid-template-columns,opacity,margin] duration-300 ease-in-out ${
-          open ? 'grid-cols-[1fr] opacity-100 mr-2' : 'grid-cols-[0fr] opacity-0 mr-0'
+          open
+            ? 'grid-cols-[1fr] opacity-100 mr-2'
+            : 'grid-cols-[0fr] opacity-0 mr-0 pointer-events-none'
         }`}
       >
         <div className="overflow-hidden flex items-center bg-white rounded-[40px] p-2 gap-1 whitespace-nowrap shadow-[0_4px_24px_rgba(0,0,0,0.18)]">
@@ -95,6 +101,7 @@ export default function SeasonToggle() {
       <button
         onClick={() => setOpen(o => !o)}
         aria-label="Switch season theme"
+        aria-expanded={open}
         className="w-14 h-14 rounded-full bg-white cursor-pointer text-2xl flex items-center justify-center shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.15)] transition-colors"
         style={{ border: `2px solid ${accentColor}` }}
       >
