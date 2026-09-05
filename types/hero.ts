@@ -6,9 +6,3 @@ export interface HeroQuestion {
   effect: EffectName
   affirmation: string
 }
-
-export interface SupportResource {
-  name: string
-  detail: string
-  href: string
-}
