@@ -48,8 +48,10 @@ const ActiveConstellation = ({ figure, goal }: ActiveConstellationProps) => {
       <ConstellationFigure
         figure={figure}
         items={items}
+        committed={goal.items}
         activeIndex={activeIndex}
         onActivate={setActiveIndex}
+        onToggle={handleToggle}
         newlyLitIds={tickedThisSession}
       />
 

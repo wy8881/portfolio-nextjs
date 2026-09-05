@@ -19,8 +19,18 @@ const TOOLTIP_HALF_WIDTH = TOOLTIP_MAX_WIDTH / 2
 export interface ConstellationFigureProps {
   figure: Constellation
   items: NowItem[]
+  /**
+   * The committed items, positionally aligned with `items`. Toggling needs these
+   * rather than the merged ones: `useLocalCompletions.toggle` decides whether an
+   * item is togglable at all by checking that its *committed* date is still null,
+   * and records that value as the override's base. Handing it a merged item would
+   * make every locally-lit star look permanently committed and unclickable.
+   */
+  committed: NowItem[]
   activeIndex: number | null
   onActivate: (index: number | null) => void
+  /** Same handler the list rows use, so a star and its row do exactly one thing. */
+  onToggle: (item: NowItem) => void
   /**
    * Ids of items toggled lit during *this* session (owned by `ActiveConstellation`,
    * which is the only thing that knows for certain — it's the one calling `toggle`).
@@ -41,7 +51,15 @@ function formatDate(date: string): string {
   })
 }
 
-const ConstellationFigure = ({ figure, items, activeIndex, onActivate, newlyLitIds }: ConstellationFigureProps) => {
+const ConstellationFigure = ({
+  figure,
+  items,
+  committed,
+  activeIndex,
+  onActivate,
+  onToggle,
+  newlyLitIds,
+}: ConstellationFigureProps) => {
   const points = starPoints(figure, SIZE, PADDING)
   // A wide or tall figure only fills a thin band of the fixed SIZE x SIZE square (the
   // catalog normalises every figure's longer axis to span the full unit box, so the
@@ -113,10 +131,23 @@ const ConstellationFigure = ({ figure, items, activeIndex, onActivate, newlyLitI
               tabIndex={0}
               role="button"
               aria-label={label}
+              aria-pressed={isLit}
               onPointerEnter={() => onActivate(i)}
               onFocus={() => onActivate(i)}
               onBlur={() => onActivate(null)}
-              onClick={() => onActivate(isActive ? null : i)}
+              // Clicking a star does exactly what clicking its row does. The tooltip
+              // is left to hover and focus, which already cover every way of reaching
+              // a star — including a tap, since pointerenter fires on touch too.
+              onClick={() => onToggle(committed[i])}
+              // `role="button"` on a <g> is a claim, not a behaviour: SVG elements get
+              // no free keyboard activation the way a real <button> does, so without
+              // this the star is focusable and announced as a button but cannot be
+              // operated from the keyboard at all.
+              onKeyDown={(event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return
+                event.preventDefault()
+                onToggle(committed[i])
+              }}
               className="cursor-pointer focus:outline-none"
             >
               {isLit && (
