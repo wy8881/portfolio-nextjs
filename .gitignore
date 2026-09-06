@@ -44,3 +44,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .worktrees/
+
+# claude code — local settings only; skills and shared settings are committed
+.claude/settings.local.json
