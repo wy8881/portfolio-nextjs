@@ -3,7 +3,7 @@
   "items": [
     { "id": "i1", "text": "App Service", "completedAt": "2026-09-05" },
     { "id": "i2", "text": "Web Apps", "completedAt": "2026-09-06" },
-    { "id": "i3", "text": "", "completedAt": null },
+    { "id": "i3", "text": "Azure Functions", "completedAt": "2026-09-09" },
     { "id": "i4", "text": "", "completedAt": null },
     { "id": "i5", "text": "", "completedAt": null }
   ]
