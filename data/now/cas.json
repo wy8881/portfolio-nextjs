@@ -5,6 +5,6 @@
     { "id": "i2", "text": "Web Apps", "completedAt": "2026-09-06" },
     { "id": "i3", "text": "Azure Functions", "completedAt": "2026-09-09" },
     { "id": "i4", "text": "", "completedAt": null },
-    { "id": "i5", "text": "", "completedAt": null }
+    { "id": "i5", "text": "Cosmos DB Storage", "completedAt": "2026-09-22" }
   ]
 }
